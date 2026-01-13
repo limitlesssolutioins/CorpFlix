@@ -1,0 +1,38 @@
+{
+  "name": "CorpFlix Solutions",
+  "logoUrl": "/logo.png",
+  "summary": "CorpFlix Solutions es una empresa líder en el desarrollo de plataformas integrales para la gestión de sistemas de calidad, seguridad y salud en el trabajo. Nuestra misión es empoderar a las organizaciones para alcanzar la excelencia operativa y el cumplimiento normativo a través de soluciones tecnológicas innovadoras y fáciles de usar.",
+  "mission": "Proveer soluciones innovadoras y de alta calidad para la gestión de sistemas de calidad y seguridad y salud en el trabajo, impulsando la mejora continua en las organizaciones.",
+  "vision": "Ser la plataforma líder en Latinoamérica para la gestión integral de sistemas de calidad y SST, reconocida por nuestra excelencia, innovación y compromiso con el éxito de nuestros clientes.",
+  "certifications": [
+    { "name": "ISO 9001", "logoUrl": "/certs/iso9001.png" },
+    { "name": "ISO 45001", "logoUrl": "/certs/iso45001.png" },
+    { "name": "ISO 14001", "logoUrl": "/certs/iso14001.png" }
+  ],
+  "portfolio": [
+    {
+      "title": "Software de Gestión de Auditorías",
+      "description": "Una herramienta completa para planificar, ejecutar y seguir auditorías internas y externas.",
+      "imageUrl": "/portfolio/auditorias.jpg"
+    },
+    {
+      "title": "Plataforma de Indicadores de Gestión",
+      "description": "Visualiza y analiza los indicadores clave de tus procesos en tiempo real.",
+      "imageUrl": "/portfolio/indicadores.jpg"
+    },
+    {
+      "title": "Gestión de Riesgos y Oportunidades",
+      "description": "Identifica, evalúa y trata los riesgos y oportunidades de tu organización.",
+      "imageUrl": "/portfolio/riesgos.jpg"
+    }
+  ],
+  "companyInfo": {
+    "razonSocial": "CorpFlix Solutions S.A.S.",
+    "nit": "900.123.456-7",
+    "direccion": "Calle 123 # 45 - 67, Bogotá D.C.",
+    "telefono": "+57 1 234 5678",
+    "email": "info@corpflix.com",
+    "actividadComercial": "Desarrollo de software y consultoría en sistemas de gestión de calidad y SST.",
+    "website": "www.corpflix.com"
+  }
+}

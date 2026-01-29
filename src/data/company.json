@@ -1,9 +1,10 @@
 {
-  "name": "CorpFlix Solutions",
+  "name": "LIDUS",
+  "tagline": "Liderazgo, Integración, Desarrollo, Usabilidad y Seguridad",
   "logoUrl": "/logo.png",
-  "summary": "CorpFlix Solutions es una empresa líder en el desarrollo de plataformas integrales para la gestión de sistemas de calidad, seguridad y salud en el trabajo. Nuestra misión es empoderar a las organizaciones para alcanzar la excelencia operativa y el cumplimiento normativo a través de soluciones tecnológicas innovadoras y fáciles de usar.",
-  "mission": "Proveer soluciones innovadoras y de alta calidad para la gestión de sistemas de calidad y seguridad y salud en el trabajo, impulsando la mejora continua en las organizaciones.",
-  "vision": "Ser la plataforma líder en Latinoamérica para la gestión integral de sistemas de calidad y SST, reconocida por nuestra excelencia, innovación y compromiso con el éxito de nuestros clientes.",
+  "summary": "LIDUS es una plataforma integral diseñada para transformar la gestión empresarial a través del Liderazgo, la Integración de procesos, el Desarrollo continuo, una Usabilidad excepcional y los más altos estándares de Seguridad. Nuestra misión es empoderar a las organizaciones para alcanzar la excelencia operativa y el cumplimiento normativo a través de soluciones tecnológicas innovadoras.",
+  "mission": "Proveer soluciones tecnológicas basadas en liderazgo e integración que impulsen el desarrollo y la seguridad en la gestión de calidad, garantizando una usabilidad intuitiva para la mejora continua organizacional.",
+  "vision": "Ser la plataforma referente a nivel global en la gestión integral de sistemas corporativos, siendo reconocidos por los pilares de LIDUS: Liderazgo, Integración, Desarrollo, Usabilidad y Seguridad.",
   "certifications": [
     { "name": "ISO 9001", "logoUrl": "/certs/iso9001.png" },
     { "name": "ISO 45001", "logoUrl": "/certs/iso45001.png" },
@@ -27,12 +28,12 @@
     }
   ],
   "companyInfo": {
-    "razonSocial": "CorpFlix Solutions S.A.S.",
+    "razonSocial": "LIDUS Solutions S.A.S.",
     "nit": "900.123.456-7",
-    "direccion": "Calle 123 # 45 - 67, Bogotá D.C.",
+    "direccion": "Sede Central - Gestión Integral",
     "telefono": "+57 1 234 5678",
-    "email": "info@corpflix.com",
-    "actividadComercial": "Desarrollo de software y consultoría en sistemas de gestión de calidad y SST.",
-    "website": "www.corpflix.com"
+    "email": "contacto@lidus.co",
+    "actividadComercial": "Desarrollo de software y consultoría en sistemas de gestión integral.",
+    "website": "www.lidus.co"
   }
 }

@@ -1,120 +1,101 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaExclamationTriangle, FaChartLine, FaTasks, FaFileAlt, FaProjectDiagram } from 'react-icons/fa';
+import { 
+  FaExclamationTriangle, 
+  FaChartLine, 
+  FaTasks, 
+  FaFileAlt, 
+  FaProjectDiagram,
+  FaArrowRight
+} from 'react-icons/fa';
 import Link from 'next/link';
-import DashboardCard from './DashboardCard';
+import axios from 'axios';
 import RiskMatrix from './RiskMatrix';
 import IndicatorChart from './IndicatorChart';
 
-// Interfaces for data structures
-interface Risk {
-  impact: 'Bajo' | 'Medio' | 'Alto';
-  probability: 'Baja' | 'Media' | 'Alta';
-}
-interface Indicator {
-  name: string;
-  goal: number;
-  measurements: { value: number }[];
-}
-interface Action {
-  status: 'Abierta' | 'En Progreso' | 'Cerrada';
-}
-interface DashboardStats {
-  highRisks: number;
-  indicatorsBelowGoal: number;
-  openActions: number;
-  totalDocuments: number;
-  totalProcesses: number;
-  risks: Risk[];
-  indicators: Indicator[];
-}
-
-// StatCard component for top-level metrics
-const StatCard = ({ title, value, icon, link, gradientColors }: { title: string; value: string | number; icon: React.ReactNode; link: string; gradientColors: string }) => (
-  <Link href={link} className={`stat-card-impact relative block p-6 rounded-xl shadow-lg overflow-hidden text-white transition-transform transform hover:scale-105 ${gradientColors}`}>
-    <div className="relative z-10">
-        <p className="text-sm font-medium uppercase tracking-wider">{title}</p>
-        <p className="text-5xl font-bold mt-2">{value}</p>
+// Componente de Tarjeta de Estadística Individual (Estilo Moderno)
+const StatCard = ({ title, value, icon, link, color }: { title: string; value: string | number; icon: React.ReactNode; link: string; color: string }) => (
+  <Link href={link} className="group bg-white p-6 rounded-[2rem] border border-slate-100 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-1 transition-all">
+    <div className="flex justify-between items-start mb-4">
+      <div className={`p-4 rounded-2xl bg-${color}-50 text-${color}-600 group-hover:bg-${color}-600 group-hover:text-white transition-all`}>
+        {icon}
+      </div>
+      <FaArrowRight className="text-slate-200 group-hover:text-slate-400 transition-colors" />
     </div>
-    <div className="absolute -bottom-4 -right-4 opacity-20 z-0">{icon}</div>
+    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
+    <p className="text-3xl font-black text-slate-900 mt-1">{value}</p>
   </Link>
 );
 
 const Dashboard = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch and process data from localStorage
-    const riskKeys = ['corporateRisks', 'healthSafetyRisks', 'environmentalRisks', 'financialRisks', 'organizationalRisks'];
-    let allRisks: Risk[] = [];
-    riskKeys.forEach(key => {
-      const stored = localStorage.getItem(key);
-      if (stored) allRisks = [...allRisks, ...JSON.parse(stored)];
-    });
-
-    const highRisks = allRisks.filter(r => 
-        (r.impact === 'Alta' && r.probability === 'Alta') || 
-        (r.impact === 'Alta' && r.probability === 'Media') || 
-        (r.impact === 'Medio' && r.probability === 'Alta')
-    ).length;
-
-    const kpiData = localStorage.getItem('kpiData');
-    let indicators: Indicator[] = kpiData ? JSON.parse(kpiData) : [];
-    const indicatorsBelowGoal = indicators.filter(ind => {
-      const lastMeasurement = ind.measurements[ind.measurements.length - 1];
-      return lastMeasurement && lastMeasurement.value < ind.goal;
-    }).length;
-
-    const actionKeys = ['improvementActions', 'correctiveActions', 'preventiveActions'];
-    let openActions = 0;
-    actionKeys.forEach(key => {
-      const stored = localStorage.getItem(key);
-      if (stored) {
-        const actions: Action[] = JSON.parse(stored);
-        openActions += actions.filter(a => a.status === 'Abierta' || a.status === 'En Progreso').length;
-      }
-    });
-
-    const totalDocuments = JSON.parse(localStorage.getItem('documents') || '[]').length;
-    const totalProcesses = JSON.parse(localStorage.getItem('processes') || '[]').length;
-
-    setStats({ 
-      highRisks, 
-      indicatorsBelowGoal, 
-      openActions, 
-      totalDocuments, 
-      totalProcesses, 
-      risks: allRisks, 
-      indicators 
-    });
+    fetchStats();
   }, []);
 
-  if (!stats) {
-    return <div className="text-center p-8">Cargando dashboard...</div>;
-  }
+  const fetchStats = async () => {
+    try {
+      // Intentamos obtener datos de la nueva API de Gestión
+      const res = await axios.get('/api/gestion/procesos'); // Por ahora procesos, pero podríamos tener un endpoint global
+      const processes = res.data || [];
+
+      // Como respaldo, seguimos leyendo cosas de localStorage hasta migrar todo
+      const kpiData = JSON.parse(localStorage.getItem('kpiData') || '[]');
+      const risks = JSON.parse(localStorage.getItem('corporateRisks') || '[]');
+      const documents = JSON.parse(localStorage.getItem('documents') || '[]');
+
+      setStats({
+        totalProcesses: processes.length,
+        totalIndicators: kpiData.length,
+        totalRisks: risks.length,
+        totalDocuments: documents.length,
+        risks,
+        indicators: kpiData
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div className="p-8 text-center text-slate-400 animate-pulse">Analizando indicadores de gestión...</div>;
 
   return (
-    <section className="dashboard-container">
-      <h2 className="dashboard-main-title">Panel de Control</h2>
+    <section className="space-y-8 mt-16 animate-in fade-in duration-1000">
+      <div className="flex items-center gap-4">
+        <div className="h-1 w-12 bg-slate-900 rounded-full"></div>
+        <h2 className="text-3xl font-black text-slate-900 tracking-tight">Panel de Control de Gestión</h2>
+      </div>
       
-      {/* Top Stat Cards */}
-      <div className="stat-cards-grid">
-        <StatCard title="Riesgos Altos" value={stats.highRisks} icon={<FaExclamationTriangle size={80} />} link="/gestion/riesgos" gradientColors="bg-gradient-to-br from-red-500 to-orange-500" />
-        <StatCard title="Indicadores Bajo Meta" value={stats.indicatorsBelowGoal} icon={<FaChartLine size={80} />} link="/gestion/indicadores" gradientColors="bg-gradient-to-br from-blue-500 to-indigo-500" />
-        <StatCard title="Acciones Pendientes" value={stats.openActions} icon={<FaTasks size={80} />} link="/gestion/mejora-continua/plan-mejoramiento" gradientColors="bg-gradient-to-br from-yellow-400 to-amber-500" />
-        <StatCard title="Procesos Definidos" value={stats.totalProcesses} icon={<FaProjectDiagram size={80} />} link="/gestion/procesos" gradientColors="bg-gradient-to-br from-green-500 to-teal-500" />
-        <StatCard title="Documentos Totales" value={stats.totalDocuments} icon={<FaFileAlt size={80} />} link="/gestion/documentos" gradientColors="bg-gradient-to-br from-purple-500 to-violet-500" />
+      {/* Grid de Estadísticas Rápidas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard title="Procesos Críticos" value={stats.totalProcesses} icon={<FaProjectDiagram size={20} />} link="/gestion/procesos" color="blue" />
+        <StatCard title="Riesgos Identificados" value={stats.totalRisks} icon={<FaExclamationTriangle size={20} />} link="/gestion/riesgos" color="red" />
+        <StatCard title="KPIs en Seguimiento" value={stats.totalIndicators} icon={<FaChartLine size={20} />} link="/gestion/indicadores" color="emerald" />
+        <StatCard title="Gestión Documental" value={stats.totalDocuments} icon={<FaFileAlt size={20} />} link="/gestion/documentos" color="purple" />
       </div>
 
-      {/* Detailed Cards */}
-      <div className="dashboard-details-grid">
-        <DashboardCard title="Matriz de Riesgos Resumida">
+      {/* Gráficos Detallados (Si existen datos) */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+          <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            Mapa de Calor de Riesgos
+          </h3>
           <RiskMatrix risks={stats.risks} />
-        </DashboardCard>
-        <DashboardCard title="Desempeño de Indicadores Clave">
+        </div>
+
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+          <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            Desempeño de Indicadores
+          </h3>
           <IndicatorChart indicators={stats.indicators} />
-        </DashboardCard>
+        </div>
       </div>
     </section>
   );

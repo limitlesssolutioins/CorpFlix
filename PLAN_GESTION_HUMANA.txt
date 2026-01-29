@@ -1,0 +1,74 @@
+PLAN DE DESARROLLO - MÓDULO GESTIÓN HUMANA (CORPFLIX)
+Fecha: 26 de Enero 2026
+Objetivo: Profundizar la funcionalidad técnica y de negocio para aportar valor real a Pymes y Grandes Empresas.
+
+ESTADO ACTUAL:
+- Estructura de carpetas completa (Frontend).
+- Base de datos con Empleados, Turnos, Asistencia y Ausencias básicas.
+- Faltan: Motores de cálculo (Nómina/Liquidación), Históricos, y Lógica de negocio compleja (PILA, Seguridad Social).
+
+---
+
+FASE 1: MOTOR DE NÓMINA Y COMPENSACIÓN (El Corazón Financiero)
+Objetivo: Que el sistema calcule cuánto pagar automáticamente basándose en la configuración y asistencia.
+
+1.1. Configuración de Conceptos (Devengados y Deducibles)
+   - Crear tabla `PayrollConcept` (Salario base, Aux. Transporte, H.E., Bonificaciones, Salud, Pensión).
+   - Lógica para "Novedades de Nómina" (conectar Ausencias con descuentos automáticos).
+
+1.2. Generación de Colilla de Pago (Payslips)
+   - Crear tabla `PayrollPeriod` (Quincenal/Mensual).
+   - Crear tabla `Payslip` y `PayslipDetail`.
+   - Script de cálculo: Salario Base + (Horas Extra x Factor) - Deducciones.
+
+1.3. Seguridad Social y Parafiscales (PILA)
+   - Lógica de cálculo de aportes empresa vs. empleado.
+   - Generación de reporte previo para operadores de información.
+
+---
+
+FASE 2: TIEMPO Y ASISTENCIA AVANZADA (Control Operativo)
+Objetivo: Convertir los datos de entrada/salida en información para nómina.
+
+2.1. Comparador Turno vs. Realidad
+   - Algoritmo que cruce `Shift` (Planificado) vs `Attendance` (Real).
+   - Detección automática de: Retardos, Salidas tempranas, Ausentismo.
+   - Cálculo automático de Horas Extras (Diurnas, Nocturnas, Festivas) según normativa colombiana.
+
+2.2. Gestión de Novedades
+   - Flujo de aprobación para horas extras y recargos.
+   - Impacto directo en la pre-nómina.
+
+---
+
+FASE 3: CICLO DE VIDA DEL EMPLEADO (Legal y Administrativo)
+Objetivo: Reducir riesgo legal para la empresa.
+
+3.1. Carpeta Digital del Empleado (Ya iniciado, falta profundizar)
+   - Alertas de vencimiento de contratos.
+   - Alertas de vencimiento de documentos (Licencias conducción, Certificados médicos).
+
+3.2. Módulo de Liquidación (Termination)
+   - Calculadora de liquidación final (Cesantías, Intereses, Primas, Vacaciones pendientes).
+   - Generación de documento de paz y salvo.
+
+3.3. Dotación y Activos
+   - Control de entrega de EPPs (Elementos de Protección Personal) y computadores.
+
+---
+
+FASE 4: BIENESTAR Y AUTOSERVICIO (Portal del Empleado)
+Objetivo: Que el empleado gestione sus propios trámites.
+
+4.1. Solicitudes
+   - Pedir vacaciones, certificaciones laborales, descargas de colillas.
+   
+4.2. Clima Laboral
+   - Encuestas simples de bienestar.
+
+---
+
+PASOS INMEDIATOS SUGERIDOS:
+1. Ampliar el `schema.prisma` para soportar `Payroll` (Nómina) y `Liquidation`.
+2. Crear el servicio de cálculo de nómina (`finance.service.ts` o `payroll.service.ts`).
+3. Conectar la asistencia (`Attendance`) con el cálculo de horas trabajadas.

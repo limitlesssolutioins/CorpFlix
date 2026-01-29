@@ -1,0 +1,66 @@
+[
+  {
+    "id": "fa5945b0-faa5-4556-804b-a72b117b39a4",
+    "period": "2026-01-full",
+    "employeeId": "EMP001",
+    "grossSalary": 1662000,
+    "deductions": 120000,
+    "netSalary": 1542000,
+    "details": [
+      {
+        "concept": "Salario Básico",
+        "type": "EARNING",
+        "amount": 1500000
+      },
+      {
+        "concept": "Auxilio de Transporte",
+        "type": "EARNING",
+        "amount": 162000
+      },
+      {
+        "concept": "Aporte Salud (4%)",
+        "type": "DEDUCTION",
+        "amount": 60000
+      },
+      {
+        "concept": "Aporte Pensión (4%)",
+        "type": "DEDUCTION",
+        "amount": 60000
+      }
+    ],
+    "status": "DRAFT",
+    "createdAt": "2026-01-26T22:45:06.842Z"
+  },
+  {
+    "id": "695ecb43-5469-4406-a52a-6871450abdcc",
+    "period": "2026-01-full",
+    "employeeId": "EMP002",
+    "grossSalary": 1962000,
+    "deductions": 144000,
+    "netSalary": 1818000,
+    "details": [
+      {
+        "concept": "Salario Básico",
+        "type": "EARNING",
+        "amount": 1800000
+      },
+      {
+        "concept": "Auxilio de Transporte",
+        "type": "EARNING",
+        "amount": 162000
+      },
+      {
+        "concept": "Aporte Salud (4%)",
+        "type": "DEDUCTION",
+        "amount": 72000
+      },
+      {
+        "concept": "Aporte Pensión (4%)",
+        "type": "DEDUCTION",
+        "amount": 72000
+      }
+    ],
+    "status": "DRAFT",
+    "createdAt": "2026-01-26T22:45:06.843Z"
+  }
+]

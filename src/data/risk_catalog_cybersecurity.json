@@ -1,0 +1,93 @@
+{
+    "category": "CIBERSEGURIDAD",
+    "description": "Catálogo de Riesgos de Ciberseguridad - Protección de activos de información y tecnología",
+    "consequence_criteria": [
+        {
+            "level": 1,
+            "name": "INSIGNIFICANTE",
+            "description": "Mínima afectación a activos no críticos sin pérdida de datos. Afectación menor a sistemas no críticos, sin impacto operacional, sin pérdida de datos sensibles."
+        },
+        {
+            "level": 2,
+            "name": "BAJA",
+            "description": "Afectación a sistemas secundarios con impacto operacional menor. Interrupción temporal de servicios no críticos, exposición mínima de datos no sensibles, recuperación en menos de 24 horas."
+        },
+        {
+            "level": 3,
+            "name": "MEDIA",
+            "description": "Compromiso de sistemas importantes con pérdida parcial de datos. Interrupción de servicios importantes, pérdida parcial de datos operacionales, tiempo de recuperación de 1-3 días, posible notificación a clientes."
+        },
+        {
+            "level": 4,
+            "name": "ALTA",
+            "description": "Compromiso significativo de sistemas críticos con pérdida de datos sensibles. Interrupción de operaciones críticas, pérdida de datos sensibles o de clientes, daño reputacional, sanciones regulatorias, tiempo de recuperación de 3-7 días."
+        },
+        {
+            "level": 5,
+            "name": "SIGNIFICATIVA",
+            "description": "Compromiso total con pérdida catastrófica de datos e inhabilitación prolongada. Pérdida total de sistemas críticos, filtración masiva de datos, interrupción completa de operaciones por más de 7 días, daño reputacional severo, demandas legales significativas."
+        }
+    ],
+    "risks": [
+        {
+            "type": "ACCESO",
+            "description": "Acceso no autorizado a sistemas o datos por personas no autorizadas",
+            "caused_by": "Contraseñas débiles, falta de autenticación multifactor, credenciales comprometidas, gestión inadecuada de accesos",
+            "impact": "Robo de información, alteración de datos, pérdida de confidencialidad, daño reputacional"
+        },
+        {
+            "type": "RANSOMWARE",
+            "description": "Cifrado malicioso de información crítica de la organización",
+            "caused_by": "Falta de backups, vulnerabilidades sin parchear, falta de capacitación en phishing, ausencia de segmentación de red",
+            "impact": "Pérdida de información, paralización de operaciones, extorsión, daño reputacional, pérdidas económicas"
+        },
+        {
+            "type": "PHISHING",
+            "description": "Engaño a usuarios para obtener credenciales o información sensible (Phishing e Ingeniería Social)",
+            "caused_by": "Falta de capacitación del personal, ausencia de filtros de correo, falta de cultura de seguridad",
+            "impact": "Compromiso de credenciales, pérdida de información, fraude financiero, acceso no autorizado"
+        },
+        {
+            "type": "FILTRACIÓN DE DATOS",
+            "description": "Exposición no autorizada de información confidencial o personal (Pérdida/Filtración de Datos)",
+            "caused_by": "Configuraciones inseguras, falta de cifrado, errores humanos, controles de acceso inadecuados",
+            "impact": "Sanciones regulatorias (GDPR, LOPD), demandas legales, daño reputacional, pérdida de clientes"
+        },
+        {
+            "type": "MALWARE",
+            "description": "Infección de sistemas con software malicioso (Malware y Virus)",
+            "caused_by": "Antivirus desactualizado, navegación insegura, dispositivos USB no autorizados, falta de políticas de seguridad",
+            "impact": "Pérdida de datos, degradación del rendimiento, robo de información, uso de recursos para botnets"
+        },
+        {
+            "type": "DDoS",
+            "description": "Denegación de servicio por saturación de recursos (Ataques DDoS)",
+            "caused_by": "Falta de protección DDoS, infraestructura sin dimensionamiento adecuado, exposición pública de servicios",
+            "impact": "Interrupción de servicios, pérdida de disponibilidad, impacto en clientes, pérdidas económicas"
+        },
+        {
+            "type": "VULNERABILIDADES",
+            "description": "Explotación de debilidades conocidas en software (Vulnerabilidades sin Parchear)",
+            "caused_by": "Gestión inadecuada de parches, falta de inventario de activos, ausencia de proceso de actualización",
+            "impact": "Compromiso de sistemas, escalación de privilegios, pérdida de datos, acceso no autorizado"
+        },
+        {
+            "type": "AMENAZA INTERNA",
+            "description": "Amenazas internas por empleados maliciosos o negligentes (Insider Threats)",
+            "caused_by": "Falta de controles de acceso, ausencia de monitoreo, gestión inadecuada de privilegios, cultura de seguridad deficiente",
+            "impact": "Robo de información, sabotaje, fraude, filtración de secretos comerciales"
+        },
+        {
+            "type": "SHADOW IT",
+            "description": "Uso de tecnologías no autorizadas o no gestionadas",
+            "caused_by": "Falta de políticas, procesos de aprobación lentos, desconocimiento de riesgos",
+            "impact": "Pérdida de control sobre datos, brechas de seguridad, incumplimiento regulatorio"
+        },
+        {
+            "type": "BACKUP",
+            "description": "Fallas en procesos de respaldo y recuperación de datos (Backup/Recuperación Inadecuada)",
+            "caused_by": "Backups no probados, almacenamiento inadecuado, frecuencia insuficiente, falta de plan de DR",
+            "impact": "Pérdida permanente de datos, imposibilidad de recuperación ante incidentes, paralización prolongada"
+        }
+    ]
+}

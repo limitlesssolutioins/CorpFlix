@@ -1,0 +1,99 @@
+{
+    "category": "FINANCIERO",
+    "description": "Catálogo de Riesgos Financieros - Riesgos que pueden afectar la situación económica y sostenibilidad",
+    "consequence_criteria": [
+        {
+            "level": 1,
+            "name": "INSIGNIFICANTE",
+            "description": "Impacto menor al 1% del presupuesto operativo. Pérdida económica menor, sin impacto en flujo de caja, sin afectación a operaciones normales."
+        },
+        {
+            "level": 2,
+            "name": "BAJA",
+            "description": "Impacto del 1-5% del presupuesto operativo. Pérdida económica moderada, afectación menor al flujo de caja, puede requerir ajustes en presupuesto."
+        },
+        {
+            "level": 3,
+            "name": "MEDIA",
+            "description": "Impacto del 5-15% del presupuesto operativo. Pérdida económica significativa, impacto notable en flujo de caja, requiere medidas de ajuste, posible reducción de inversiones."
+        },
+        {
+            "level": 4,
+            "name": "ALTA",
+            "description": "Impacto del 15-30% del presupuesto operativo. Pérdida económica severa, crisis de liquidez, posible incumplimiento de obligaciones, reducción de personal, suspensión de proyectos."
+        },
+        {
+            "level": 5,
+            "name": "SIGNIFICATIVA",
+            "description": "Impacto superior al 30% del presupuesto o riesgo de insolvencia. Pérdida catastrófica, riesgo de quiebra, incapacidad de cumplir obligaciones financieras, cierre de operaciones."
+        }
+    ],
+    "risks": [
+        {
+            "type": "FRAUDE",
+            "description": "Apropiación indebida de fondos o manipulación contable (Fraude Financiero)",
+            "caused_by": "Falta de controles internos, segregación inadecuada de funciones, ausencia de auditorías, conducta ética indeseable",
+            "impact": "Detrimento patrimonial, sanciones legales, pérdida de imagen, desconfianza de inversionistas"
+        },
+        {
+            "type": "LIQUIDEZ",
+            "description": "Insuficiencia de efectivo para cumplir obligaciones a corto plazo",
+            "caused_by": "Mala planificación del flujo de caja, retrasos en cobros, concentración de pagos, crecimiento no planificado",
+            "impact": "Incumplimiento con proveedores, deterioro de relaciones comerciales, insolvencia, quiebra"
+        },
+        {
+            "type": "CRÉDITO",
+            "description": "Incumplimiento de clientes en pago de obligaciones (Crédito/Cartera)",
+            "caused_by": "Políticas de crédito inadecuadas, falta de análisis de clientes, ausencia de garantías, crisis económica",
+            "impact": "Pérdida de ingresos esperados, afectación al flujo de caja, incremento de provisiones, reducción de rentabilidad"
+        },
+        {
+            "type": "TASA DE CAMBIO",
+            "description": "Fluctuaciones adversas en tipos de cambio",
+            "caused_by": "Exposición a moneda extranjera, falta de cobertura, volatilidad del mercado",
+            "impact": "Pérdida en transacciones internacionales, incremento de costos, reducción de márgenes"
+        },
+        {
+            "type": "TASA DE INTERÉS",
+            "description": "Cambios adversos en tasas de interés",
+            "caused_by": "Deuda con tasa variable, falta de cobertura, decisiones de política monetaria",
+            "impact": "Incremento en costo de financiamiento, reducción de rentabilidad, afectación a inversiones"
+        },
+        {
+            "type": "CONCENTRACIÓN",
+            "description": "Dependencia excesiva de pocos clientes (Concentración de Clientes)",
+            "caused_by": "Falta de diversificación, contratos de largo plazo sin respaldo, mercado limitado",
+            "impact": "Pérdida catastrófica de ingresos si se pierde cliente clave, vulnerabilidad estratégica"
+        },
+        {
+            "type": "PROVEEDORES",
+            "description": "Dependencia de proveedores únicos o limitados (Concentración de Proveedores)",
+            "caused_by": "Mercado con pocos proveedores, falta de plan de contingencia, contratos sin alternativas",
+            "impact": "Interrupción de operaciones, incremento de costos, pérdida de poder de negociación"
+        },
+        {
+            "type": "COSTOS OPERATIVOS",
+            "description": "Incremento no planificado de gastos operativos",
+            "caused_by": "Inflación, ineficiencias operativas, falta de control de costos, aumento de salarios",
+            "impact": "Reducción de márgenes, pérdida de rentabilidad, necesidad de ajustes presupuestarios"
+        },
+        {
+            "type": "INVERSIONES",
+            "description": "Pérdida en proyectos de inversión o activos (Inversiones Fallidas)",
+            "caused_by": "Análisis inadecuado de viabilidad, cambios en mercado, ejecución deficiente, sobrecostos",
+            "impact": "Pérdida de capital, reducción de patrimonio, afectación a flujo de caja"
+        },
+        {
+            "type": "TRIBUTARIO",
+            "description": "Errores o fraude en obligaciones fiscales (Incumplimiento Tributario)",
+            "caused_by": "Desconocimiento normativo, errores contables, falta de asesoría, evasión deliberada",
+            "impact": "Sanciones fiscales, intereses moratorios, procesos legales, pérdida de imagen"
+        },
+        {
+            "type": "ACTIVOS",
+            "description": "Pérdida de valor de activos por cambios tecnológicos o de mercado (Obsolescencia de Activos)",
+            "caused_by": "Falta de plan de renovación, cambios tecnológicos acelerados, mala planificación",
+            "impact": "Reducción de eficiencia, pérdida de competitividad, necesidad de inversión no planificada"
+        }
+    ]
+}

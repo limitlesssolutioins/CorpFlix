@@ -1,0 +1,39 @@
+{
+  "general": {
+    "nombreEmpresa": "LIMITLESS SOLUTIONS S.A.S.",
+    "nit": "901.809.916-3",
+    "direccion": "Calle Principal #123",
+    "ciudad": "Cartagena",
+    "telefono": "+57 601 1234567",
+    "email": "admin@admin.co",
+    "sitioWeb": "www.limitlesscol.com",
+    "logoUrl": "/uploads/logo-1768948284971.png",
+    "sectorActividad": "Desarrollo de software a medida, Desarrollo web, Desarrollo de aplicaciones móviles, soluciones digitales y ciberseguridad"
+  },
+  "roles": [
+    {
+      "id": "ADMIN",
+      "nombre": "Administrador del Sistema",
+      "permisos": [
+        "ALL"
+      ]
+    },
+    {
+      "id": "GERENTE",
+      "nombre": "Gerente General",
+      "permisos": [
+        "VIEW_ALL",
+        "APPROVE_BUDGET"
+      ]
+    },
+    {
+      "id": "RRHH",
+      "nombre": "Analista de RRHH",
+      "permisos": [
+        "MANAGE_EMPLOYEES",
+        "MANAGE_SHIFTS"
+      ]
+    }
+  ],
+  "usuarios": []
+}

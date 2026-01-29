@@ -1,0 +1,105 @@
+{
+    "category": "SEGURIDAD_VIAL",
+    "description": "Catálogo de Riesgos de Seguridad Vial - Riesgos asociados con el uso de vehículos y desplazamientos",
+    "consequence_criteria": [
+        {
+            "level": 1,
+            "name": "INSIGNIFICANTE",
+            "description": "Incidente sin lesiones ni daños materiales significativos. Incidente menor sin lesiones, daños materiales mínimos (rasguños, abolladuras menores), sin afectación operacional."
+        },
+        {
+            "level": 2,
+            "name": "BAJA",
+            "description": "Lesiones leves o daños materiales menores. Lesiones leves que requieren primeros auxilios, daños materiales reparables en menos de 3 días, incapacidad de 1-2 días."
+        },
+        {
+            "level": 3,
+            "name": "MEDIA",
+            "description": "Lesiones moderadas o daños materiales significativos. Lesiones que requieren hospitalización sin secuelas permanentes, incapacidad de 3-30 días, daños materiales significativos, pérdida temporal de vehículo."
+        },
+        {
+            "level": 4,
+            "name": "ALTA",
+            "description": "Lesiones graves con secuelas o daños materiales severos. Lesiones graves con incapacidad permanente parcial, hospitalización prolongada, pérdida total de vehículo, afectación severa a operaciones, demandas legales."
+        },
+        {
+            "level": 5,
+            "name": "SIGNIFICATIVA",
+            "description": "Una o más fatalidades. Muerte de uno o más personas, trauma organizacional severo, investigaciones legales, sanciones, pérdida total de imagen corporativa."
+        }
+    ],
+    "risks": [
+        {
+            "type": "ACCIDENTE",
+            "description": "Colisión, volcamiento u otro incidente vial (Accidente de Tránsito)",
+            "caused_by": "Exceso de velocidad, distracción, incumplimiento de normas, condiciones viales adversas, fallas mecánicas",
+            "impact": "Lesiones o muerte, daños materiales, pérdidas económicas, responsabilidad legal, afectación de imagen"
+        },
+        {
+            "type": "FATIGA",
+            "description": "Somnolencia o cansancio durante la conducción (Fatiga del Conductor)",
+            "caused_by": "Jornadas extendidas, falta de descanso, turnos nocturnos, trayectos largos sin pausas",
+            "impact": "Reducción de reflejos, riesgo de accidente, lesiones, muerte"
+        },
+        {
+            "type": "SUSTANCIAS",
+            "description": "Conducción bajo influencia de alcohol, drogas o medicamentos (Conducción bajo Efectos)",
+            "caused_by": "Falta de políticas, ausencia de controles, cultura organizacional deficiente",
+            "impact": "Accidentes graves, fatalidades, responsabilidad penal y civil, pérdida de imagen"
+        },
+        {
+            "type": "DISTRACCIÓN",
+            "description": "Uso de celular, comer, o distracciones durante la conducción (Distracción al Volante)",
+            "caused_by": "Falta de políticas de uso de dispositivos, ausencia de cultura de seguridad, presión por responder comunicaciones",
+            "impact": "Colisiones, lesiones, daños materiales, responsabilidad legal"
+        },
+        {
+            "type": "VELOCIDAD",
+            "description": "Conducción a velocidades superiores a las permitidas (Exceso de Velocidad)",
+            "caused_by": "Presión por cumplir horarios, falta de supervisión, ausencia de telemetría, cultura de riesgo",
+            "impact": "Accidentes severos, lesiones graves o fatalidades, sanciones legales, pérdida de vehículos"
+        },
+        {
+            "type": "MANTENIMIENTO",
+            "description": "Vehículos en mal estado mecánico o de seguridad (Mantenimiento Inadecuado)",
+            "caused_by": "Falta de programa de mantenimiento preventivo, ausencia de inspecciones, reducción de costos inadecuada",
+            "impact": "Fallas mecánicas durante operación, accidentes, lesiones, costos de reparación elevados"
+        },
+        {
+            "type": "CLIMA",
+            "description": "Conducción en lluvia intensa, neblina, tormentas (Condiciones Climáticas Adversas)",
+            "caused_by": "Falta de capacitación en conducción defensiva, ausencia de protocolos de suspensión de viaje, presión por cumplir agenda",
+            "impact": "Pérdida de control del vehículo, colisiones, volcamientos, lesiones o muerte"
+        },
+        {
+            "type": "VÍAS",
+            "description": "Vías en mal estado, sin señalización adecuada (Condiciones Viales Deficientes)",
+            "caused_by": "Rutas mal seleccionadas, falta de reconocimiento previo, ausencia de alternativas",
+            "impact": "Daños al vehículo, accidentes, lesiones, retrasos operacionales"
+        },
+        {
+            "type": "CARGA",
+            "description": "Transporte de carga mal asegurada o sobrepeso (Carga Inadecuada)",
+            "caused_by": "Falta de capacitación en aseguramiento de carga, presión por optimizar viajes, ausencia de inspección",
+            "impact": "Pérdida de estabilidad, volcamiento, caída de carga, daños a terceros, accidentes"
+        },
+        {
+            "type": "COMPETENCIA",
+            "description": "Personal sin licencia adecuada o capacitación insuficiente (Conductor No Competente)",
+            "caused_by": "Falta de verificación de documentos, ausencia de programa de capacitación en conducción defensiva",
+            "impact": "Accidentes por impericia, responsabilidad legal de la organización, sanciones"
+        },
+        {
+            "type": "ESTRÉS",
+            "description": "Conducción bajo presión por cumplir tiempos o metas (Estrés y Presión Laboral)",
+            "caused_by": "Planificación inadecuada de rutas y tiempos, cultura de urgencia, falta de recursos",
+            "impact": "Conducción riesgosa, exceso de velocidad, fatiga, accidentes"
+        },
+        {
+            "type": "AGRESIÓN",
+            "description": "Conflictos con otros conductores o peatones (Agresión Vial)",
+            "caused_by": "Falta de cultura de respeto, estrés del conductor, ausencia de capacitación en manejo de conflictos",
+            "impact": "Accidentes por maniobras agresivas, lesiones, implicaciones legales"
+        }
+    ]
+}

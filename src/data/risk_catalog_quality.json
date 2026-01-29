@@ -1,0 +1,129 @@
+{
+    "category": "CALIDAD",
+    "description": "Catálogo de Riesgos de Calidad extraídos del archivo Riesgos.xlsx",
+    "consequence_criteria": [
+        {
+            "level": 1,
+            "name": "INSIGNIFICANTE",
+            "description": "Efecto mínimo sobre el producto o servicio; se pueden generar no conformidades internas, sugerencia manifestada por el cliente para la mejora."
+        },
+        {
+            "level": 2,
+            "name": "BAJA",
+            "description": "Efecto bajo sobre el producto o servicio; se pueden generar solicitudes de informes por parte de autoridades de inspección y vigilancia, observación del cliente para alertar sobre una futura queja."
+        },
+        {
+            "level": 3,
+            "name": "MEDIA",
+            "description": "Efecto moderado sobre el producto o servicio; se pueden generar demandas o tutelas, insatisfacción manifestada como queja del cliente."
+        },
+        {
+            "level": 4,
+            "name": "ALTA",
+            "description": "Efecto alto sobre el producto o servicio, interrupción de operaciones del negocio; insatisfacción manifestada como queja del cliente."
+        },
+        {
+            "level": 5,
+            "name": "SIGNIFICATIVA",
+            "description": "Efecto catastrófico sobre el producto o servicio, inhabilidad para continuar las operaciones normales de la organización; insatisfacción total y pérdida del cliente."
+        }
+    ],
+    "risks": [
+        {
+            "type": "IMAGEN",
+            "description": "Tratamiento inadecuado de quejas, reclamos, solicitudes y sugerencias de los clientes",
+            "caused_by": "Falta de formación o compromiso del personal involucrado en el servicio al cliente",
+            "impact": "Pérdida del cliente, imagen o credibilidad de la organización"
+        },
+        {
+            "type": "IMAGEN",
+            "description": "Desconocimiento de la percepción de los clientes actuales",
+            "caused_by": "Falta de gestión en la realización de encuestas para la evaluación de la satisfacción de los clientes",
+            "impact": "Disminución de las ventas y no identificación de oportunidades de mejora"
+        },
+        {
+            "type": "IMAGEN",
+            "description": "Extemporaneidad o inexactitud en la presentación de los informes financieros (Internos y externos)",
+            "caused_by": "Falta de planificación del tiempo",
+            "impact": "Sanciones legales por los entes de control y pérdida de imagen de la organización"
+        },
+        {
+            "type": "IMAGEN",
+            "description": "Incumplimiento en el tiempo de cotización establecido",
+            "caused_by": "Talento humano incompetente o no comprometido",
+            "impact": "Insatisfacción de los clientes y pérdida de oportunidades de negocio"
+        },
+        {
+            "type": "LEGALIDAD",
+            "description": "Incumplimiento de los requisitos legales y otros aplicables",
+            "caused_by": "No identificación oportuna de todos los requisitos legales y otros aplicables a la organización",
+            "impact": "Sanciones económicas, disciplinarias, legales y judiciales, pérdida de la imagen de la organización y detrimento patrimonial"
+        },
+        {
+            "type": "LEGALIDAD",
+            "description": "Pérdida de procesos de contratación",
+            "caused_by": "Mala interpretación de los pliegos de condiciones, documentación desactualizada (RUT, RUP, Certificado de junta de contadores, entre otros)",
+            "impact": "Disminución de los ingresos de la organización"
+        },
+        {
+            "type": "FINANCIERO",
+            "description": "Apropiación indebida de fondos",
+            "caused_by": "Falta de controles apropiados, personas con conducta ética indeseable",
+            "impact": "Detrimento patrimonial y/o pérdida de imagen"
+        },
+        {
+            "type": "FINANCIERO",
+            "description": "Deterioro de los documentos legales",
+            "caused_by": "Almacenamiento inadecuado, mala administración y manejo del archivo",
+            "impact": "Pérdida de información y detrimento patrimonial"
+        },
+        {
+            "type": "FINANCIERO",
+            "description": "Falta de recursos",
+            "caused_by": "Mala planificación financiera, baja rentabilidad, pérdida de clientes importantes",
+            "impact": "Sanciones económicas, disciplinarias, legales y judiciales, pérdida de proveedores importantes"
+        },
+        {
+            "type": "CALIDAD",
+            "description": "Inadecuada planeación del uso de los recursos",
+            "caused_by": "Desconocimiento de la capacidad disponible de la maquinaria y/o inadecuada planificación de los procesos requeridos externamente",
+            "impact": "Aumento del desperdicio de materiales, reprocesos e incumplimiento en los tiempos de entrega pactados con los clientes"
+        },
+        {
+            "type": "CALIDAD",
+            "description": "Direccionamiento estratégico sin implementar",
+            "caused_by": "Fallas en la comunicación al personal sobre los objetivos estratégicos de la organización o en la asignación de los recursos",
+            "impact": "Portafolio de productos obsoleto, pérdida de participación en el mercado e insatisfacción de los clientes"
+        },
+        {
+            "type": "CALIDAD",
+            "description": "Pérdida de participación en el mercado",
+            "caused_by": "Portafolio de productos no acorde a las necesidades del mercado, personal de ventas sin la competencia requerida, incumplimiento de los compromisos pactados con los clientes",
+            "impact": "Disminución de los ingresos por ventas de la organización, capacidad instalada subutilizada, reducción de personal y/o aumento en los costos fijos"
+        },
+        {
+            "type": "CALIDAD",
+            "description": "Documentación incompleta, desactualizada y/u obsoleta",
+            "caused_by": "Falta de conocimiento en la implementación de los requisitos y/o falta de control de la documentación",
+            "impact": "Desmejoramiento del SG y errores en los procesos"
+        },
+        {
+            "type": "CALIDAD",
+            "description": "Incumplimiento de las especificaciones dadas por el cliente",
+            "caused_by": "El software desarrollado no cumple los requisitos acordados porque no se ajusta a la capacidad del hardware del cliente",
+            "impact": "Servicio no aceptado a conformidad, sanciones económicas y pérdida de clientes"
+        },
+        {
+            "type": "TECNOLOGÍA",
+            "description": "Obsolescencia de las instalaciones, maquinaria, equipos y dispositivos de sistemas",
+            "caused_by": "Falta de inversión en renovación tecnológica, falta de plan de actualización",
+            "impact": "Atraso en entrega de productos, reprocesos, pérdidas económicas"
+        },
+        {
+            "type": "CALIDAD",
+            "description": "Vinculación del personal que no cumple las competencias y/o requisitos exigidos para el cargo",
+            "caused_by": "Presiones indebidas en la contratación, fallas en la realización de pruebas de conocimiento y psicométricas para determinar la aptitud de los candidatos",
+            "impact": "Errores en los procesos, pérdidas económicas, incumplimiento con la normatividad"
+        }
+    ]
+}

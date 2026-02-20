@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS iso_requirements (
     FOREIGN KEY (chapter_id) REFERENCES iso_chapters(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_requirements_chapter ON iso_requirements(chapter_id);
+CREATE INDEX IF NOT EXISTS idx_requirements_chapter ON iso_requirements(chapter_id);
 
 -- =====================================================
 -- AUDITORÍAS
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS audits (
     FOREIGN KEY (audit_type_id) REFERENCES audit_types(id)
 );
 
-CREATE INDEX idx_audits_date ON audits(audit_date);
-CREATE INDEX idx_audits_status ON audits(status);
+CREATE INDEX IF NOT EXISTS idx_audits_date ON audits(audit_date);
+CREATE INDEX IF NOT EXISTS idx_audits_status ON audits(status);
 
 -- Capítulos cubiertos en cada auditoría
 CREATE TABLE IF NOT EXISTS audit_scope_chapters (
@@ -99,8 +99,8 @@ CREATE TABLE IF NOT EXISTS audit_findings (
     FOREIGN KEY (finding_type_id) REFERENCES finding_types(id)
 );
 
-CREATE INDEX idx_findings_audit ON audit_findings(audit_id);
-CREATE INDEX idx_findings_type ON audit_findings(finding_type_id);
+CREATE INDEX IF NOT EXISTS idx_findings_audit ON audit_findings(audit_id);
+CREATE INDEX IF NOT EXISTS idx_findings_type ON audit_findings(finding_type_id);
 
 -- =====================================================
 -- ACCIONES CORRECTIVAS
@@ -125,8 +125,8 @@ CREATE TABLE IF NOT EXISTS corrective_actions (
     FOREIGN KEY (finding_id) REFERENCES audit_findings(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_actions_status ON corrective_actions(status);
-CREATE INDEX idx_actions_target_date ON corrective_actions(target_date);
+CREATE INDEX IF NOT EXISTS idx_actions_status ON corrective_actions(status);
+CREATE INDEX IF NOT EXISTS idx_actions_target_date ON corrective_actions(target_date);
 
 -- Verificación de eficacia de acciones
 CREATE TABLE IF NOT EXISTS action_verification (

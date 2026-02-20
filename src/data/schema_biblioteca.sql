@@ -58,9 +58,9 @@ CREATE TABLE IF NOT EXISTS documents (
     FOREIGN KEY (category_id) REFERENCES document_categories(id)
 );
 
-CREATE INDEX idx_documents_category ON documents(category_id);
-CREATE INDEX idx_documents_status ON documents(status);
-CREATE INDEX idx_documents_upload_date ON documents(upload_date);
+CREATE INDEX IF NOT EXISTS idx_documents_category ON documents(category_id);
+CREATE INDEX IF NOT EXISTS idx_documents_status ON documents(status);
+CREATE INDEX IF NOT EXISTS idx_documents_upload_date ON documents(upload_date);
 
 -- Relación documentos-tags
 CREATE TABLE IF NOT EXISTS document_tag_relation (
@@ -98,8 +98,8 @@ CREATE TABLE IF NOT EXISTS access_logs (
     FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_access_logs_document ON access_logs(document_id);
-CREATE INDEX idx_access_logs_date ON access_logs(access_date);
+CREATE INDEX IF NOT EXISTS idx_access_logs_document ON access_logs(document_id);
+CREATE INDEX IF NOT EXISTS idx_access_logs_date ON access_logs(access_date);
 
 -- =====================================================
 -- CHATBOT (PLACEHOLDER)

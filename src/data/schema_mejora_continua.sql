@@ -51,9 +51,9 @@ CREATE TABLE IF NOT EXISTS improvement_suggestions (
     FOREIGN KEY (status_id) REFERENCES suggestion_status(id)
 );
 
-CREATE INDEX idx_suggestions_status ON improvement_suggestions(status_id);
-CREATE INDEX idx_suggestions_category ON improvement_suggestions(category_id);
-CREATE INDEX idx_suggestions_date ON improvement_suggestions(submitted_date);
+CREATE INDEX IF NOT EXISTS idx_suggestions_status ON improvement_suggestions(status_id);
+CREATE INDEX IF NOT EXISTS idx_suggestions_category ON improvement_suggestions(category_id);
+CREATE INDEX IF NOT EXISTS idx_suggestions_date ON improvement_suggestions(submitted_date);
 
 -- Comentarios en sugerencias
 CREATE TABLE IF NOT EXISTS suggestion_comments (
@@ -96,8 +96,8 @@ CREATE TABLE IF NOT EXISTS improvement_projects (
     FOREIGN KEY (suggestion_id) REFERENCES improvement_suggestions(id)
 );
 
-CREATE INDEX idx_projects_phase ON improvement_projects(current_phase);
-CREATE INDEX idx_projects_status ON improvement_projects(status);
+CREATE INDEX IF NOT EXISTS idx_projects_phase ON improvement_projects(current_phase);
+CREATE INDEX IF NOT EXISTS idx_projects_status ON improvement_projects(status);
 
 -- Fases PDCA del proyecto
 CREATE TABLE IF NOT EXISTS project_phases (
@@ -149,8 +149,8 @@ CREATE TABLE IF NOT EXISTS lessons_learned (
     FOREIGN KEY (project_id) REFERENCES improvement_projects(id)
 );
 
-CREATE INDEX idx_lessons_date ON lessons_learned(lesson_date);
-CREATE INDEX idx_lessons_category ON lessons_learned(category_id);
+CREATE INDEX IF NOT EXISTS idx_lessons_date ON lessons_learned(lesson_date);
+CREATE INDEX IF NOT EXISTS idx_lessons_category ON lessons_learned(category_id);
 
 -- =====================================================
 -- MÉTRICAS DE MEJORA

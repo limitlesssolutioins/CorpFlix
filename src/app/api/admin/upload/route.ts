@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
 
 export async function POST(request: Request) {
@@ -11,6 +11,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -19,6 +23,7 @@ export async function POST(request: Request) {
     const uploadDir = path.join(process.cwd(), 'public/uploads');
     const filepath = path.join(uploadDir, filename);
 
+    await mkdir(uploadDir, { recursive: true });
     await writeFile(filepath, buffer);
 
     // Retornamos la URL pública

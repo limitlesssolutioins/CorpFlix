@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { 
+import {
   FaBuilding, 
   FaIdCard, 
   FaMapMarkerAlt, 
@@ -18,17 +18,31 @@ import {
   FaUpload
 } from 'react-icons/fa';
 
+interface CertificationItem {
+  name: string;
+  logoUrl: string;
+}
+
+interface PortfolioItem {
+  title: string;
+  description: string;
+  imageUrl: string;
+}
+
 export default function AdminGeneralPage() {
   const [settings, setSettings] = useState({
     nombreEmpresa: '',
     nit: '',
     sectorActividad: '',
+    resumenEjecutivo: '',
     direccion: '',
     ciudad: '',
     telefono: '',
     email: '',
     sitioWeb: '',
-    logoUrl: '' // Nuevo campo
+    logoUrl: '',
+    certificaciones: [] as CertificationItem[],
+    portafolio: [] as PortfolioItem[]
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -42,7 +56,13 @@ export default function AdminGeneralPage() {
   const fetchSettings = async () => {
     try {
       const res = await axios.get('/api/admin/general');
-      setSettings(prev => ({ ...prev, ...res.data })); // Merge con defaults
+      const incoming = res.data || {};
+      setSettings(prev => ({
+        ...prev,
+        ...incoming,
+        certificaciones: Array.isArray(incoming.certificaciones) ? incoming.certificaciones : prev.certificaciones,
+        portafolio: Array.isArray(incoming.portafolio) ? incoming.portafolio : prev.portafolio
+      }));
     } catch (error) {
       toast.error('Error al cargar configuración');
     } finally {
@@ -62,8 +82,14 @@ export default function AdminGeneralPage() {
       const res = await axios.post('/api/admin/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
-      setSettings(prev => ({ ...prev, logoUrl: res.data.url }));
+
+      const nextSettings = { ...settings, logoUrl: res.data.url as string };
+      setSettings(nextSettings);
+      await axios.post('/api/admin/general', nextSettings);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       toast.success('Logo subido correctamente');
     } catch (error) {
       console.error(error);
@@ -79,7 +105,13 @@ export default function AdminGeneralPage() {
     await new Promise(resolve => setTimeout(resolve, 800));
     
     try {
-      await axios.post('/api/admin/general', settings);
+      const payload = {
+        ...settings,
+        certificaciones: settings.certificaciones.filter((cert) => cert.name.trim() || cert.logoUrl.trim()),
+        portafolio: settings.portafolio.filter((item) => item.title.trim() || item.description.trim() || item.imageUrl.trim())
+      };
+      await axios.post('/api/admin/general', payload);
+      setSettings(payload);
       toast.success('Configuración guardada exitosamente', {
         description: 'El perfil corporativo ha sido actualizado.'
       });
@@ -88,6 +120,50 @@ export default function AdminGeneralPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const updateCertification = (index: number, field: keyof CertificationItem, value: string) => {
+    setSettings(prev => {
+      const next = [...prev.certificaciones];
+      next[index] = { ...next[index], [field]: value };
+      return { ...prev, certificaciones: next };
+    });
+  };
+
+  const addCertification = () => {
+    setSettings(prev => ({
+      ...prev,
+      certificaciones: [...prev.certificaciones, { name: '', logoUrl: '' }]
+    }));
+  };
+
+  const removeCertification = (index: number) => {
+    setSettings(prev => ({
+      ...prev,
+      certificaciones: prev.certificaciones.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updatePortfolio = (index: number, field: keyof PortfolioItem, value: string) => {
+    setSettings(prev => {
+      const next = [...prev.portafolio];
+      next[index] = { ...next[index], [field]: value };
+      return { ...prev, portafolio: next };
+    });
+  };
+
+  const addPortfolio = () => {
+    setSettings(prev => ({
+      ...prev,
+      portafolio: [...prev.portafolio, { title: '', description: '', imageUrl: '' }]
+    }));
+  };
+
+  const removePortfolio = (index: number) => {
+    setSettings(prev => ({
+      ...prev,
+      portafolio: prev.portafolio.filter((_, i) => i !== index)
+    }));
   };
 
   if (loading) return (
@@ -177,6 +253,141 @@ export default function AdminGeneralPage() {
              </div>
           </div>
 
+          {/* Tarjeta: Resumen Ejecutivo */}
+          <div className="bg-white p-8 rounded-[2rem] shadow-lg shadow-slate-200/50 border border-slate-100 relative group overflow-hidden transition-all hover:shadow-xl">
+            <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500 transform origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-300" />
+
+            <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+              <div className="p-3 bg-cyan-50 text-cyan-600 rounded-xl">
+                <FaBuilding size={20} />
+              </div>
+              Resumen Ejecutivo del Perfil
+            </h2>
+
+            <textarea
+              className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-medium text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all placeholder:text-slate-300 shadow-sm"
+              placeholder="Escribe aqui el resumen ejecutivo que se mostrara en el perfil corporativo..."
+              rows={5}
+              value={settings.resumenEjecutivo}
+              onChange={e => setSettings({ ...settings, resumenEjecutivo: e.target.value })}
+            />
+            <p className="text-xs text-slate-400 mt-3">
+              Este texto es independiente de la mision y la vision de Planeacion Estrategica.
+            </p>
+          </div>
+
+          {/* Tarjeta: Certificaciones */}
+          <div className="bg-white p-8 rounded-[2rem] shadow-lg shadow-slate-200/50 border border-slate-100 relative group overflow-hidden transition-all hover:shadow-xl">
+            <div className="absolute top-0 left-0 w-1 h-full bg-amber-500 transform origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-300" />
+
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                  <FaCheckCircle size={20} />
+                </div>
+                Certificaciones
+              </h2>
+              <button
+                type="button"
+                onClick={addCertification}
+                className="px-4 py-2 rounded-xl bg-amber-50 text-amber-700 font-bold hover:bg-amber-100 transition-colors"
+              >
+                Agregar
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {settings.certificaciones.length === 0 && (
+                <p className="text-sm text-slate-400">No hay certificaciones agregadas.</p>
+              )}
+              {settings.certificaciones.map((cert, index) => (
+                <div key={`cert-${index}`} className="p-4 rounded-2xl border border-slate-200 bg-slate-50 grid grid-cols-1 md:grid-cols-12 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Nombre (ej. ISO 9001)"
+                    value={cert.name}
+                    onChange={e => updateCertification(index, 'name', e.target.value)}
+                    className="md:col-span-4 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-amber-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="URL logo (ej. /uploads/logo.png)"
+                    value={cert.logoUrl}
+                    onChange={e => updateCertification(index, 'logoUrl', e.target.value)}
+                    className="md:col-span-7 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-amber-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeCertification(index)}
+                    className="md:col-span-1 px-3 py-3 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tarjeta: Portafolio de Servicios */}
+          <div className="bg-white p-8 rounded-[2rem] shadow-lg shadow-slate-200/50 border border-slate-100 relative group overflow-hidden transition-all hover:shadow-xl">
+            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 transform origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-300" />
+
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                  <FaGlobe size={20} />
+                </div>
+                Portafolio de Servicios
+              </h2>
+              <button
+                type="button"
+                onClick={addPortfolio}
+                className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 font-bold hover:bg-emerald-100 transition-colors"
+              >
+                Agregar
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {settings.portafolio.length === 0 && (
+                <p className="text-sm text-slate-400">No hay servicios agregados.</p>
+              )}
+              {settings.portafolio.map((item, index) => (
+                <div key={`port-${index}`} className="p-4 rounded-2xl border border-slate-200 bg-slate-50 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Titulo del servicio"
+                      value={item.title}
+                      onChange={e => updatePortfolio(index, 'title', e.target.value)}
+                      className="md:col-span-5 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-emerald-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="URL imagen (opcional)"
+                      value={item.imageUrl}
+                      onChange={e => updatePortfolio(index, 'imageUrl', e.target.value)}
+                      className="md:col-span-6 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePortfolio(index)}
+                      className="md:col-span-1 px-3 py-3 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors"
+                    >
+                      X
+                    </button>
+                  </div>
+                  <textarea
+                    placeholder="Descripcion del servicio"
+                    value={item.description}
+                    onChange={e => updatePortfolio(index, 'description', e.target.value)}
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-emerald-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
           {/* Tarjeta: Información Legal */}
           <div className="bg-white p-8 rounded-[2rem] shadow-lg shadow-slate-200/50 border border-slate-100 relative group overflow-hidden transition-all hover:shadow-xl">
              <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 transform origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-300" />
@@ -361,3 +572,4 @@ export default function AdminGeneralPage() {
     </div>
   );
 }
+

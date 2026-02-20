@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { FaAward } from 'react-icons/fa';
 
 interface Certification {
@@ -26,12 +25,15 @@ const Certifications = ({ certifications }: CertificationsProps) => {
       <div className="grid grid-cols-3 gap-6">
         {certifications.map((cert, index) => (
           <div key={index} className="flex flex-col items-center gap-3 group">
-            <div className="w-full aspect-square bg-slate-50 rounded-2xl flex items-center justify-center p-4 border border-slate-100 group-hover:border-amber-200 group-hover:bg-amber-50/30 transition-all">
-              {/* Fallback visual if no image is present, or the actual image */}
-              <div className="text-center">
-                 <span className="block text-2xl font-black text-slate-300 group-hover:text-amber-500 transition-colors">ISO</span>
-                 <span className="text-xs font-bold text-slate-400">{cert.name.replace('ISO', '').trim()}</span>
-              </div>
+            <div className="w-full aspect-square bg-slate-50 rounded-2xl flex items-center justify-center p-4 border border-slate-100 group-hover:border-amber-200 group-hover:bg-amber-50/30 transition-all overflow-hidden">
+              {cert.logoUrl ? (
+                <img src={cert.logoUrl} alt={cert.name} className="w-full h-full object-contain" />
+              ) : (
+                <div className="text-center">
+                  <span className="block text-2xl font-black text-slate-300 group-hover:text-amber-500 transition-colors">ISO</span>
+                  <span className="text-xs font-bold text-slate-400">{cert.name.replace('ISO', '').trim()}</span>
+                </div>
+              )}
             </div>
             <p className="text-xs font-bold text-slate-600 text-center uppercase tracking-wider">{cert.name}</p>
           </div>

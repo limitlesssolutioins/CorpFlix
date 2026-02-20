@@ -47,22 +47,22 @@ export default function Home() {
   // Adaptación de datos
   const displayInfo = {
     name: info?.nombreEmpresa || companyData.name,
-    summary: strategic?.mision || companyData.summary, // Usamos Misión como resumen inicial si existe
-    logoUrl: companyData.logoUrl,
+    summary: info?.resumenEjecutivo || strategic?.mision || companyData.summary, // Usamos Mision como resumen inicial si existe
+    logoUrl: info?.logoUrl || companyData.logoUrl,
     razonSocial: info?.nombreEmpresa || companyData.companyInfo.razonSocial,
     nit: info?.nit || companyData.companyInfo.nit,
     direccion: info?.direccion || companyData.companyInfo.direccion,
     telefono: info?.telefono || companyData.companyInfo.telefono,
     email: info?.email || companyData.companyInfo.email,
     website: info?.sitioWeb || companyData.companyInfo.website,
-    actividadComercial: companyData.companyInfo.actividadComercial,
+    actividadComercial: info?.sectorActividad || companyData.companyInfo.actividadComercial,
   };
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20 animate-in fade-in duration-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         
-        <Header name={displayInfo.name} logoUrl={info?.logoUrl} />
+        <Header name={displayInfo.name} logoUrl={displayInfo.logoUrl} />
         
         <CompanySummary {...displayInfo} />
         
@@ -79,8 +79,8 @@ export default function Home() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-           <Certifications certifications={companyData.certifications} />
-           <Portfolio portfolio={companyData.portfolio} />
+           <Certifications certifications={info?.certificaciones || companyData.certifications} />
+           <Portfolio portfolio={info?.portafolio || companyData.portfolio} />
         </div>
 
         <Dashboard />
@@ -89,3 +89,4 @@ export default function Home() {
     </div>
   );
 }
+

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
   FaUserTie,
@@ -18,18 +18,32 @@ import {
   FaClock,
   FaMoneyBillWave,
   FaIdCard,
-  FaCreditCard
+  FaCreditCard,
+  FaSignOutAlt
 } from 'react-icons/fa';
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isAdministracionOpen, setAdministracionOpen] = useState(true);
   const [isRecursosHumanosOpen, setRecursosHumanosOpen] = useState(true); // New state
   const [isGestionOpen, setGestionOpen] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const isActive = (path: string) => {
     if (path === '/') return pathname === '/';
     return pathname.startsWith(path);
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/companies/logout', { method: 'POST' });
+    } finally {
+      router.push('/login');
+      router.refresh();
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -109,6 +123,16 @@ const Sidebar = () => {
           )}
         </div>
       </nav>
+      <div className="p-4 border-t border-slate-700">
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="w-full flex items-center justify-center gap-2 p-3 rounded-lg font-semibold text-white bg-slate-800 hover:bg-slate-700 disabled:opacity-60 transition-colors"
+        >
+          <FaSignOutAlt className="text-base" />
+          {isLoggingOut ? 'Cerrando sesion...' : 'Cerrar sesion'}
+        </button>
+      </div>
     </aside>
   );
 };

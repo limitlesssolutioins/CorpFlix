@@ -26,6 +26,11 @@ const Portfolio = ({ portfolio }: PortfolioProps) => {
       <div className="space-y-6">
         {portfolio.map((item, index) => (
           <div key={index} className="group p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:border-emerald-200 hover:shadow-lg transition-all cursor-default">
+            {item.imageUrl && (
+              <div className="mb-4 h-32 w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
+                <img src={item.imageUrl} alt={item.title} className="h-full w-full object-cover" />
+              </div>
+            )}
             <h4 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-700 transition-colors">
               {item.title}
             </h4>

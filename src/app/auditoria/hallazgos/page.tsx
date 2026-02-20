@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, Save, CheckCircle2, AlertTriangle, FileText } from 'lucide-react';
@@ -24,7 +24,7 @@ interface FindingType {
     color: string;
 }
 
-export default function HallazgosPage() {
+function HallazgosContent() {
     const searchParams = useSearchParams();
     const auditId = searchParams.get('audit_id');
 
@@ -143,6 +143,7 @@ export default function HallazgosPage() {
 
     return (
         <div className="max-w-6xl mx-auto">
+
             <div className="mb-8">
                 <Link
                     href="/auditoria"
@@ -345,5 +346,13 @@ export default function HallazgosPage() {
                 </>
             )}
         </div>
+    );
+}
+
+export default function HallazgosPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center py-20"><div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>}>
+            <HallazgosContent />
+        </Suspense>
     );
 }

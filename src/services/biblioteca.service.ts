@@ -142,7 +142,7 @@ class BibliotecaService {
     getDashboardStats() {
         const totalDocuments = (this.db.prepare('SELECT COUNT(*) as count FROM documents WHERE status = \'PUBLISHED\'').get() as any).count;
         const totalCategories = (this.db.prepare('SELECT COUNT(*) as count FROM document_categories').get() as any).count;
-        const recentUploads = this.db.prepare('SELECT COUNT(*) as count FROM documents WHERE upload_date >= DATE(\'now\', \'-7 days\')').get() as any).count;
+        const recentUploads = (this.db.prepare('SELECT COUNT(*) as count FROM documents WHERE upload_date >= DATE(\'now\', \'-7 days\')').get() as any).count;
         const totalViews = (this.db.prepare('SELECT COALESCE(SUM(views), 0) as total FROM documents').get() as any).total;
 
         const categoryStats = this.db.prepare(`

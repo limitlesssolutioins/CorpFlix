@@ -111,31 +111,6 @@
 
 /* --- OPTIMIZACIÓN DE IMPRESIÓN REFINADA --- */
 @media print {
-  /* Forzar ocultamiento de elementos de navegación del Layout de React */
-  :global(nav), :global(aside), :global(header), :global(.no-print), :global(button), :global(.sidebar), :global(.header-web) {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    position: absolute !important;
-  }
-
-  /* Resetear el body para que no tenga márgenes de la web */
-  :global(body), :global(html) {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: white !important;
-    width: 100% !important;
-  }
-
-  /* Resetear todos los posibles contenedores padres del Layout */
-  :global(div[class*="flex"]), :global(main), :global(section) {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    display: block !important;
-    position: static !important;
-  }
-
   .container {
     max-width: 100% !important;
     width: 100% !important;

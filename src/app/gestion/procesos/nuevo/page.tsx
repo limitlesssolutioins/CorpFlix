@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import ProcessForm from '@/components/ProcessForm';
-import { Process } from '../page';
+import { Process } from '@/components/ProcessGeneratorModal';
 
 const NewProcessPage = () => {
   const router = useRouter();

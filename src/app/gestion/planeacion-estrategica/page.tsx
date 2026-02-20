@@ -240,16 +240,16 @@ export default function PlaneacionPage() {
     if (wizardType) {
       setEditingBlocks(prev => ({ ...prev, [wizardType]: true }));
     }
-    if (wizardType === 'swot') {
-      const formatList = (list: any[]) => {
-        return list.map(s => {
-          if (typeof s === 'string') return `• ${s}`;
-          // Handle structured weaknesses
-          if (s.item && s.plan) return `• ${s.item} [Plan: ${s.plan}]`;
-          return '';
-        }).join('\n');
-      };
+    const formatList = (list: any[]) => {
+      return list.map(s => {
+        if (typeof s === 'string') return `• ${s}`;
+        // Handle structured weaknesses
+        if (s.item && s.plan) return `• ${s.item} [Plan: ${s.plan}]`;
+        return '';
+      }).join('\n');
+    };
 
+    if (wizardType === 'swot') {
       setData((prev: any) => ({
         ...prev,
         strengths: formatList(selectedAnalysis.strengths || []),

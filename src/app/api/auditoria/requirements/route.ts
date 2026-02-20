@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { isoAuditService } from '@/services/iso-audit.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getIsoAuditService } from '@/services/iso-audit.service';
 
-// GET /api/auditoria/requirements - Obtener requisitos (opcionalmente por capítulo)
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const { searchParams } = new URL(request.url);
         const chapterId = searchParams.get('chapter_id');
 

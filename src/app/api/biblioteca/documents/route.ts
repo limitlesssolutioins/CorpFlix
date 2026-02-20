@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
-import { bibliotecaService } from '@/services/biblioteca.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getBibliotecaService } from '@/services/biblioteca.service';
 
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const bibliotecaService = getBibliotecaService(dataDir);
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
 
@@ -30,6 +33,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const bibliotecaService = getBibliotecaService(dataDir);
         const body = await request.json();
         const newDocument = bibliotecaService.createDocument(body);
         return NextResponse.json(newDocument, { status: 201 });
@@ -41,6 +46,8 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const bibliotecaService = getBibliotecaService(dataDir);
         const body = await request.json();
         const { id, ...updateData } = body;
 
@@ -58,6 +65,8 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const bibliotecaService = getBibliotecaService(dataDir);
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
 

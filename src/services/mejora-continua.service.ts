@@ -1,27 +1,32 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
+
+const SCHEMA_PATH = path.join(process.cwd(), 'src', 'data', 'schema_mejora_continua.sql');
 
 class MejoraContinuaService {
     private db: Database.Database;
 
-    constructor() {
-        const dbPath = path.join(process.cwd(), 'src', 'data', 'mejora_continua.db');
+    constructor(dataDir: string) {
+        const dbPath = path.join(dataDir, 'mejora_continua.db');
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
         this.db = new Database(dbPath);
         this.initializeDatabase();
     }
 
     private initializeDatabase() {
-        const schemaPath = path.join(process.cwd(), 'src', 'data', 'schema_mejora_continua.sql');
-        const schema = require('fs').readFileSync(schemaPath, 'utf8');
+        const schema = fs.readFileSync(SCHEMA_PATH, 'utf8');
         this.db.exec(schema);
     }
 
     // SUGGESTIONS
     getAllSuggestions(filters?: { status?: string; category?: string }) {
-        let query = `SELECT s.*, c.category_name, st.status_name, st.color as status_color 
-                 FROM improvement_suggestions s 
-                 LEFT JOIN improvement_categories c ON s.category_id = c.id 
-                 LEFT JOIN suggestion_status st ON s.status_id = st.id 
+        let query = `SELECT s.*, c.category_name, st.status_name, st.color as status_color
+                 FROM improvement_suggestions s
+                 LEFT JOIN improvement_categories c ON s.category_id = c.id
+                 LEFT JOIN suggestion_status st ON s.status_id = st.id
                  WHERE 1=1`;
         const params: any[] = [];
 
@@ -42,8 +47,8 @@ class MejoraContinuaService {
     createSuggestion(data: any) {
         const code = `SUG-${Date.now()}`;
         const stmt = this.db.prepare(`
-      INSERT INTO improvement_suggestions 
-      (suggestion_code, title, description, category_id, submitted_by, area_affected, 
+      INSERT INTO improvement_suggestions
+      (suggestion_code, title, description, category_id, submitted_by, area_affected,
        current_situation, proposed_solution, expected_benefits, estimated_savings, priority)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
@@ -67,8 +72,8 @@ class MejoraContinuaService {
 
     updateSuggestion(id: number, data: any) {
         const stmt = this.db.prepare(`
-      UPDATE improvement_suggestions 
-      SET status_id = ?, votes = ?, assigned_to = ?, evaluation_notes = ?, 
+      UPDATE improvement_suggestions
+      SET status_id = ?, votes = ?, assigned_to = ?, evaluation_notes = ?,
           implementation_date = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
@@ -87,9 +92,9 @@ class MejoraContinuaService {
 
     // PROJECTS
     getAllProjects(filters?: { phase?: string; status?: string }) {
-        let query = `SELECT p.*, c.category_name 
-                 FROM improvement_projects p 
-                 LEFT JOIN improvement_categories c ON p.category_id = c.id 
+        let query = `SELECT p.*, c.category_name
+                 FROM improvement_projects p
+                 LEFT JOIN improvement_categories c ON p.category_id = c.id
                  WHERE 1=1`;
         const params: any[] = [];
 
@@ -110,8 +115,8 @@ class MejoraContinuaService {
     createProject(data: any) {
         const code = `PRJ-${Date.now()}`;
         const stmt = this.db.prepare(`
-      INSERT INTO improvement_projects 
-      (project_code, title, description, category_id, suggestion_id, objective_smart, 
+      INSERT INTO improvement_projects
+      (project_code, title, description, category_id, suggestion_id, objective_smart,
        scope, project_leader, team_members, start_date, target_end_date, budget, expected_roi)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
@@ -137,8 +142,8 @@ class MejoraContinuaService {
 
     updateProject(id: number, data: any) {
         const stmt = this.db.prepare(`
-      UPDATE improvement_projects 
-      SET current_phase = ?, status = ?, progress = ?, actual_cost = ?, 
+      UPDATE improvement_projects
+      SET current_phase = ?, status = ?, progress = ?, actual_cost = ?,
           actual_roi = ?, actual_end_date = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
@@ -158,9 +163,9 @@ class MejoraContinuaService {
 
     // LESSONS LEARNED
     getAllLessons(filters?: { category?: string }) {
-        let query = `SELECT l.*, c.category_name 
-                 FROM lessons_learned l 
-                 LEFT JOIN improvement_categories c ON l.category_id = c.id 
+        let query = `SELECT l.*, c.category_name
+                 FROM lessons_learned l
+                 LEFT JOIN improvement_categories c ON l.category_id = c.id
                  WHERE l.is_public = 1`;
         const params: any[] = [];
 
@@ -176,8 +181,8 @@ class MejoraContinuaService {
     createLesson(data: any) {
         const code = `LES-${Date.now()}`;
         const stmt = this.db.prepare(`
-      INSERT INTO lessons_learned 
-      (lesson_code, title, description, context, what_worked, what_didnt_work, 
+      INSERT INTO lessons_learned
+      (lesson_code, title, description, context, what_worked, what_didnt_work,
        recommendations, category_id, project_id, submitted_by, tags)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
@@ -222,4 +227,11 @@ class MejoraContinuaService {
     }
 }
 
-export const mejoraContinuaService = new MejoraContinuaService();
+const instances = new Map<string, MejoraContinuaService>();
+
+export function getMejoraContinuaService(dataDir: string): MejoraContinuaService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new MejoraContinuaService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

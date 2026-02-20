@@ -2,10 +2,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import moment from 'moment';
-
-const attendancePath = path.join(process.cwd(), 'src/data/attendance.json');
-const payrollConfigPath = path.join(process.cwd(), 'src/data/gestion-humana.json');
-const employeesPath = path.join(process.cwd(), 'src/data/employees.json');
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getEmployeesService } from '@/services/employees.service';
 
 interface AttendanceRecord {
   id: string;
@@ -52,15 +50,18 @@ export async function GET(req: NextRequest) {
   const period = periodParam as '1' | '2' | 'full';
 
   try {
-    const [attendanceFile, payrollConfigFile, employeesFile] = await Promise.all([
-      fs.readFile(attendancePath, 'utf8'),
-      fs.readFile(payrollConfigPath, 'utf8'),
-      fs.readFile(employeesPath, 'utf8'),
+    const dataDir = await getCompanyDataDir();
+    const attendancePath = path.join(dataDir, 'attendance.json');
+    const payrollConfigPath = path.join(dataDir, 'gestion-humana.json');
+
+    const [attendanceFile, payrollConfigFile] = await Promise.all([
+      fs.readFile(attendancePath, 'utf8').catch(() => '[]'),
+      fs.readFile(payrollConfigPath, 'utf8').catch(() => '{"extras":[]}'),
     ]);
 
     const attendanceRecords: AttendanceRecord[] = JSON.parse(attendanceFile);
     const payrollConfig: PayrollConfigData = JSON.parse(payrollConfigFile);
-    const employees: Employee[] = JSON.parse(employeesFile);
+    const employees: Employee[] = (await getEmployeesService(dataDir).findAll()) as Employee[];
 
     const report: any[] = [];
 

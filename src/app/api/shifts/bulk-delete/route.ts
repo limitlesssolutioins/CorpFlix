@@ -1,16 +1,19 @@
 
 import { NextResponse } from 'next/server';
-import Database from 'better-sqlite3';
-import path from 'path';
-
-const db = new Database(path.join(process.cwd(), 'prisma', 'dev.db'));
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getShiftsService } from '@/services/shifts.service';
 
 export async function POST(req: Request) {
-    const { ids } = await req.json();
-    if (!ids || !Array.isArray(ids)) {
-        return NextResponse.json({ error: "Invalid ids" }, { status: 400 });
+    try {
+        const dataDir = await getCompanyDataDir();
+        const shiftsService = getShiftsService(dataDir);
+        const { ids } = await req.json();
+        if (!ids || !Array.isArray(ids)) {
+            return NextResponse.json({ error: 'Invalid ids' }, { status: 400 });
+        }
+        await shiftsService.bulkDelete(ids);
+        return NextResponse.json({ message: 'Deleted' });
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
-    const placeholders = ids.map(() => '?').join(',');
-    db.prepare(`DELETE FROM Shift WHERE id IN (${placeholders})`).run(...ids);
-    return NextResponse.json({ message: "Deleted" });
 }

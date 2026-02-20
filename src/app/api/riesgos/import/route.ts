@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
-import { riskService } from '@/services/risk.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getRiskService } from '@/services/risk.service';
 import path from 'path';
 
-// POST /api/riesgos/import - Importar riesgos desde catálogos JSON
 export async function POST(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const riskService = getRiskService(dataDir);
         const { category } = await request.json();
 
         if (!category) {
-            return NextResponse.json(
-                { error: 'Category code required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Category code required' }, { status: 400 });
         }
 
         const catalogFiles: Record<string, string> = {
@@ -25,25 +24,15 @@ export async function POST(request: Request) {
 
         const filename = catalogFiles[category];
         if (!filename) {
-            return NextResponse.json(
-                { error: 'Invalid category' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
         }
 
         const catalogPath = path.join(process.cwd(), 'src/data', filename);
         const count = riskService.importRisksFromCatalog(category, catalogPath);
 
-        return NextResponse.json({
-            success: true,
-            category,
-            imported: count
-        });
+        return NextResponse.json({ success: true, category, imported: count });
     } catch (error) {
         console.error('Error importing risks:', error);
-        return NextResponse.json(
-            { error: 'Failed to import risks', details: (error as Error).message },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to import risks', details: (error as Error).message }, { status: 500 });
     }
 }

@@ -1,9 +1,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { shiftsService } from '@/services/shifts.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getShiftsService } from '@/services/shifts.service';
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const shiftsService = getShiftsService(dataDir);
         const body = await req.json();
         const shift = await shiftsService.update(params.id, body);
         return NextResponse.json(shift);
@@ -14,6 +17,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const shiftsService = getShiftsService(dataDir);
         await shiftsService.remove(params.id);
         return NextResponse.json({ message: 'Shift deleted successfully' });
     } catch (error) {

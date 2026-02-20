@@ -1,9 +1,12 @@
 
 import { NextResponse } from 'next/server';
-import { dashboardService } from '@/services/dashboard.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getDashboardService } from '@/services/dashboard.service';
 
 export async function GET() {
     try {
+        const dataDir = await getCompanyDataDir();
+        const dashboardService = getDashboardService(dataDir);
         const stats = await dashboardService.getStats();
         return NextResponse.json(stats);
     } catch (error) {

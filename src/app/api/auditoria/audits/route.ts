@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { isoAuditService } from '@/services/iso-audit.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getIsoAuditService } from '@/services/iso-audit.service';
 
-// GET /api/auditoria/audits - Obtener auditorías
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
         const year = searchParams.get('year');
@@ -20,9 +22,10 @@ export async function GET(request: Request) {
     }
 }
 
-// POST /api/auditoria/audits - Crear nueva auditoría
 export async function POST(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const body = await request.json();
         const newAudit = isoAuditService.createAudit(body);
         return NextResponse.json(newAudit, { status: 201 });
@@ -32,9 +35,10 @@ export async function POST(request: Request) {
     }
 }
 
-// PUT /api/auditoria/audits - Actualizar auditoría
 export async function PUT(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const body = await request.json();
         const { id, ...updateData } = body;
 
@@ -43,7 +47,6 @@ export async function PUT(request: Request) {
         }
 
         const updatedAudit = isoAuditService.updateAudit(id, updateData);
-
         if (!updatedAudit) {
             return NextResponse.json({ error: 'Audit not found' }, { status: 404 });
         }

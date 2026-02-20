@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { mejoraContinuaService } from '@/services/mejora-continua.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getMejoraContinuaService } from '@/services/mejora-continua.service';
 
-// GET - Obtain all suggestions with optional filters
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const mejoraContinuaService = getMejoraContinuaService(dataDir);
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
         const category = searchParams.get('category');
@@ -20,9 +22,10 @@ export async function GET(request: Request) {
     }
 }
 
-// POST - Create new suggestion
 export async function POST(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const mejoraContinuaService = getMejoraContinuaService(dataDir);
         const body = await request.json();
         const newSuggestion = mejoraContinuaService.createSuggestion(body);
         return NextResponse.json(newSuggestion, { status: 201 });
@@ -32,9 +35,10 @@ export async function POST(request: Request) {
     }
 }
 
-// PUT - Update suggestion
 export async function PUT(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const mejoraContinuaService = getMejoraContinuaService(dataDir);
         const body = await request.json();
         const { id, ...updateData } = body;
 

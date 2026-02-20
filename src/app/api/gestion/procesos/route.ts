@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server';
-import { managementService } from '@/services/management.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getManagementService } from '@/services/management.service';
 
 export async function GET() {
+  const dataDir = await getCompanyDataDir();
+  const managementService = getManagementService(dataDir);
   const data = managementService.getProcesses();
   return NextResponse.json(data);
 }
 
 export async function POST(request: Request) {
+  const dataDir = await getCompanyDataDir();
+  const managementService = getManagementService(dataDir);
   const body = await request.json();
-  
+
   if (Array.isArray(body)) {
     const newItems = managementService.addProcesses(body);
     return NextResponse.json(newItems);
@@ -19,6 +24,8 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const dataDir = await getCompanyDataDir();
+  const managementService = getManagementService(dataDir);
   const body = await request.json();
   const updatedItem = managementService.updateProcess(body);
   if (updatedItem) {
@@ -28,6 +35,8 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const dataDir = await getCompanyDataDir();
+  const managementService = getManagementService(dataDir);
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 

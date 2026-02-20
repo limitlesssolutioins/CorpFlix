@@ -1,28 +1,37 @@
 import fs from 'fs';
 import path from 'path';
 
-const DATA_PATH = path.join(process.cwd(), 'src/data/gestion.json');
+const DEFAULT_DATA = {
+  planeacion: {},
+  procesos: [],
+  riesgos: [],
+  indicadores: [],
+  mejoras: [],
+  auditorias: []
+};
 
 export class ManagementService {
+  private dataPath: string;
+
+  constructor(dataDir: string) {
+    this.dataPath = path.join(dataDir, 'gestion.json');
+  }
+
   private getData() {
     try {
-      const fileContent = fs.readFileSync(DATA_PATH, 'utf-8');
+      if (!fs.existsSync(this.dataPath)) {
+        fs.writeFileSync(this.dataPath, JSON.stringify(DEFAULT_DATA, null, 2));
+        return { ...DEFAULT_DATA };
+      }
+      const fileContent = fs.readFileSync(this.dataPath, 'utf-8');
       return JSON.parse(fileContent);
     } catch (error) {
-      // Si el archivo no existe o falla, retornamos estructura base
-      return {
-        planeacion: {},
-        procesos: [],
-        riesgos: [],
-        indicadores: [],
-        mejoras: [],
-        auditorias: []
-      };
+      return { ...DEFAULT_DATA };
     }
   }
 
   private saveData(data: any) {
-    fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
+    fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2));
   }
 
   // --- PLANEACIÓN ESTRATÉGICA ---
@@ -44,7 +53,6 @@ export class ManagementService {
 
   addProcess(process: any) {
     const data = this.getData();
-    // Use provided ID if exists, otherwise generate one
     const newProcess = { ...process, id: process.id || `PROC-${Date.now()}` };
     data.procesos.push(newProcess);
     this.saveData(data);
@@ -77,7 +85,7 @@ export class ManagementService {
     const data = this.getData();
     const initialLength = data.procesos.length;
     data.procesos = data.procesos.filter((p: any) => p.id !== id);
-    
+
     if (data.procesos.length < initialLength) {
       this.saveData(data);
       return true;
@@ -117,7 +125,7 @@ export class ManagementService {
   addIndicators(indicators: any[]) {
     const data = this.getData();
     if (!data.indicadores) data.indicadores = [];
-    
+
     const newItems = indicators.map((ind, idx) => ({
       ...ind,
       id: ind.id || `IND-${Date.now()}-${idx}`,
@@ -144,7 +152,7 @@ export class ManagementService {
     const data = this.getData();
     const initialLength = data.indicadores.length;
     data.indicadores = data.indicadores.filter((i: any) => i.id !== id);
-    
+
     if (data.indicadores.length < initialLength) {
       this.saveData(data);
       return true;
@@ -153,4 +161,11 @@ export class ManagementService {
   }
 }
 
-export const managementService = new ManagementService();
+const instances = new Map<string, ManagementService>();
+
+export function getManagementService(dataDir: string): ManagementService {
+  if (!instances.has(dataDir)) {
+    instances.set(dataDir, new ManagementService(dataDir));
+  }
+  return instances.get(dataDir)!;
+}

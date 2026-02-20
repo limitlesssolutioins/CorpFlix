@@ -2,8 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-const DATA_PATH = path.join(process.cwd(), 'src/data/finanzas.json');
-
 export interface Payment {
   id: string;
   amount: number;
@@ -17,13 +15,26 @@ export interface Payment {
 }
 
 export class PaymentService {
+  private dataPath: string;
+
+  constructor(dataDir: string) {
+    this.dataPath = path.join(dataDir, 'finanzas.json');
+  }
+
   private getData() {
-    const fileContent = fs.readFileSync(DATA_PATH, 'utf-8');
-    return JSON.parse(fileContent);
+    try {
+      if (!fs.existsSync(this.dataPath)) {
+        return { configuracion: { moneda: 'COP' }, pagos: [], suscripciones: { estado: 'ACTIVO', fechaFin: null }, tarjetas: [] };
+      }
+      const fileContent = fs.readFileSync(this.dataPath, 'utf-8');
+      return JSON.parse(fileContent);
+    } catch {
+      return { configuracion: { moneda: 'COP' }, pagos: [], suscripciones: { estado: 'ACTIVO', fechaFin: null }, tarjetas: [] };
+    }
   }
 
   private saveData(data: any) {
-    fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
+    fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2));
   }
 
   getPayments(): Payment[] {
@@ -49,11 +60,11 @@ export class PaymentService {
   addCard(card: any) {
     const data = this.getData();
     if (!data.tarjetas) data.tarjetas = [];
-    const newCard = { 
-      ...card, 
+    const newCard = {
+      ...card,
       id: uuidv4(),
       last4: card.number.slice(-4),
-      number: undefined // No guardamos el número completo por seguridad simulada
+      number: undefined
     };
     data.tarjetas.push(newCard);
     this.saveData(data);
@@ -74,10 +85,11 @@ export class PaymentService {
     description?: string;
   }): Payment {
     const data = this.getData();
+    if (!data.pagos) data.pagos = [];
     const newPayment: Payment = {
       id: uuidv4(),
       amount: params.amount,
-      currency: data.configuracion.moneda || 'COP',
+      currency: data.configuracion?.moneda || 'COP',
       status: 'PENDING',
       type: params.type,
       method: params.method,
@@ -94,26 +106,32 @@ export class PaymentService {
   processPSEPayment(paymentId: string) {
     const data = this.getData();
     const payment = data.pagos.find((p: Payment) => p.id === paymentId);
-    
+
     if (payment) {
-      // Simular procesamiento exitoso
       payment.status = 'COMPLETED';
-      
+
       if (payment.type === 'SUBSCRIPTION') {
         const endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 1);
-        
+
         data.suscripciones = {
           plan: payment.description || 'Mensual',
           estado: 'ACTIVO',
           fechaFin: endDate.toISOString()
         };
       }
-      
+
       this.saveData(data);
     }
     return payment;
   }
 }
 
-export const paymentService = new PaymentService();
+const instances = new Map<string, PaymentService>();
+
+export function getPaymentService(dataDir: string): PaymentService {
+  if (!instances.has(dataDir)) {
+    instances.set(dataDir, new PaymentService(dataDir));
+  }
+  return instances.get(dataDir)!;
+}

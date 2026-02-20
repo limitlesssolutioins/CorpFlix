@@ -1,10 +1,18 @@
-import db from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+
+const { getDb } = require('@/lib/db');
 
 export class ShiftsService {
+    private db: any;
+
+    constructor(dataDir: string) {
+        this.db = getDb(path.join(dataDir, 'hr.db'));
+    }
+
     async findAll(filters?: any) {
         let query = `
-      SELECT s.*, 
+      SELECT s.*,
              e.firstName, e.lastName,
              si.name as siteName,
              p.name as positionName
@@ -15,7 +23,7 @@ export class ShiftsService {
       WHERE 1=1
     `;
 
-        const params = [];
+        const params: any[] = [];
 
         if (filters?.employeeId) {
             query += ' AND s.employeeId = ?';
@@ -39,10 +47,9 @@ export class ShiftsService {
 
         query += ' ORDER BY s.startTime DESC';
 
-        const shifts = await db.all(query, params);
+        const shifts = await this.db.all(query, params);
 
-        // Add employee object for frontend compatibility
-        return shifts.map(s => ({
+        return shifts.map((s: any) => ({
             ...s,
             employee: {
                 firstName: s.firstName,
@@ -53,22 +60,21 @@ export class ShiftsService {
 
     async create(data: any) {
         const id = uuidv4();
-        await db.run(`
+        await this.db.run(`
       INSERT INTO Shift (
         id, employeeId, siteId, positionId, startTime, endTime,
         conflictStatus, createdAt
       ) VALUES (?, ?, ?, ?, ?, ?, 'NONE', datetime('now'))
     `, [id, data.employeeId, data.siteId, data.positionId, data.startTime, data.endTime]);
 
-        // Log audit
         await this.logAudit('Shift', id, 'CREATE', `Created shift for employee ${data.employeeId}`);
 
         return this.findOne(id);
     }
 
     async findOne(id: string) {
-        const shift = await db.get(`
-      SELECT s.*, 
+        const shift = await this.db.get(`
+      SELECT s.*,
              e.firstName, e.lastName,
              si.name as siteName,
              p.name as positionName
@@ -90,8 +96,8 @@ export class ShiftsService {
     }
 
     async update(id: string, data: any) {
-        const fields = [];
-        const values = [];
+        const fields: string[] = [];
+        const values: any[] = [];
 
         if (data.startTime) {
             fields.push('startTime = ?');
@@ -112,32 +118,39 @@ export class ShiftsService {
 
         values.push(id);
 
-        await db.run(`UPDATE Shift SET ${fields.join(', ')} WHERE id = ?`, values);
+        await this.db.run(`UPDATE Shift SET ${fields.join(', ')} WHERE id = ?`, values);
         await this.logAudit('Shift', id, 'UPDATE', 'Updated shift');
 
         return this.findOne(id);
     }
 
     async remove(id: string) {
-        await db.run('DELETE FROM Shift WHERE id = ?', [id]);
+        await this.db.run('DELETE FROM Shift WHERE id = ?', [id]);
         await this.logAudit('Shift', id, 'DELETE', 'Deleted shift');
         return { deleted: true };
     }
 
     async bulkDelete(ids: string[]) {
         const placeholders = ids.map(() => '?').join(',');
-        await db.run(`DELETE FROM Shift WHERE id IN (${placeholders})`, ids);
+        await this.db.run(`DELETE FROM Shift WHERE id IN (${placeholders})`, ids);
         await this.logAudit('Shift', 'bulk', 'DELETE', `Deleted ${ids.length} shifts`);
         return { deleted: ids.length };
     }
 
     private async logAudit(entity: string, entityId: string, action: string, details: string) {
         const id = uuidv4();
-        await db.run(`
+        await this.db.run(`
       INSERT INTO AuditLog (id, entity, entityId, action, details, performedBy, createdAt)
       VALUES (?, ?, ?, ?, ?, 'Sistema', datetime('now'))
     `, [id, entity, entityId, action, details]);
     }
 }
 
-export const shiftsService = new ShiftsService();
+const instances = new Map<string, ShiftsService>();
+
+export function getShiftsService(dataDir: string): ShiftsService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new ShiftsService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

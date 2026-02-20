@@ -2,7 +2,6 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const DB_PATH = path.join(process.cwd(), 'src/data/auditoria.db');
 const SCHEMA_PATH = path.join(process.cwd(), 'src/data/schema_auditoria.sql');
 
 // Types
@@ -65,13 +64,12 @@ export interface CorrectiveAction {
 class ISOAuditService {
     private db: Database.Database;
 
-    constructor() {
-        const dir = path.dirname(DB_PATH);
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
+    constructor(dataDir: string) {
+        const dbPath = path.join(dataDir, 'auditoria.db');
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
         }
-
-        this.db = new Database(DB_PATH);
+        this.db = new Database(dbPath);
         this.initializeDatabase();
     }
 
@@ -204,4 +202,11 @@ class ISOAuditService {
     }
 }
 
-export const isoAuditService = new ISOAuditService();
+const instances = new Map<string, ISOAuditService>();
+
+export function getIsoAuditService(dataDir: string): ISOAuditService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new ISOAuditService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { managementService } from '@/services/management.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getManagementService } from '@/services/management.service';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -10,8 +11,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'API Key not configured' }, { status: 500 });
     }
 
+    const dataDir = await getCompanyDataDir();
     const { context } = await request.json();
-    const plan = managementService.getStrategicPlan();
+    const plan = getManagementService(dataDir).getStrategicPlan();
     const objectives = plan.objetivos || [];
 
     if (objectives.length === 0) {

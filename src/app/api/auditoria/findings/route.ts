@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { isoAuditService } from '@/services/iso-audit.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getIsoAuditService } from '@/services/iso-audit.service';
 
-// GET /api/auditoria/findings - Obtener hallazgos por auditoría
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const { searchParams } = new URL(request.url);
         const auditId = searchParams.get('audit_id');
 
@@ -19,9 +21,10 @@ export async function GET(request: Request) {
     }
 }
 
-// POST /api/auditoria/findings - Crear hallazgo
 export async function POST(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const body = await request.json();
         const newFinding = isoAuditService.createFinding(body);
         return NextResponse.json(newFinding, { status: 201 });

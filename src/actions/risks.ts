@@ -1,10 +1,12 @@
 'use server';
 
-import { managementService } from '@/services/management.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getManagementService } from '@/services/management.service';
 
 export async function getRisksAction() {
   try {
-    const risks = managementService.getRisks();
+    const dataDir = await getCompanyDataDir();
+    const risks = getManagementService(dataDir).getRisks();
     return { success: true, data: risks };
   } catch (error) {
     console.error('Error fetching risks:', error);
@@ -14,7 +16,8 @@ export async function getRisksAction() {
 
 export async function getRiskCatalogsAction() {
   try {
-    const catalogs = managementService.getRiskCatalogs();
+    const dataDir = await getCompanyDataDir();
+    const catalogs = getManagementService(dataDir).getRiskCatalogs();
     return { success: true, data: catalogs };
   } catch (error) {
     console.error('Error fetching catalogs:', error);
@@ -24,7 +27,8 @@ export async function getRiskCatalogsAction() {
 
 export async function saveRisksAction(risks: any[]) {
   try {
-    managementService.updateRisks(risks);
+    const dataDir = await getCompanyDataDir();
+    getManagementService(dataDir).updateRisks(risks);
     return { success: true };
   } catch (error) {
     console.error('Error saving risks:', error);

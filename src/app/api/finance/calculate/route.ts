@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
-import { financeService } from '@/services/finance.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getFinanceService } from '@/services/finance.service';
 
 export async function POST(request: Request) {
   try {
+    const dataDir = await getCompanyDataDir();
+    const financeService = getFinanceService(dataDir);
     const body = await request.json();
-    
-    // Si recibimos salario base, calculamos el costo de labor primero
+
     let hourlyCost = body.baseHourlyCost;
     let laborDetails = null;
 
@@ -21,10 +23,7 @@ export async function POST(request: Request) {
       desiredMargin: body.desiredMargin || 0
     });
 
-    return NextResponse.json({
-      ...result,
-      laborDetails
-    });
+    return NextResponse.json({ ...result, laborDetails });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Error performing calculation' }, { status: 500 });

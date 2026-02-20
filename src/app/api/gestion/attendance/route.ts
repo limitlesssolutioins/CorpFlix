@@ -2,8 +2,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-
-const attendancePath = path.join(process.cwd(), 'src/data/attendance.json');
+import { getCompanyDataDir } from '@/lib/companyContext';
 
 interface AttendanceRecord {
   id: string;
@@ -17,6 +16,8 @@ interface AttendanceRecord {
 
 export async function GET() {
   try {
+    const dataDir = await getCompanyDataDir();
+    const attendancePath = path.join(dataDir, 'attendance.json');
     const fileContent = await fs.readFile(attendancePath, 'utf8');
     const attendance = JSON.parse(fileContent);
     return NextResponse.json(attendance);
@@ -28,6 +29,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const dataDir = await getCompanyDataDir();
+    const attendancePath = path.join(dataDir, 'attendance.json');
     const { employeeId, shiftId, checkIn, checkOut, notes } = await req.json();
 
     if (!employeeId || !checkIn) {
@@ -44,8 +47,13 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    const fileContent = await fs.readFile(attendancePath, 'utf8');
-    const attendance: AttendanceRecord[] = JSON.parse(fileContent);
+    let attendance: AttendanceRecord[] = [];
+    try {
+      const fileContent = await fs.readFile(attendancePath, 'utf8');
+      attendance = JSON.parse(fileContent);
+    } catch {
+      // file doesn't exist yet, start with empty array
+    }
     attendance.push(newRecord);
 
     await fs.writeFile(attendancePath, JSON.stringify(attendance, null, 2), 'utf8');

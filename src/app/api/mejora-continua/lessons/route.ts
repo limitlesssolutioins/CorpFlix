@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
-import { mejoraContinuaService } from '@/services/mejora-continua.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getMejoraContinuaService } from '@/services/mejora-continua.service';
 
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const mejoraContinuaService = getMejoraContinuaService(dataDir);
         const { searchParams } = new URL(request.url);
         const category = searchParams.get('category');
 
@@ -19,6 +22,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const mejoraContinuaService = getMejoraContinuaService(dataDir);
         const body = await request.json();
         const newLesson = mejoraContinuaService.createLesson(body);
         return NextResponse.json(newLesson, { status: 201 });

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
-import { bibliotecaService } from '@/services/biblioteca.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getBibliotecaService } from '@/services/biblioteca.service';
 
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const bibliotecaService = getBibliotecaService(dataDir);
         const { searchParams } = new URL(request.url);
         const query = searchParams.get('q');
 

@@ -1,26 +1,31 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
+
+const SCHEMA_PATH = path.join(process.cwd(), 'src', 'data', 'schema_biblioteca.sql');
 
 class BibliotecaService {
     private db: Database.Database;
 
-    constructor() {
-        const dbPath = path.join(process.cwd(), 'src', 'data', 'biblioteca.db');
+    constructor(dataDir: string) {
+        const dbPath = path.join(dataDir, 'biblioteca.db');
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
         this.db = new Database(dbPath);
         this.initializeDatabase();
     }
 
     private initializeDatabase() {
-        const schemaPath = path.join(process.cwd(), 'src', 'data', 'schema_biblioteca.sql');
-        const schema = require('fs').readFileSync(schemaPath, 'utf8');
+        const schema = fs.readFileSync(SCHEMA_PATH, 'utf8');
         this.db.exec(schema);
     }
 
     // DOCUMENTS
     getAllDocuments(filters?: { category?: string; status?: string; search?: string }) {
-        let query = `SELECT d.*, c.category_name 
-                 FROM documents d 
-                 LEFT JOIN document_categories c ON d.category_id = c.id 
+        let query = `SELECT d.*, c.category_name
+                 FROM documents d
+                 LEFT JOIN document_categories c ON d.category_id = c.id
                  WHERE 1=1`;
         const params: any[] = [];
 
@@ -46,9 +51,9 @@ class BibliotecaService {
 
     getDocumentById(id: number) {
         return this.db.prepare(`
-      SELECT d.*, c.category_name 
-      FROM documents d 
-      LEFT JOIN document_categories c ON d.category_id = c.id 
+      SELECT d.*, c.category_name
+      FROM documents d
+      LEFT JOIN document_categories c ON d.category_id = c.id
       WHERE d.id = ?
     `).get(id);
     }
@@ -56,8 +61,8 @@ class BibliotecaService {
     createDocument(data: any) {
         const code = `DOC-${Date.now()}`;
         const stmt = this.db.prepare(`
-      INSERT INTO documents 
-      (document_code, title, description, category_id, file_path, file_name, 
+      INSERT INTO documents
+      (document_code, title, description, category_id, file_path, file_name,
        file_size, file_type, mime_type, version, author, uploaded_by, keywords)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
@@ -83,8 +88,8 @@ class BibliotecaService {
 
     updateDocument(id: number, data: any) {
         const stmt = this.db.prepare(`
-      UPDATE documents 
-      SET title = ?, description = ?, category_id = ?, status = ?, 
+      UPDATE documents
+      SET title = ?, description = ?, category_id = ?, status = ?,
           keywords = ?, last_modified = CURRENT_DATE, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
@@ -128,10 +133,10 @@ class BibliotecaService {
     searchDocuments(query: string) {
         const searchTerm = `%${query}%`;
         return this.db.prepare(`
-      SELECT d.*, c.category_name 
-      FROM documents d 
-      LEFT JOIN document_categories c ON d.category_id = c.id 
-      WHERE d.status = 'PUBLISHED' 
+      SELECT d.*, c.category_name
+      FROM documents d
+      LEFT JOIN document_categories c ON d.category_id = c.id
+      WHERE d.status = 'PUBLISHED'
         AND (d.title LIKE ? OR d.description LIKE ? OR d.keywords LIKE ?)
       ORDER BY d.views DESC, d.upload_date DESC
       LIMIT 50
@@ -146,19 +151,19 @@ class BibliotecaService {
         const totalViews = (this.db.prepare('SELECT COALESCE(SUM(views), 0) as total FROM documents').get() as any).total;
 
         const categoryStats = this.db.prepare(`
-      SELECT c.category_name, COUNT(d.id) as count 
-      FROM document_categories c 
+      SELECT c.category_name, COUNT(d.id) as count
+      FROM document_categories c
       LEFT JOIN documents d ON c.id = d.category_id AND d.status = 'PUBLISHED'
-      GROUP BY c.id 
+      GROUP BY c.id
       ORDER BY count DESC
     `).all();
 
         const recentDocuments = this.db.prepare(`
-      SELECT d.*, c.category_name 
-      FROM documents d 
-      LEFT JOIN document_categories c ON d.category_id = c.id 
+      SELECT d.*, c.category_name
+      FROM documents d
+      LEFT JOIN document_categories c ON d.category_id = c.id
       WHERE d.status = 'PUBLISHED'
-      ORDER BY d.upload_date DESC 
+      ORDER BY d.upload_date DESC
       LIMIT 10
     `).all();
 
@@ -181,4 +186,11 @@ class BibliotecaService {
     }
 }
 
-export const bibliotecaService = new BibliotecaService();
+const instances = new Map<string, BibliotecaService>();
+
+export function getBibliotecaService(dataDir: string): BibliotecaService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new BibliotecaService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

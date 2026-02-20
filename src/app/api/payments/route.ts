@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
-import { paymentService } from '@/services/payment.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getPaymentService } from '@/services/payment.service';
 
 export async function GET() {
   try {
+    const dataDir = await getCompanyDataDir();
+    const paymentService = getPaymentService(dataDir);
     const payments = paymentService.getPayments();
     const subscription = paymentService.getSubscription();
     const cards = paymentService.getCards();
@@ -14,6 +17,8 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
+    const dataDir = await getCompanyDataDir();
+    const paymentService = getPaymentService(dataDir);
     const { action } = await request.json();
     if (action === 'CANCEL') {
       const sub = paymentService.cancelSubscription();
@@ -27,6 +32,8 @@ export async function PATCH(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const dataDir = await getCompanyDataDir();
+    const paymentService = getPaymentService(dataDir);
     const card = await request.json();
     const newCard = paymentService.addCard(card);
     return NextResponse.json(newCard);
@@ -37,6 +44,8 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const dataDir = await getCompanyDataDir();
+    const paymentService = getPaymentService(dataDir);
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (id) {
@@ -51,6 +60,8 @@ export async function DELETE(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const dataDir = await getCompanyDataDir();
+    const paymentService = getPaymentService(dataDir);
     const body = await request.json();
     const newPayment = paymentService.createPayment(body);
     return NextResponse.json(newPayment);

@@ -1,12 +1,21 @@
 import fs from 'fs';
 import path from 'path';
 
-const DATA_PATH = path.join(process.cwd(), 'src/data/admin.json');
-
 export class AdminService {
+  private dataPath: string;
+
+  constructor(dataDir: string) {
+    this.dataPath = path.join(dataDir, 'admin.json');
+  }
+
   private getData() {
     try {
-      const fileContent = fs.readFileSync(DATA_PATH, 'utf-8');
+      if (!fs.existsSync(this.dataPath)) {
+        const defaults = { general: {}, roles: [], usuarios: [] };
+        fs.writeFileSync(this.dataPath, JSON.stringify(defaults, null, 2));
+        return defaults;
+      }
+      const fileContent = fs.readFileSync(this.dataPath, 'utf-8');
       return JSON.parse(fileContent);
     } catch (error) {
       return { general: {}, roles: [], usuarios: [] };
@@ -14,7 +23,7 @@ export class AdminService {
   }
 
   private saveData(data: any) {
-    fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
+    fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2));
   }
 
   getGeneralSettings() {
@@ -33,4 +42,11 @@ export class AdminService {
   }
 }
 
-export const adminService = new AdminService();
+const instances = new Map<string, AdminService>();
+
+export function getAdminService(dataDir: string): AdminService {
+  if (!instances.has(dataDir)) {
+    instances.set(dataDir, new AdminService(dataDir));
+  }
+  return instances.get(dataDir)!;
+}

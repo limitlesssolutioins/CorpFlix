@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { isoAuditService } from '@/services/iso-audit.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getIsoAuditService } from '@/services/iso-audit.service';
 
-// GET /api/auditoria/actions - Obtener acciones correctivas
 export async function GET(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
 
@@ -18,9 +20,10 @@ export async function GET(request: Request) {
     }
 }
 
-// POST /api/auditoria/actions - Crear acción correctiva
 export async function POST(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const body = await request.json();
         const newAction = isoAuditService.createCorrectiveAction(body);
         return NextResponse.json(newAction, { status: 201 });
@@ -30,9 +33,10 @@ export async function POST(request: Request) {
     }
 }
 
-// PUT /api/auditoria/actions - Actualizar acción correctiva
 export async function PUT(request: Request) {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const body = await request.json();
         const { id, ...updateData } = body;
 
@@ -41,7 +45,6 @@ export async function PUT(request: Request) {
         }
 
         const updatedAction = isoAuditService.updateCorrectiveAction(id, updateData);
-
         if (!updatedAction) {
             return NextResponse.json({ error: 'Action not found' }, { status: 404 });
         }

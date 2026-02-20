@@ -1,9 +1,11 @@
 
 import { NextResponse } from 'next/server';
-import { catalogService } from '@/services/catalog.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getCatalogService } from '@/services/catalog.service';
 
 export async function GET() {
-    const data = catalogService.getSocialSecurityData();
-    const absenceTypes = await catalogService.getAbsenceTypes();
-    return NextResponse.json({ ...data, absenceTypes });
+    const dataDir = await getCompanyDataDir();
+    const catalogService = getCatalogService(dataDir);
+    const constants = await catalogService.getConstants();
+    return NextResponse.json(constants);
 }

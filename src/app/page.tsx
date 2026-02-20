@@ -53,7 +53,7 @@ export default function Home() {
     nit: info?.nit || companyData.companyInfo.nit,
     direccion: info?.direccion || companyData.companyInfo.direccion,
     telefono: info?.telefono || companyData.companyInfo.telefono,
-    email: info?.email || companyData.email,
+    email: info?.email || companyData.companyInfo.email,
     website: info?.sitioWeb || companyData.companyInfo.website,
     actividadComercial: companyData.companyInfo.actividadComercial,
   };

@@ -1,9 +1,17 @@
-import db from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+
+const { getDb } = require('@/lib/db');
 
 export class AbsencesService {
+    private db: any;
+
+    constructor(dataDir: string) {
+        this.db = getDb(path.join(dataDir, 'hr.db'));
+    }
+
     async findAll() {
-        return db.all(`
+        return this.db.all(`
       SELECT a.*, e.firstName, e.lastName, at.name as absenceTypeName
       FROM Absence a
       JOIN Employee e ON a.employeeId = e.id
@@ -14,7 +22,7 @@ export class AbsencesService {
 
     async create(data: any) {
         const id = uuidv4();
-        await db.run(`
+        await this.db.run(`
       INSERT INTO Absence (
         id, employeeId, absenceTypeCode, startDate, endDate,
         diagnosisCode, medicalCertificateUrl, status, createdAt
@@ -24,8 +32,15 @@ export class AbsencesService {
             data.diagnosisCode, data.medicalCertificateUrl
         ]);
 
-        return db.get('SELECT * FROM Absence WHERE id = ?', [id]);
+        return this.db.get('SELECT * FROM Absence WHERE id = ?', [id]);
     }
 }
 
-export const absencesService = new AbsencesService();
+const instances = new Map<string, AbsencesService>();
+
+export function getAbsencesService(dataDir: string): AbsencesService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new AbsencesService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

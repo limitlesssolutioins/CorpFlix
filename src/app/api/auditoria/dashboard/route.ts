@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
-import { isoAuditService } from '@/services/iso-audit.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getIsoAuditService } from '@/services/iso-audit.service';
 
-// GET /api/auditoria/dashboard - Obtener KPIs y estadísticas
 export async function GET() {
     try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
         const kpis = isoAuditService.getDashboardKPIs();
         return NextResponse.json(kpis);
     } catch (error) {

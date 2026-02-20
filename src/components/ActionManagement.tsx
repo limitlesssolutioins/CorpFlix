@@ -164,7 +164,7 @@ const ActionManagement = ({ actionType, storageKey }: ActionManagementProps) => 
         {actions.length === 0 ? (
           <p>No hay acciones registradas aún.</p>
         ) : (
-          <div classNameName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {actions.map((action) => (
               <div key={action.id} className="action-card">
                 <div className="flex justify-between items-start mb-2">

@@ -1,10 +1,12 @@
 
 import { NextResponse } from 'next/server';
-import { adminService } from '@/services/admin.service';
+import { getCompanyDataDir } from '@/lib/companyContext';
+import { getAdminService } from '@/services/admin.service';
 
 export async function GET() {
     // 1. Fetch Company Profile from Admin Service (Source of Truth)
-    const adminSettings = adminService.getGeneralSettings();
+    const dataDir = await getCompanyDataDir();
+    const adminSettings = getAdminService(dataDir).getGeneralSettings();
 
     // 2. Define HR/Legal Settings Defaults (Removed Prisma Dependency)
     const config = {

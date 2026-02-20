@@ -2,7 +2,6 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const DB_PATH = path.join(process.cwd(), 'src/data/riesgos.db');
 const SCHEMA_PATH = path.join(process.cwd(), 'src/data/schema_riesgos.sql');
 
 // Types
@@ -78,27 +77,22 @@ export interface ActionPlan {
 class RiskService {
     private db: Database.Database;
 
-    constructor() {
-        // Crear directorio si no existe
-        const dir = path.dirname(DB_PATH);
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
+    constructor(dataDir: string) {
+        const dbPath = path.join(dataDir, 'riesgos.db');
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
         }
-
-        // Inicializar base de datos
-        this.db = new Database(DB_PATH);
+        this.db = new Database(dbPath);
         this.initializeDatabase();
     }
 
     private initializeDatabase() {
         try {
-            // Verificar si las tablas ya existen
             const tableExists = this.db
                 .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='risk_categories'")
                 .get();
 
             if (!tableExists) {
-                // Ejecutar script SQL de inicialización
                 const schema = fs.readFileSync(SCHEMA_PATH, 'utf-8');
                 this.db.exec(schema);
                 console.log('✅ Risk database initialized successfully');
@@ -162,7 +156,7 @@ class RiskService {
 
     createRisk(risk: Risk): Risk {
         const stmt = this.db.prepare(`
-      INSERT INTO risks (category_id, code, type, description, caused_by, impact, 
+      INSERT INTO risks (category_id, code, type, description, caused_by, impact,
                          related_activity, related_process, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
@@ -187,8 +181,8 @@ class RiskService {
         if (!existing) return null;
 
         const stmt = this.db.prepare(`
-      UPDATE risks 
-      SET category_id = ?, code = ?, type = ?, description = ?, caused_by = ?, 
+      UPDATE risks
+      SET category_id = ?, code = ?, type = ?, description = ?, caused_by = ?,
           impact = ?, related_activity = ?, related_process = ?, status = ?,
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
@@ -254,7 +248,6 @@ class RiskService {
     }
 
     createAssessment(assessment: RiskAssessment): any {
-        // Calcular riesgo inherente y nivel
         const inherentRisk = assessment.probability * assessment.consequence;
         const matrixRow = this.db
             .prepare('SELECT * FROM risk_matrix WHERE inherent_risk = ?')
@@ -288,8 +281,8 @@ class RiskService {
             assessment.priority || 'NO PRIORITARIO',
             assessment.significance || 'NO SIGNIFICATIVO',
             assessment.acceptability || 'ALERTA',
-            0, 0, 0, 0, 0, // condiciones
-            0, 0, 0, 0, // exposición
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0,
             assessment.notes || null,
             'ACTIVE'
         );
@@ -298,7 +291,6 @@ class RiskService {
     }
 
     updateAssessmentAfterControls(assessmentId: number): any {
-        // Obtener controles y calcular efectividad promedio
         const controls = this.db
             .prepare('SELECT effectiveness FROM risk_controls WHERE assessment_id = ? AND status = ?')
             .all(assessmentId, 'ACTIVE') as any[];
@@ -310,7 +302,6 @@ class RiskService {
         const avgEffectiveness =
             controls.reduce((sum, c) => sum + (c.effectiveness || 0), 0) / controls.length;
 
-        // Determinar nivel residual basado en eficacia
         let residualLevel = 'NO ACEPTABLE/PRIORITARIO/SIGNIFICATIVO';
         let acceptability = 'NO ACEPTABLE';
         let priority = 'PRIORITARIO';
@@ -351,7 +342,6 @@ class RiskService {
     }
 
     createControl(control: RiskControl): RiskControl {
-        // Determinar nivel de eficacia
         const effectivenessLevel = this.getEffectivenessLevel(control.effectiveness || 3);
 
         const stmt = this.db.prepare(`
@@ -374,7 +364,6 @@ class RiskService {
             control.notes || null
         );
 
-        // Actualizar assessment después de agregar control
         this.updateAssessmentAfterControls(control.assessment_id);
 
         const createdControl = this.db
@@ -404,7 +393,7 @@ class RiskService {
 
     getAllActionPlans(filters?: { status?: string }): any[] {
         let query = `
-      SELECT ap.*, ra.inherent_risk_level, r.description as risk_description, 
+      SELECT ap.*, ra.inherent_risk_level, r.description as risk_description,
              rc.name as category_name
       FROM action_plans ap
       INNER JOIN risk_assessments ra ON ap.assessment_id = ra.id
@@ -502,7 +491,7 @@ class RiskService {
 
         const criticalRisks = this.db
             .prepare(`
-        SELECT COUNT(*) as count FROM risk_assessments 
+        SELECT COUNT(*) as count FROM risk_assessments
         WHERE status = 'ACTIVE' AND acceptability = 'NO ACEPTABLE'
       `)
             .get() as any;
@@ -565,7 +554,6 @@ class RiskService {
                 throw new Error(`Category ${categoryCode} not found`);
             }
 
-            // Insertar criterios de consecuencia si existen
             if (catalog.consequence_criteria) {
                 for (const criteria of catalog.consequence_criteria) {
                     const existing = this.db
@@ -582,7 +570,6 @@ class RiskService {
                 }
             }
 
-            // Insertar riesgos
             let count = 0;
             for (const risk of catalog.risks) {
                 this.createRisk({
@@ -604,4 +591,11 @@ class RiskService {
     }
 }
 
-export const riskService = new RiskService();
+const instances = new Map<string, RiskService>();
+
+export function getRiskService(dataDir: string): RiskService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new RiskService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

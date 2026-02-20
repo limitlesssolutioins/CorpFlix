@@ -1,11 +1,19 @@
-import db from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+
+const { getDb } = require('@/lib/db');
 
 export class EmployeesService {
+    private db: any;
+
+    constructor(dataDir: string) {
+        this.db = getDb(path.join(dataDir, 'hr.db'));
+    }
+
     async findAll() {
-        const employees = await db.all(`
-      SELECT e.*, 
-             s.name as siteName, 
+        const employees = await this.db.all(`
+      SELECT e.*,
+             s.name as siteName,
              p.name as positionName,
              t.name as teamName
       FROM Employee e
@@ -19,9 +27,9 @@ export class EmployeesService {
     }
 
     async findOne(id: string) {
-        const employee = await db.get(`
-      SELECT e.*, 
-             s.name as siteName, 
+        const employee = await this.db.get(`
+      SELECT e.*,
+             s.name as siteName,
              p.name as positionName,
              t.name as teamName
       FROM Employee e
@@ -35,7 +43,7 @@ export class EmployeesService {
 
     async create(data: any) {
         const id = uuidv4();
-        await db.run(`
+        await this.db.run(`
       INSERT INTO Employee (
         id, firstName, lastName, identification, email, phone,
         contractType, salaryAmount, salaryScheme, startDate,
@@ -57,8 +65,8 @@ export class EmployeesService {
     }
 
     async update(id: string, data: any) {
-        const fields = [];
-        const values = [];
+        const fields: string[] = [];
+        const values: any[] = [];
 
         Object.keys(data).forEach(key => {
             if (data[key] !== undefined) {
@@ -70,8 +78,8 @@ export class EmployeesService {
         fields.push('updatedAt = datetime(\'now\')');
         values.push(id);
 
-        await db.run(`
-      UPDATE Employee 
+        await this.db.run(`
+      UPDATE Employee
       SET ${fields.join(', ')}
       WHERE id = ?
     `, values);
@@ -80,23 +88,30 @@ export class EmployeesService {
     }
 
     async remove(id: string) {
-        await db.run('UPDATE Employee SET isActive = 0 WHERE id = ?', [id]);
+        await this.db.run('UPDATE Employee SET isActive = 0 WHERE id = ?', [id]);
         return { deleted: true };
     }
 
     async getDocuments(employeeId: string) {
-        return db.all('SELECT * FROM EmployeeDocument WHERE employeeId = ? ORDER BY createdAt DESC', [employeeId]);
+        return this.db.all('SELECT * FROM EmployeeDocument WHERE employeeId = ? ORDER BY createdAt DESC', [employeeId]);
     }
 
     async addDocument(employeeId: string, data: any) {
         const id = uuidv4();
-        await db.run(`
+        await this.db.run(`
       INSERT INTO EmployeeDocument (id, employeeId, title, category, fileUrl, expiryDate, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
     `, [id, employeeId, data.title, data.category, data.fileUrl, data.expiryDate]);
 
-        return db.get('SELECT * FROM EmployeeDocument WHERE id = ?', [id]);
+        return this.db.get('SELECT * FROM EmployeeDocument WHERE id = ?', [id]);
     }
 }
 
-export const employeesService = new EmployeesService();
+const instances = new Map<string, EmployeesService>();
+
+export function getEmployeesService(dataDir: string): EmployeesService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new EmployeesService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

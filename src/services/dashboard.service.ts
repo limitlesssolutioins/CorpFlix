@@ -1,13 +1,21 @@
-import db from '@/lib/db';
+import path from 'path';
+
+const { getDb } = require('@/lib/db');
 
 export class DashboardService {
-    async getStats() {
-        const totalEmployees = await db.get('SELECT COUNT(*) as count FROM Employee WHERE isActive = 1');
-        const totalShifts = await db.get('SELECT COUNT(*) as count FROM Shift WHERE date(startTime) >= date("now", "start of month")');
-        const totalSites = await db.get('SELECT COUNT(*) as count FROM Site');
-        const activeAbsences = await db.get('SELECT COUNT(*) as count FROM Absence WHERE status = "PENDING_APPROVAL"');
+    private db: any;
 
-        const recentShifts = await db.all(`
+    constructor(dataDir: string) {
+        this.db = getDb(path.join(dataDir, 'hr.db'));
+    }
+
+    async getStats() {
+        const totalEmployees = await this.db.get('SELECT COUNT(*) as count FROM Employee WHERE isActive = 1');
+        const totalShifts = await this.db.get('SELECT COUNT(*) as count FROM Shift WHERE date(startTime) >= date("now", "start of month")');
+        const totalSites = await this.db.get('SELECT COUNT(*) as count FROM Site');
+        const activeAbsences = await this.db.get('SELECT COUNT(*) as count FROM Absence WHERE status = "PENDING_APPROVAL"');
+
+        const recentShifts = await this.db.all(`
       SELECT s.*, e.firstName, e.lastName, si.name as siteName
       FROM Shift s
       JOIN Employee e ON s.employeeId = e.id
@@ -26,4 +34,11 @@ export class DashboardService {
     }
 }
 
-export const dashboardService = new DashboardService();
+const instances = new Map<string, DashboardService>();
+
+export function getDashboardService(dataDir: string): DashboardService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new DashboardService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

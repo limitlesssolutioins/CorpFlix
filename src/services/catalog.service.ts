@@ -1,32 +1,47 @@
-import db from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+
+const { getDb } = require('@/lib/db');
 
 export class CatalogService {
+    private db: any;
+
+    constructor(dataDir: string) {
+        this.db = getDb(path.join(dataDir, 'hr.db'));
+    }
+
     async getSites() {
-        return db.all('SELECT * FROM Site ORDER BY name');
+        return this.db.all('SELECT * FROM Site ORDER BY name');
     }
 
     async createSite(data: any) {
         const id = uuidv4();
-        await db.run('INSERT INTO Site (id, name, address) VALUES (?, ?, ?)',
+        await this.db.run('INSERT INTO Site (id, name, address) VALUES (?, ?, ?)',
             [id, data.name, data.address]);
-        return db.get('SELECT * FROM Site WHERE id = ?', [id]);
+        return this.db.get('SELECT * FROM Site WHERE id = ?', [id]);
     }
 
     async getPositions() {
-        return db.all('SELECT * FROM Position ORDER BY name');
+        return this.db.all('SELECT * FROM Position ORDER BY name');
     }
 
     async createPosition(data: any) {
         const id = uuidv4();
-        await db.run('INSERT INTO Position (id, name) VALUES (?, ?)', [id, data.name]);
-        return db.get('SELECT * FROM Position WHERE id = ?', [id]);
+        await this.db.run('INSERT INTO Position (id, name) VALUES (?, ?)', [id, data.name]);
+        return this.db.get('SELECT * FROM Position WHERE id = ?', [id]);
     }
 
     async getConstants() {
-        const absenceTypes = await db.all('SELECT * FROM AbsenceType ORDER BY code');
+        const absenceTypes = await this.db.all('SELECT * FROM AbsenceType ORDER BY code');
         return { absenceTypes };
     }
 }
 
-export const catalogService = new CatalogService();
+const instances = new Map<string, CatalogService>();
+
+export function getCatalogService(dataDir: string): CatalogService {
+    if (!instances.has(dataDir)) {
+        instances.set(dataDir, new CatalogService(dataDir));
+    }
+    return instances.get(dataDir)!;
+}

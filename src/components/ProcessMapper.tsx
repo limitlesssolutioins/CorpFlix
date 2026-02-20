@@ -20,8 +20,9 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import NodeLinker from './NodeLinker';
 import CustomProcessNode from './CustomProcessNode';
+import type { ComponentType } from 'react';
 
-const nodeTypes = { customProcessNode: CustomProcessNode };
+const nodeTypes = { customProcessNode: CustomProcessNode as ComponentType<any> };
 
 const defaultInitialNodes: Node[] = [
   { id: 'start', position: { x: 50, y: 50 }, data: { label: 'Inicio' }, type: 'customProcessNode' },

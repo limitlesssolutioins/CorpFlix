@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Shield, AlertTriangle, CheckCircle2, Clock, TrendingUp, FileText, Plus } from 'lucide-react';
+import { Shield, AlertTriangle, CheckCircle2, Clock, TrendingUp, FileText, Plus, Sparkles } from 'lucide-react';
 
 interface DashboardKPIs {
     totalRisks: number;
@@ -94,6 +94,17 @@ export default function RiesgosPage() {
             borderColor: 'border-orange-100',
             hoverBorder: 'group-hover:border-orange-200',
             accentGradient: 'from-orange-400 to-orange-600'
+        },
+        {
+            title: 'Asistente IA',
+            description: 'Genera matriz de riesgos, controles y planes de accion con preguntas simples.',
+            href: '/riesgos/asistente-ia',
+            icon: Sparkles,
+            iconBg: 'from-indigo-50 to-indigo-100',
+            iconColor: 'text-indigo-600',
+            borderColor: 'border-indigo-100',
+            hoverBorder: 'group-hover:border-indigo-200',
+            accentGradient: 'from-indigo-400 to-indigo-600'
         }
     ];
 
@@ -262,3 +273,4 @@ export default function RiesgosPage() {
         </div>
     );
 }
+

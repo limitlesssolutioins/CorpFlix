@@ -16,20 +16,19 @@ export async function POST(request: Request) {
     const plan = getManagementService(dataDir).getStrategicPlan();
     const objectives = plan.objetivos || [];
 
-    if (objectives.length === 0) {
-      return NextResponse.json({ error: 'No se encontraron objetivos en la planeación estratégica' }, { status: 400 });
-    }
-
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const objectivesSection = objectives.length > 0
+      ? `Objetivos Estratégicos actuales:\n${objectives.map((obj: any) => `- ${obj.texto}`).join('\n')}`
+      : 'No hay objetivos estratégicos definidos aún. Genera indicadores generales apropiados para el contexto de la empresa.';
 
     const prompt = `
       Actúa como un experto consultor en Sistemas de Gestión de Calidad ISO 9001:2015.
-      Tu tarea es generar Indicadores de Gestión (KPIs) basados en los Objetivos Estratégicos de la empresa.
+      Tu tarea es generar Indicadores de Gestión (KPIs) para la empresa.
 
       Contexto de la empresa: "${context}"
-      
-      Objetivos Estratégicos actuales:
-      ${objectives.map((obj: any) => `- ${obj.texto}`).join('\n')}
+
+      ${objectivesSection}
 
       INSTRUCCIONES:
       1. Genera al menos un indicador clave por cada objetivo.

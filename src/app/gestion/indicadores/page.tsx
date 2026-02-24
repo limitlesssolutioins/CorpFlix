@@ -69,8 +69,9 @@ export default function IndicadoresPage() {
         toast.success('¡Indicadores generados!', { id: toastId });
         fetchIndicators();
       }
-    } catch {
-      toast.error('Error al generar con IA', { id: toastId });
+    } catch (error: any) {
+      const msg = error?.response?.data?.error || 'Error al generar con IA';
+      toast.error(msg, { id: toastId });
     } finally {
       setGeneratingIA(false);
     }

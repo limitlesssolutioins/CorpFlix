@@ -62,8 +62,14 @@ export default function IndicadoresPage() {
     setGeneratingIA(true);
     const toastId = toast.loading('La IA está diseñando tus métricas...');
     try {
-      const context = JSON.parse(localStorage.getItem('company_context') || '{"description": "Empresa en crecimiento"}');
-      const res = await axios.post('/api/generate-indicators', { context: context.description });
+      let context = 'Empresa en crecimiento';
+      try {
+        const settingsRes = await axios.get('/api/admin/general', { timeout: 5000 });
+        const s = settingsRes.data || {};
+        const parts = [s.nombreEmpresa, s.sectorActividad, s.resumenEjecutivo].filter(Boolean);
+        if (parts.length > 0) context = parts.join('. ');
+      } catch { /* use default */ }
+      const res = await axios.post('/api/generate-indicators', { context });
       if (res.data && Array.isArray(res.data)) {
         await axios.post('/api/gestion/indicadores', res.data);
         toast.success('¡Indicadores generados!', { id: toastId });
@@ -302,9 +308,18 @@ export default function IndicadoresPage() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex justify-between items-start">
-              <div>
+              <div className="flex-1">
                 <h2 className="text-xl font-black text-slate-900 uppercase">{selectedIndicator.nombre}</h2>
-                <p className="text-sm text-slate-400 mt-1">{selectedIndicator.descripcion}</p>
+                <p className="text-sm text-slate-500 mt-1 leading-relaxed">{selectedIndicator.descripcion}</p>
+                {selectedIndicator.formula && (
+                  <div className="mt-3 p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">Fórmula de Cálculo</p>
+                    <p className="text-xs text-indigo-900 font-medium leading-relaxed">{selectedIndicator.formula}</p>
+                  </div>
+                )}
+                {selectedIndicator.fuente && (
+                  <p className="text-xs text-slate-400 mt-2">Fuente: <span className="font-bold text-slate-600">{selectedIndicator.fuente}</span></p>
+                )}
               </div>
               <button
                 onClick={() => setShowDetailModal(false)}

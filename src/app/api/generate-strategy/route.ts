@@ -64,7 +64,7 @@ export async function POST(request: Request) {
 
         CONTEXTO INTERNO (Proporcionado por el usuario):
         "${userAnalysis || 'No proporcionado'}"
-        
+
         FACTORES DE CAPACIDAD A EVALUAR (Si el usuario no mencionó alguno, asume el estándar del sector ${activity}):
         - Financiera, Tecnológica, Logística, Comercial, Experiencia, RRHH, Directiva, Good Will, Legal, Ambiente Laboral, Innovación, Gestión del Riesgo.
 
@@ -75,10 +75,10 @@ export async function POST(request: Request) {
         - Tecnológico: ${pestelContext?.technological || 'No definido'}
         - Ecológico: ${pestelContext?.ecological || 'No definido'}
         - Legal: ${pestelContext?.legal || 'No definido'}
-        
+
         Instrucciones:
         1. FORTALEZAS: Capacidades internas sobresalientes mencionadas o inferidas.
-        2. DEBILIDADES: Falencias internas identificadas. Para cada debilidad DEBES proponer una acción de mejora específica.
+        2. DEBILIDADES: Falencias internas identificadas (solo el texto, sin planes de mejora).
         3. OPORTUNIDADES: Cómo aprovechar los factores POSITIVOS del PESTEL usando las fortalezas.
         4. AMENAZAS: Riesgos del entorno PESTEL que pueden afectar la continuidad.
 
@@ -86,14 +86,40 @@ export async function POST(request: Request) {
         Devuelve SOLO un objeto JSON con esta estructura:
         {
           "strengths": ["string", ...],
-          "weaknesses": [
-            { "item": "La debilidad encontrada", "plan": "Acción para mejorarla" },
-            ...
-          ],
+          "weaknesses": ["string", ...],
           "opportunities": ["string", ...],
           "threats": ["string", ...]
         }
         Sin markdown.
+      `;
+    }
+    else if (type.startsWith('swot-')) {
+      const quadrant = type.split('-')[1]; // strengths, weaknesses, opportunities, threats
+      const { name, activity, userAnalysis, existingItems, pestelContext } = inputs;
+      const quadrantLabels: Record<string, string> = {
+        strengths: 'FORTALEZAS (capacidades internas sobresalientes)',
+        weaknesses: 'DEBILIDADES (falencias internas, sin planes de mejora)',
+        opportunities: 'OPORTUNIDADES (factores externos positivos a aprovechar)',
+        threats: 'AMENAZAS (riesgos del entorno que pueden afectar la continuidad)'
+      };
+      const label = quadrantLabels[quadrant] || quadrant;
+      const existing = existingItems ? `\nElementos ya existentes (NO duplicar):\n${existingItems}` : '';
+      const pestel = pestelContext ? `\nContexto PESTEL: Político: ${pestelContext.political || ''}, Económico: ${pestelContext.economic || ''}, Social: ${pestelContext.social || ''}, Tecnológico: ${pestelContext.technological || ''}, Ecológico: ${pestelContext.ecological || ''}, Legal: ${pestelContext.legal || ''}` : '';
+
+      prompt = `
+        Actúa como un consultor estratégico experto en normas ISO 9001:2015.
+        Genera 3 nuevos elementos de ${label} para la empresa "${name}" (sector: ${activity || 'general'}).
+
+        ${userAnalysis ? `Contexto adicional del usuario: "${userAnalysis}"` : ''}
+        ${existing}
+        ${pestel}
+
+        Instrucciones:
+        - Genera EXACTAMENTE 3 elementos nuevos y distintos a los ya existentes.
+        - Redacción formal, concisa y profesional.
+        - Devuelve SOLO un objeto JSON con la clave "${quadrant}" y un array de 3 strings.
+        - Estructura: {"${quadrant}": ["elemento 1", "elemento 2", "elemento 3"]}
+        - Sin markdown.
       `;
     }
     else if (type.startsWith('pestel-')) {
@@ -230,7 +256,7 @@ export async function POST(request: Request) {
     }
 
     // Retornar estructura correcta según el tipo
-    if (['swot', 'pestel'].includes(type) || type.startsWith('pestel-')) {
+    if (['swot', 'pestel'].includes(type) || type.startsWith('pestel-') || type.startsWith('swot-')) {
       return NextResponse.json({ data: parsedData });
     } else {
       return NextResponse.json({ options: parsedData });

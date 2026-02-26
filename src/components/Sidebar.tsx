@@ -91,11 +91,7 @@ const Sidebar = () => {
                 <FaCog className="mr-3" />
                 General
               </Link>
-              <Link href="/administracion/roles" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/administracion/roles' ? 'bg-slate-800 text-white' : ''}`}>
-                <FaUsers className="mr-3" />
-                Roles
-              </Link>
-              <Link href="/administracion/suscripcion" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/administracion/suscripcion' ? 'bg-slate-800 text-white' : ''}`}>
+<Link href="/administracion/suscripcion" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/administracion/suscripcion' ? 'bg-slate-800 text-white' : ''}`}>
                 <FaCreditCard className="mr-3" />
                 Suscripción
               </Link>

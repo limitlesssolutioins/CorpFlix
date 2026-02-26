@@ -11,15 +11,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+    const isImage = file.type.startsWith('image/');
+    const isPdf = file.type === 'application/pdf';
+
+    if (!isImage && !isPdf) {
+      return NextResponse.json({ error: "Invalid file type. Only images and PDFs are allowed." }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
     // Generamos un nombre único para evitar caché
-    const filename = `logo-${Date.now()}${path.extname(file.name)}`;
+    const prefix = isPdf ? 'doc' : 'logo';
+    const filename = `${prefix}-${Date.now()}${path.extname(file.name)}`;
     const uploadDir = path.join(process.cwd(), 'public/uploads');
     const filepath = path.join(uploadDir, filename);
 

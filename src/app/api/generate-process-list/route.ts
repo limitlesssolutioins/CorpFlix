@@ -138,10 +138,26 @@ export async function POST(request: Request) {
     // Construct the answers context
     let answersContext = "";
     if (answers && Object.keys(answers).length > 0) {
-        answersContext = "Respuestas específicas del usuario sobre su operación:\n";
-        for (const [key, value] of Object.entries(answers)) {
-            answersContext += `- Pregunta ${key.replace('q', '')}: ${value}\n`;
+        // For generic types (additional processes), q1=title and q2=description
+        if (answers.q1 && answers.q2 && !typeDefinition) {
+            answersContext = `Título del proceso: "${answers.q1}"\nDescripción del proceso: "${answers.q2}"`;
+        } else {
+            answersContext = "Respuestas específicas del usuario sobre su operación:\n";
+            for (const [key, value] of Object.entries(answers)) {
+                answersContext += `- ${key === 'q1' ? 'Respuesta' : 'Descripción'}: ${value}\n`;
+            }
         }
+    }
+
+    // For generic types without typeDefinition, use title+description from answers
+    if (!typeDefinition && answers?.q1) {
+        typeDefinition = `Proceso personalizado basado en: ${answers.q1}`;
+        specificInstruction = `
+          IMPORTANTE: Genera EXACTAMENTE UN (1) proceso basado en el título y descripción proporcionados por el usuario.
+          El nombre DEBE ser: "${answers.q1}".
+          La descripción debe estar basada en: "${answers.q2 || answers.q1}", elevando el lenguaje a nivel corporativo y profesional.
+          NOTA CRÍTICA: NO menciones "ISO", "SGC" ni terminología normativa. Enfócate en la operación real.
+        `;
     }
 
     const prompt = `

@@ -31,19 +31,23 @@ export async function POST(request: Request) {
       ${objectivesSection}
 
       INSTRUCCIONES:
-      1. Genera al menos un indicador clave por cada objetivo.
-      2. CADA indicador DEBE incluir una FÓRMULA ESTADÍSTICA/MATEMÁTICA clara (ej: (N° de incidentes / Total horas hombre) * 100).
-      3. La META debe ser un número puntual y específico basado en estándares de la industria para ese objetivo.
+      1. Genera al menos un indicador clave por cada objetivo estratégico.
+      2. CADA indicador DEBE incluir:
+         - Una FÓRMULA MATEMÁTICA clara con la operación exacta (ej: (Numerador / Denominador) × 100).
+         - La descripción del NUMERADOR: qué representa y cómo se obtiene (ej: "Número de clientes que respondieron 'Satisfecho' o 'Muy Satisfecho' en la encuesta mensual").
+         - La descripción del DENOMINADOR: qué representa y cómo se obtiene (ej: "Total de clientes encuestados en el período").
+         - Las VARIABLES involucradas: definición de cada variable usada en la fórmula.
+      3. La META debe ser un número puntual basado en estándares de la industria.
       4. El lenguaje debe ser 100% profesional, corporativo y técnico.
-      5. No uses jerga informal.
+      5. La descripción del indicador debe explicar QUÉ mide, CÓMO se mide y QUÉ significa el resultado.
 
-      Debes devolver un objeto JSON ESTRICTO con la siguiente estructura:
+      Debes devolver un array JSON ESTRICTO con la siguiente estructura (sin markdown):
       [
         {
           "nombre": "Nombre del Indicador",
-          "descripcion": "Definición técnica",
-          "formula": "Fórmula matemática",
-          "fuente": "De dónde sale la información (ej: CRM, Encuestas, Excel)",
+          "descripcion": "Qué mide este indicador, cómo se interpreta y qué decisiones permite tomar.",
+          "formula": "Fórmula: (Variable A / Variable B) × 100. Numerador (Variable A): [descripción de qué representa y cómo obtenerlo]. Denominador (Variable B): [descripción de qué representa y cómo obtenerlo].",
+          "fuente": "De dónde sale la información (ej: CRM, Encuestas de satisfacción, ERP)",
           "frecuencia": "Mensual/Trimestral/Semestral",
           "meta": 90,
           "unidad": "%"

@@ -116,12 +116,17 @@ export default function ProcesosPage() {
     const handleWizardGenerate = async (answers: Record<string, string>) => {
         setIsGenerating(true);
         try {
-            // We can get the company description from local context or a generic one if not set
-            const companyInfo = JSON.parse(localStorage.getItem('company_context') || '{"description": "Empresa en crecimiento"}');
+            let context = 'Empresa en crecimiento';
+            try {
+                const settingsRes = await axios.get('/api/admin/general', { timeout: 5000 });
+                const s = settingsRes.data || {};
+                const parts = [s.nombreEmpresa, s.sectorActividad, s.resumenEjecutivo].filter(Boolean);
+                if (parts.length > 0) context = parts.join('. ');
+            } catch { /* use default */ }
 
             const res = await axios.post('/api/generate-process-list', {
                 type: wizardType,
-                context: companyInfo.description,
+                context,
                 answers,
                 existingProcesses: processes.filter(p => p.tipo === wizardType)
             });
@@ -303,7 +308,7 @@ export default function ProcesosPage() {
                         onClick={() => { setWizardType(type); setWizardOpen(true); }}
                         className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm"
                     >
-                        <FaMagic /> CONSULTAR IA
+                        <FaMagic /> IA
                     </button>
                 )}
             </div>
@@ -336,6 +341,20 @@ export default function ProcesosPage() {
                 onSave={handleManualSave}
                 initialType={manualType}
             />
+
+            {/* Header with Create button */}
+            <div className="flex items-center justify-between px-2">
+                <div>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Mapa de Procesos</h1>
+                    <p className="text-slate-500 font-medium text-sm">Gestiona los procesos de tu organización.</p>
+                </div>
+                <button
+                    onClick={() => { setManualType('MISIONAL'); setIsManualOpen(true); }}
+                    className="flex items-center gap-2 px-5 py-3 bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl font-black text-sm shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all"
+                >
+                    <FaPlus /> Crear Nuevo Proceso
+                </button>
+            </div>
 
             {/* Process Map Layout */}
             <div className="space-y-8">
@@ -376,7 +395,7 @@ export default function ProcesosPage() {
                                     onClick={() => { setWizardType('ESTRATÉGICO_PLANIFICACION'); setWizardOpen(true); }}
                                     className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-purple-600 hover:border-purple-500 transition-all shadow-sm"
                                 >
-                                    <FaMagic /> IA PLANIFICA
+                                    <FaMagic /> IA
                                 </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -397,7 +416,7 @@ export default function ProcesosPage() {
                                     onClick={() => { setWizardType('ESTRATÉGICO_GERENCIAL'); setWizardOpen(true); }}
                                     className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-indigo-600 hover:border-indigo-500 transition-all shadow-sm"
                                 >
-                                    <FaMagic /> IA GERENCIA
+                                    <FaMagic /> IA
                                 </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

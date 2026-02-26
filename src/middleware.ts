@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const PUBLIC_PATHS = ['/login', '/api/companies'];
+const PUBLIC_FILES = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,6 +14,11 @@ export function middleware(request: NextRequest) {
 
   // Allow Next.js internals
   if (pathname.startsWith('/_next') || pathname.startsWith('/favicon')) {
+    return NextResponse.next();
+  }
+
+  // Allow static image files (logos, etc.)
+  if (PUBLIC_FILES.some((ext) => pathname.toLowerCase().endsWith(ext))) {
     return NextResponse.next();
   }
 

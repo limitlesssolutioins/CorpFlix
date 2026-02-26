@@ -4,29 +4,43 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import {
-  FaBuilding, 
-  FaIdCard, 
-  FaMapMarkerAlt, 
-  FaPhone, 
-  FaEnvelope, 
-  FaGlobe, 
+  FaBuilding,
+  FaIdCard,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaEnvelope,
+  FaGlobe,
   FaSave,
   FaSpinner,
   FaCheckCircle,
   FaNetworkWired,
   FaImage,
-  FaUpload
+  FaUpload,
+  FaChevronDown
 } from 'react-icons/fa';
+
+const CIUDADES_COLOMBIA = [
+  'Bogotá D.C.', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga',
+  'Cúcuta', 'Pereira', 'Ibagué', 'Santa Marta', 'Manizales', 'Bello', 'Pasto',
+  'Villavicencio', 'Montería', 'Valledupar', 'Armenia', 'Buenaventura', 'Floridablanca',
+  'Soacha', 'Itagüí', 'Soledad', 'Palmira', 'Neiva', 'Popayán', 'Barrancabermeja',
+  'Sincelejo', 'Riohacha', 'Tunja', 'Dosquebradas', 'Envigado', 'Duitama',
+  'Sogamoso', 'Quibdó', 'Florencia', 'Girón', 'Yopal', 'Apartadó', 'Turbo',
+  'Maicao', 'Ipiales', 'Tumaco', 'Leticia', 'Arauca', 'Puerto Asís', 'Mocoa',
+  'Mitú', 'Inírida', 'Puerto Carreño', 'San José del Guaviare',
+];
 
 interface CertificationItem {
   name: string;
   logoUrl: string;
+  pdfUrl?: string;
 }
 
 interface PortfolioItem {
   title: string;
   description: string;
   imageUrl: string;
+  pdfUrl?: string;
 }
 
 export default function AdminGeneralPage() {
@@ -47,6 +61,8 @@ export default function AdminGeneralPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState<string | null>(null);
+  const [logoTimestamp, setLogoTimestamp] = useState(Date.now());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -85,6 +101,7 @@ export default function AdminGeneralPage() {
 
       const nextSettings = { ...settings, logoUrl: res.data.url as string };
       setSettings(nextSettings);
+      setLogoTimestamp(Date.now());
       await axios.post('/api/admin/general', nextSettings);
 
       if (fileInputRef.current) {
@@ -96,6 +113,37 @@ export default function AdminGeneralPage() {
       toast.error('Error al subir la imagen');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handlePdfUpload = async (file: File, type: 'cert' | 'port', index: number) => {
+    const key = `${type}-${index}`;
+    setUploadingPdf(key);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await axios.post('/api/admin/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const pdfUrl = res.data.url as string;
+      if (type === 'cert') {
+        setSettings(prev => {
+          const next = [...prev.certificaciones];
+          next[index] = { ...next[index], pdfUrl };
+          return { ...prev, certificaciones: next };
+        });
+      } else {
+        setSettings(prev => {
+          const next = [...prev.portafolio];
+          next[index] = { ...next[index], pdfUrl };
+          return { ...prev, portafolio: next };
+        });
+      }
+      toast.success('PDF subido correctamente');
+    } catch {
+      toast.error('Error al subir el PDF');
+    } finally {
+      setUploadingPdf(null);
     }
   };
 
@@ -215,9 +263,15 @@ export default function AdminGeneralPage() {
 
              <div className="flex items-center gap-8">
                 {/* Preview Area */}
-                <div className="w-32 h-32 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group/image">
+                <div className="w-40 h-40 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group/image">
                   {settings.logoUrl ? (
-                    <img src={settings.logoUrl} alt="Logo Preview" className="w-full h-full object-contain p-2" />
+                    <img
+                      key={logoTimestamp}
+                      src={`${settings.logoUrl}?t=${logoTimestamp}`}
+                      alt="Logo Preview"
+                      className="w-full h-full object-contain p-2"
+                      onError={(e) => { (e.target as HTMLImageElement).src = ''; }}
+                    />
                   ) : (
                     <FaImage className="text-slate-300 text-3xl" />
                   )}
@@ -301,28 +355,48 @@ export default function AdminGeneralPage() {
                 <p className="text-sm text-slate-400">No hay certificaciones agregadas.</p>
               )}
               {settings.certificaciones.map((cert, index) => (
-                <div key={`cert-${index}`} className="p-4 rounded-2xl border border-slate-200 bg-slate-50 grid grid-cols-1 md:grid-cols-12 gap-3">
-                  <input
-                    type="text"
-                    placeholder="Nombre (ej. ISO 9001)"
-                    value={cert.name}
-                    onChange={e => updateCertification(index, 'name', e.target.value)}
-                    className="md:col-span-4 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-amber-500"
-                  />
-                  <input
-                    type="text"
-                    placeholder="URL logo (ej. /uploads/logo.png)"
-                    value={cert.logoUrl}
-                    onChange={e => updateCertification(index, 'logoUrl', e.target.value)}
-                    className="md:col-span-7 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-amber-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeCertification(index)}
-                    className="md:col-span-1 px-3 py-3 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors"
-                  >
-                    X
-                  </button>
+                <div key={`cert-${index}`} className="p-4 rounded-2xl border border-slate-200 bg-slate-50 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Nombre (ej. ISO 9001)"
+                      value={cert.name}
+                      onChange={e => updateCertification(index, 'name', e.target.value)}
+                      className="md:col-span-5 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-amber-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="URL logo (ej. /uploads/logo.png)"
+                      value={cert.logoUrl}
+                      onChange={e => updateCertification(index, 'logoUrl', e.target.value)}
+                      className="md:col-span-6 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeCertification(index)}
+                      className="md:col-span-1 px-3 py-3 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors"
+                    >
+                      X
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-xl font-bold text-xs cursor-pointer hover:bg-amber-100 transition-colors">
+                      <FaUpload size={11} />
+                      {uploadingPdf === `cert-${index}` ? 'Subiendo...' : cert.pdfUrl ? 'Cambiar PDF' : 'Subir PDF'}
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        disabled={uploadingPdf === `cert-${index}`}
+                        onChange={e => e.target.files?.[0] && handlePdfUpload(e.target.files[0], 'cert', index)}
+                      />
+                    </label>
+                    {cert.pdfUrl && (
+                      <a href={cert.pdfUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-1">
+                        Ver PDF
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -357,7 +431,7 @@ export default function AdminGeneralPage() {
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                     <input
                       type="text"
-                      placeholder="Titulo del servicio"
+                      placeholder="Título del servicio"
                       value={item.title}
                       onChange={e => updatePortfolio(index, 'title', e.target.value)}
                       className="md:col-span-5 px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-emerald-500"
@@ -378,12 +452,30 @@ export default function AdminGeneralPage() {
                     </button>
                   </div>
                   <textarea
-                    placeholder="Descripcion del servicio"
+                    placeholder="Descripción del servicio"
                     value={item.description}
                     onChange={e => updatePortfolio(index, 'description', e.target.value)}
                     rows={3}
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white outline-none focus:border-emerald-500"
                   />
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs cursor-pointer hover:bg-emerald-100 transition-colors">
+                      <FaUpload size={11} />
+                      {uploadingPdf === `port-${index}` ? 'Subiendo...' : item.pdfUrl ? 'Cambiar PDF' : 'Subir PDF'}
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        disabled={uploadingPdf === `port-${index}`}
+                        onChange={e => e.target.files?.[0] && handlePdfUpload(e.target.files[0], 'port', index)}
+                      />
+                    </label>
+                    {item.pdfUrl && (
+                      <a href={item.pdfUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 font-bold hover:underline">
+                        Ver PDF
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -479,13 +571,19 @@ export default function AdminGeneralPage() {
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1 group-focus-within/input:text-emerald-600 transition-colors">
                     Ciudad / Municipio
                   </label>
-                  <input 
-                      type="text"
-                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 outline-none focus:bg-white focus:border-emerald-500 transition-all placeholder:text-slate-300 shadow-sm"
-                      placeholder="Ej. Bogotá D.C."
+                  <div className="relative">
+                    <select
+                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 outline-none focus:bg-white focus:border-emerald-500 transition-all appearance-none shadow-sm"
                       value={settings.ciudad}
                       onChange={e => setSettings({...settings, ciudad: e.target.value})}
-                   />
+                    >
+                      <option value="">Seleccionar ciudad...</option>
+                      {CIUDADES_COLOMBIA.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <FaChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
              </div>
           </div>

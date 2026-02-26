@@ -60,11 +60,11 @@ export default function PlaneacionPage() {
     try {
       const [res, settingsRes] = await Promise.all([
         axios.get('/api/gestion/planeacion', { timeout: 8000 }),
-        axios.get('/api/settings', { timeout: 8000 })
+        axios.get('/api/admin/general', { timeout: 8000 })
       ]);
-      
-      if (settingsRes.data?.companyName) {
-        setCompanyName(settingsRes.data.companyName);
+
+      if (settingsRes.data?.nombreEmpresa) {
+        setCompanyName(settingsRes.data.nombreEmpresa);
       }
       if (settingsRes.data?.sectorActividad) {
         setCompanyActivity(settingsRes.data.sectorActividad);
@@ -136,9 +136,27 @@ export default function PlaneacionPage() {
     setWizardType(type);
     setWizardOpen(true);
     setWizardStep(0);
-    setWizardInputs({ 
+
+    // For individual SWOT quadrants, pass existing items as context
+    const existingSwot: Record<string, string> = {
+      'swot-strengths': data.strengths,
+      'swot-weaknesses': data.weaknesses,
+      'swot-opportunities': data.opportunities,
+      'swot-threats': data.threats,
+    };
+
+    setWizardInputs({
       name: companyName,
-      activity: companyActivity 
+      activity: companyActivity,
+      ...(existingSwot[type] ? { existingItems: existingSwot[type] } : {}),
+      pestelContext: {
+        political: data.political,
+        economic: data.economic,
+        social: data.social,
+        technological: data.technological,
+        ecological: data.ecological,
+        legal: data.legal
+      }
     });
     setGeneratedOptions([]);
     setGeneratedData(null);
@@ -238,15 +256,14 @@ export default function PlaneacionPage() {
 
   const applyAnalysisSelection = () => {
     if (wizardType) {
-      setEditingBlocks(prev => ({ ...prev, [wizardType]: true }));
+      setEditingBlocks(prev => ({ ...prev, [wizardType.startsWith('swot') ? 'swot' : wizardType]: true }));
     }
     const formatList = (list: any[]) => {
       return list.map(s => {
         if (typeof s === 'string') return `• ${s}`;
-        // Handle structured weaknesses
-        if (s.item && s.plan) return `• ${s.item} [Plan: ${s.plan}]`;
+        if (s.item) return `• ${s.item}`;
         return '';
-      }).join('\n');
+      }).filter(Boolean).join('\n');
     };
 
     if (wizardType === 'swot') {
@@ -257,8 +274,18 @@ export default function PlaneacionPage() {
         opportunities: formatList(selectedAnalysis.opportunities || []),
         threats: formatList(selectedAnalysis.threats || [])
       }));
+    } else if (wizardType?.startsWith('swot-')) {
+      // Individual quadrant: append to existing content
+      const quadrant = wizardType.split('-')[1]; // strengths, weaknesses, opportunities, threats
+      const newItems = formatList(selectedAnalysis[quadrant] || []);
+      setData((prev: any) => {
+        const existing = prev[quadrant] ? prev[quadrant].trim() : '';
+        return {
+          ...prev,
+          [quadrant]: existing ? `${existing}\n${newItems}` : newItems
+        };
+      });
     } else if (wizardType === 'pestel' || wizardType?.startsWith('pestel-')) {
-      
       if (wizardType === 'pestel') {
         setData((prev: any) => ({
           ...prev,

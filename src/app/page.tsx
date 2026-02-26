@@ -22,14 +22,16 @@ export default function Home() {
   const fetchData = async () => {
     try {
       const [adminRes, gestionRes] = await Promise.all([
-        axios.get('/api/admin/general'),
-        axios.get('/api/gestion/planeacion')
+        axios.get('/api/admin/general', { timeout: 10000 }),
+        axios.get('/api/gestion/planeacion', { timeout: 10000 })
       ]);
 
-      setInfo(adminRes.data);
-      setStrategic(gestionRes.data);
+      setInfo(adminRes.data || {});
+      setStrategic(gestionRes.data || {});
     } catch (error) {
       console.error("Error fetching corporate profile data:", error);
+      setInfo({});
+      setStrategic({});
     } finally {
       setLoading(false);
     }

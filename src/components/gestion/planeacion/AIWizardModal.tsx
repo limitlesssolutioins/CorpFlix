@@ -202,6 +202,36 @@ export const AIWizardModal: React.FC<Props> = ({
         );
     }
 
+    // Individual SWOT quadrant
+    if (wizardType.startsWith('swot-')) {
+      const quadrant = wizardType.split('-')[1];
+      const quadrantInfo: Record<string, { label: string; bgClass: string; textClass: string; desc: string }> = {
+        strengths: { label: 'Fortalezas', bgClass: 'bg-emerald-50 border-emerald-100', textClass: 'text-emerald-800', desc: 'Capacidades y ventajas internas que diferencian a la empresa.' },
+        weaknesses: { label: 'Debilidades', bgClass: 'bg-amber-50 border-amber-100', textClass: 'text-amber-800', desc: 'Áreas internas que limitan el desempeño o representan una desventaja competitiva.' },
+        opportunities: { label: 'Oportunidades', bgClass: 'bg-blue-50 border-blue-100', textClass: 'text-blue-800', desc: 'Factores externos positivos del entorno que la empresa puede aprovechar.' },
+        threats: { label: 'Amenazas', bgClass: 'bg-red-50 border-red-100', textClass: 'text-red-800', desc: 'Factores externos que pueden representar un riesgo o impacto negativo.' },
+      };
+      const info = quadrantInfo[quadrant] || { label: quadrant, bgClass: 'bg-slate-50 border-slate-100', textClass: 'text-slate-800', desc: '' };
+      return (
+        <>
+          <div className={`p-4 rounded-2xl border ${info.bgClass} mb-4`}>
+            <p className={`text-xs font-bold ${info.textClass} uppercase tracking-wide mb-1`}>{info.label} — Generar 3 elementos nuevos</p>
+            <p className={`text-xs ${info.textClass} opacity-80`}>{info.desc}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">Contexto adicional (opcional)</label>
+            <textarea
+              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+              rows={3}
+              placeholder="Describe aspectos relevantes que la IA debe considerar..."
+              onChange={(e) => setWizardInputs(prev => ({ ...prev, userAnalysis: e.target.value }))}
+            />
+            <p className="text-[10px] text-slate-400 mt-1">La IA generará 3 elementos nuevos y los agregará a los existentes.</p>
+          </div>
+        </>
+      );
+    }
+
     // Default for SWOT / PESTEL
     if (wizardType === 'swot') {
       const internalFactors = [
@@ -432,7 +462,12 @@ export const AIWizardModal: React.FC<Props> = ({
               <FaBrain className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold uppercase tracking-wider">Generador de Estrategia</h3>
+              <h3 className="text-xl font-bold uppercase tracking-wider">
+                {wizardType?.startsWith('swot-')
+                  ? `Generar ${({'swot-strengths':'Fortalezas','swot-weaknesses':'Debilidades','swot-opportunities':'Oportunidades','swot-threats':'Amenazas'} as Record<string,string>)[wizardType] || 'DOFA'}`
+                  : 'Generador de Estrategia'
+                }
+              </h3>
               <p className="text-indigo-100 text-sm">Gemini IA te ayudará a redactarla.</p>
             </div>
           </div>

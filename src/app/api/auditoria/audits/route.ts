@@ -10,9 +10,12 @@ export async function GET(request: Request) {
         const status = searchParams.get('status');
         const year = searchParams.get('year');
 
+        const standardId = searchParams.get('standard_id');
+
         const filters: any = {};
         if (status) filters.status = status;
         if (year) filters.year = parseInt(year);
+        if (standardId) filters.standard_id = parseInt(standardId);
 
         const audits = isoAuditService.getAllAudits(filters);
         return NextResponse.json(audits);

@@ -2,268 +2,191 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Shield, AlertTriangle, CheckCircle2, Clock, TrendingUp, FileText, Plus, Sparkles } from 'lucide-react';
+import { ArrowRight, Shield, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+
+interface CategoryKPI {
+    name: string;
+    code: string;
+    color: string;
+    icon: string;
+    count: number;
+    critical: number;
+}
 
 interface DashboardKPIs {
     totalRisks: number;
     totalAssessments: number;
     criticalRisks: number;
     pendingActions: number;
-    risksByCategory: Array<{
-        name: string;
-        code: string;
-        color: string;
-        count: number;
-    }>;
-    risksByLevel: Array<{
-        level: string;
-        count: number;
-    }>;
-    risksByAcceptability: Array<{
-        acceptability: string;
-        count: number;
-    }>;
+    risksByCategory: CategoryKPI[];
+    risksByAcceptability: Array<{ acceptability: string; count: number }>;
 }
+
+const CATEGORY_META: Record<string, { slug: string; emoji: string; tagline: string; description: string }> = {
+    CALIDAD:         { slug: 'calidad',         emoji: '🏆', tagline: 'Calidad del producto y servicio', description: 'Riesgos que afectan la satisfacción del cliente, procesos, proveedores y cumplimiento.' },
+    SST:             { slug: 'sst',             emoji: '🦺', tagline: 'Seguridad y Salud en el Trabajo', description: 'Peligros y condiciones que pueden causar accidentes, enfermedades o incidentes laborales.' },
+    AMBIENTAL:       { slug: 'ambiental',       emoji: '🌿', tagline: 'Impacto ambiental', description: 'Efectos de la operación sobre el medio ambiente: residuos, agua, aire y energía.' },
+    CIBERSEGURIDAD:  { slug: 'ciberseguridad',  emoji: '🔒', tagline: 'Seguridad de la información', description: 'Amenazas digitales: accesos no autorizados, fraudes, pérdida de datos y ataques.' },
+    FINANCIERO:      { slug: 'financiero',      emoji: '💰', tagline: 'Estabilidad financiera', description: 'Riesgos de liquidez, crédito, fraude, tributario y dependencia de clientes o proveedores.' },
+    SEGURIDAD_VIAL:  { slug: 'seguridad-vial',  emoji: '🚗', tagline: 'Seguridad en carretera', description: 'Riesgos en el uso de vehículos: accidentes, fatiga, mantenimiento y conductas viales.' },
+};
 
 export default function RiesgosPage() {
     const [kpis, setKPIs] = useState<DashboardKPIs | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchDashboardData();
+        fetch('/api/riesgos/dashboard')
+            .then(r => r.json())
+            .then(setKPIs)
+            .catch(() => {})
+            .finally(() => setLoading(false));
     }, []);
 
-    const fetchDashboardData = async () => {
-        try {
-            const response = await fetch('/api/riesgos/dashboard');
-            const data = await response.json();
-            setKPIs(data);
-        } catch (error) {
-            console.error('Error fetching dashboard data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const totalRisks = kpis?.totalRisks || 0;
+    const criticalRisks = kpis?.criticalRisks || 0;
+    const pendingActions = kpis?.pendingActions || 0;
+    const categories = kpis?.risksByCategory || [];
 
-    const getCriticalPercentage = () => {
-        if (!kpis || kpis.totalAssessments === 0) return 0;
-        return Math.round((kpis.criticalRisks / kpis.totalAssessments) * 100);
-    };
-
-    const modules = [
-        {
-            title: 'Catálogo de Riesgos',
-            description: 'Gestión completa del catálogo de riesgos identificados por categoría.',
-            href: '/riesgos/catalogo',
-            icon: FileText,
-            iconBg: 'from-blue-50 to-blue-100',
-            iconColor: 'text-blue-600',
-            borderColor: 'border-blue-100',
-            hoverBorder: 'group-hover:border-blue-200',
-            accentGradient: 'from-blue-400 to-blue-600'
-        },
-        {
-            title: 'Evaluación de Riesgos',
-            description: 'Evaluar riesgos, calcular riesgo inherente y residual, definir controles.',
-            href: '/riesgos/evaluacion',
-            icon: Shield,
-            iconBg: 'from-purple-50 to-purple-100',
-            iconColor: 'text-purple-600',
-            borderColor: 'border-purple-100',
-            hoverBorder: 'group-hover:border-purple-200',
-            accentGradient: 'from-purple-400 to-purple-600'
-        },
-        {
-            title: 'Matrices de Riesgo',
-            description: 'Visualización de matrices 5×5 por categoría con riesgos mapeados.',
-            href: '/riesgos/matrices',
-            icon: TrendingUp,
-            iconBg: 'from-emerald-50 to-emerald-100',
-            iconColor: 'text-emerald-600',
-            borderColor: 'border-emerald-100',
-            hoverBorder: 'group-hover:border-emerald-200',
-            accentGradient: 'from-emerald-400 to-emerald-600'
-        },
-        {
-            title: 'Planes de Acción',
-            description: 'Gestión de planes de acción para mitigación de riesgos críticos.',
-            href: '/riesgos/planes-accion',
-            icon: Clock,
-            iconBg: 'from-orange-50 to-orange-100',
-            iconColor: 'text-orange-600',
-            borderColor: 'border-orange-100',
-            hoverBorder: 'group-hover:border-orange-200',
-            accentGradient: 'from-orange-400 to-orange-600'
-        },
-        {
-            title: 'Asistente IA',
-            description: 'Genera matriz de riesgos, controles y planes de accion con preguntas simples.',
-            href: '/riesgos/asistente-ia',
-            icon: Sparkles,
-            iconBg: 'from-indigo-50 to-indigo-100',
-            iconColor: 'text-indigo-600',
-            borderColor: 'border-indigo-100',
-            hoverBorder: 'group-hover:border-indigo-200',
-            accentGradient: 'from-indigo-400 to-indigo-600'
-        }
+    const globalLinks = [
+        { href: '/riesgos/planes-accion', label: 'Planes de Acción', badge: pendingActions > 0 ? pendingActions : null, color: 'text-orange-600 bg-orange-50 border-orange-200' },
+        { href: '/riesgos/matrices', label: 'Matrices de Riesgo', badge: null, color: 'text-purple-600 bg-purple-50 border-purple-200' },
+        { href: '/riesgos/asistente-ia', label: 'Asistente IA', badge: null, color: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
     ];
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-slate-600">Cargando módulo de riesgos...</p>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return (
+        <div className="flex items-center justify-center min-h-[400px]">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+    );
 
     return (
         <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-black text-slate-900 mb-2">Gestión de Riesgos</h1>
-                <p className="text-slate-600">
-                    Sistema integral de identificación, evaluación y control de riesgos organizacionales
-                </p>
+            <div className="mb-6">
+                <h1 className="text-3xl font-black text-slate-900 mb-1">Gestión de Riesgos</h1>
+                <p className="text-slate-500">Selecciona una categoría para identificar y gestionar tus riesgos</p>
             </div>
 
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                            <FileText className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <span className="text-3xl font-black text-slate-900">{kpis?.totalRisks || 0}</span>
+            {/* Top stats + quick links */}
+            <div className="flex flex-wrap items-center gap-4 mb-8">
+                <div className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <Shield className="w-4 h-4 text-blue-600" />
+                    <span className="font-bold text-slate-900">{totalRisks}</span>
+                    <span className="text-slate-500 text-sm">riesgos identificados</span>
+                </div>
+                {criticalRisks > 0 && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
+                        <AlertTriangle className="w-4 h-4 text-red-600" />
+                        <span className="font-bold text-red-700">{criticalRisks}</span>
+                        <span className="text-red-600 text-sm">críticos</span>
                     </div>
-                    <p className="text-sm font-semibold text-slate-600">Riesgos Identificados</p>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                            <Shield className="w-6 h-6 text-purple-600" />
-                        </div>
-                        <span className="text-3xl font-black text-slate-900">{kpis?.totalAssessments || 0}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-slate-600">Evaluaciones Realizadas</p>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                            <AlertTriangle className="w-6 h-6 text-red-600" />
-                        </div>
-                        <div className="text-right">
-                            <span className="text-3xl font-black text-slate-900">{kpis?.criticalRisks || 0}</span>
-                            <span className="text-sm text-red-600 font-bold ml-2">({getCriticalPercentage()}%)</span>
-                        </div>
-                    </div>
-                    <p className="text-sm font-semibold text-slate-600">Riesgos Críticos</p>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                            <Clock className="w-6 h-6 text-orange-600" />
-                        </div>
-                        <span className="text-3xl font-black text-slate-900">{kpis?.pendingActions || 0}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-slate-600">Acciones Pendientes</p>
-                </div>
-            </div>
-
-            {/* Categorías de Riesgo */}
-            {kpis && kpis.risksByCategory.length > 0 && (
-                <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm mb-8">
-                    <h2 className="text-xl font-bold text-slate-900 mb-6">Riesgos por Categoría</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {kpis.risksByCategory.map((cat) => (
-                            <div
-                                key={cat.code}
-                                className="p-4 rounded-xl border-2 border-slate-100 hover:border-slate-200 transition-colors"
-                            >
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div
-                                        className="w-3 h-3 rounded-full"
-                                        style={{ backgroundColor: cat.color }}
-                                    />
-                                    <span className="font-bold text-slate-700">{cat.name}</span>
-                                </div>
-                                <p className="text-2xl font-black text-slate-900">{cat.count}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Módulos */}
-            <div className="mb-8">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-black text-slate-900">Módulos del Sistema</h2>
-                    <Link
-                        href="/riesgos/catalogo"
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-semibold"
-                    >
-                        <Plus size={20} />
-                        Agregar Riesgo
-                    </Link>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {modules.map((module) => (
-                        <Link
-                            key={module.href}
-                            href={module.href}
-                            className={`group bg-white rounded-2xl p-6 border-2 ${module.borderColor} ${module.hoverBorder} shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden`}
-                        >
-                            {/* Gradient accent bar on left */}
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${module.accentGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-
-                            {/* Icon container with gradient background */}
-                            <div className={`w-14 h-14 bg-gradient-to-br ${module.iconBg} rounded-2xl flex items-center justify-center mb-4 shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-110`}>
-                                <module.icon className={`w-7 h-7 ${module.iconColor}`} />
-                            </div>
-
-                            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-slate-700 transition-colors">{module.title}</h3>
-                            <p className="text-sm text-slate-600 leading-relaxed">
-                                {module.description}
-                            </p>
+                )}
+                <div className="ml-auto flex gap-2 flex-wrap">
+                    {globalLinks.map(link => (
+                        <Link key={link.href} href={link.href}
+                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all hover:shadow-sm ${link.color}`}>
+                            {link.label}
+                            {link.badge !== null && link.badge !== undefined && link.badge > 0 && (
+                                <span className="bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-black">
+                                    {link.badge}
+                                </span>
+                            )}
                         </Link>
                     ))}
                 </div>
             </div>
 
-            {/* Estado de Riesgos */}
-            {kpis && kpis.risksByAcceptability.length > 0 && (
-                <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
-                    <h2 className="text-xl font-bold text-slate-900 mb-6">Distribución por Nivel de Aceptabilidad</h2>
-                    <div className="grid grid-cols-3 gap-4">
-                        {kpis.risksByAcceptability.map((item) => {
-                            const getColor = (acceptability: string) => {
-                                if (acceptability === 'ACEPTABLE') return 'bg-green-100 text-green-700 border-green-200';
-                                if (acceptability === 'ALERTA') return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-                                return 'bg-red-100 text-red-700 border-red-200';
-                            };
+            {/* Category Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {Object.entries(CATEGORY_META).map(([code, meta]) => {
+                    const catData = categories.find(c => c.code === code);
+                    const count = catData?.count || 0;
+                    const critical = catData?.critical || 0;
+                    const color = catData?.color || '#6b7280';
 
-                            const getIcon = (acceptability: string) => {
-                                if (acceptability === 'ACEPTABLE') return <CheckCircle2 className="w-5 h-5" />;
-                                if (acceptability === 'ALERTA') return <AlertTriangle className="w-5 h-5" />;
-                                return <AlertTriangle className="w-5 h-5" />;
-                            };
+                    return (
+                        <Link
+                            key={code}
+                            href={`/riesgos/${meta.slug}`}
+                            className="group bg-white rounded-2xl p-6 border-2 border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+                        >
+                            {/* Left accent bar */}
+                            <div
+                                className="absolute left-0 top-0 bottom-0 w-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l-2xl"
+                                style={{ backgroundColor: color }}
+                            />
 
-                            return (
-                                <div
-                                    key={item.acceptability}
-                                    className={`p-4 rounded-xl border-2 ${getColor(item.acceptability)}`}
-                                >
-                                    <div className="flex items-center gap-2 mb-2">
-                                        {getIcon(item.acceptability)}
-                                        <span className="font-bold">{item.acceptability}</span>
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                                    style={{ backgroundColor: color + '18' }}>
+                                    {meta.emoji}
+                                </div>
+                                <div className="flex flex-col items-end gap-1">
+                                    {count > 0 && (
+                                        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                            {count} riesgo{count !== 1 ? 's' : ''}
+                                        </span>
+                                    )}
+                                    {critical > 0 && (
+                                        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+                                            {critical} crítico{critical !== 1 ? 's' : ''}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="mb-0.5">
+                                <span className="text-xs font-black uppercase tracking-widest" style={{ color }}>
+                                    {meta.tagline}
+                                </span>
+                            </div>
+                            <h3 className="text-base font-bold text-slate-900 mb-2 leading-tight">
+                                {catData?.name || code}
+                            </h3>
+                            <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                                {meta.description}
+                            </p>
+
+                            <div className="flex items-center justify-between">
+                                {count === 0 ? (
+                                    <span className="text-xs text-slate-400">Sin riesgos registrados aún</span>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        {(kpis?.risksByAcceptability || []).length > 0 && (
+                                            <span className="text-xs text-slate-400">{count} evaluados</span>
+                                        )}
                                     </div>
-                                    <p className="text-3xl font-black">{item.count}</p>
+                                )}
+                                <div className="flex items-center gap-1 text-sm font-bold" style={{ color }}>
+                                    {count === 0 ? 'Identificar riesgos' : 'Ver y gestionar'}
+                                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                </div>
+                            </div>
+                        </Link>
+                    );
+                })}
+            </div>
+
+            {/* Acceptability summary */}
+            {kpis && kpis.risksByAcceptability.length > 0 && (
+                <div className="mt-8 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                    <h2 className="text-base font-bold text-slate-900 mb-4">Estado general de riesgos</h2>
+                    <div className="grid grid-cols-3 gap-4">
+                        {[
+                            { key: 'ACEPTABLE', label: 'Aceptable', icon: CheckCircle2, color: 'bg-green-50 border-green-200 text-green-700' },
+                            { key: 'ALERTA', label: 'En alerta', icon: AlertTriangle, color: 'bg-yellow-50 border-yellow-200 text-yellow-700' },
+                            { key: 'NO ACEPTABLE', label: 'Crítico', icon: AlertTriangle, color: 'bg-red-50 border-red-200 text-red-700' },
+                        ].map(item => {
+                            const found = kpis.risksByAcceptability.find(r => r.acceptability === item.key);
+                            const Icon = item.icon;
+                            return (
+                                <div key={item.key} className={`p-4 rounded-xl border-2 ${item.color}`}>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Icon className="w-4 h-4" />
+                                        <span className="font-bold text-sm">{item.label}</span>
+                                    </div>
+                                    <p className="text-3xl font-black">{found?.count || 0}</p>
                                 </div>
                             );
                         })}
@@ -273,4 +196,3 @@ export default function RiesgosPage() {
         </div>
     );
 }
-

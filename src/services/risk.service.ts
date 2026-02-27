@@ -148,6 +148,32 @@ class RiskService {
         return this.db.prepare(query).all(...params) as Risk[];
     }
 
+    getAllRisksWithAssessments(filters?: { category_id?: number; status?: string }): any[] {
+        let query = `
+            SELECT r.*,
+                rc.name as category_name, rc.color as category_color,
+                ra.id as assessment_id, ra.probability, ra.consequence,
+                ra.inherent_risk, ra.inherent_risk_level, ra.residual_risk_level,
+                ra.acceptability, ra.priority
+            FROM risks r
+            LEFT JOIN risk_categories rc ON r.category_id = rc.id
+            LEFT JOIN risk_assessments ra ON ra.risk_id = r.id
+                AND ra.id = (SELECT id FROM risk_assessments WHERE risk_id = r.id ORDER BY assessment_date DESC LIMIT 1)
+            WHERE 1=1
+        `;
+        const params: any[] = [];
+        if (filters?.category_id) {
+            query += ' AND r.category_id = ?';
+            params.push(filters.category_id);
+        }
+        if (filters?.status) {
+            query += ' AND r.status = ?';
+            params.push(filters.status);
+        }
+        query += ' ORDER BY r.created_at DESC';
+        return this.db.prepare(query).all(...params);
+    }
+
     getRiskById(id: number): Risk | undefined {
         return this.db
             .prepare('SELECT * FROM risks WHERE id = ?')
@@ -498,9 +524,12 @@ class RiskService {
 
         const risksByCategory = this.db
             .prepare(`
-        SELECT rc.name, rc.code, rc.color, COUNT(r.id) as count
+        SELECT rc.name, rc.code, rc.color,
+               COUNT(DISTINCT r.id) as count,
+               COUNT(DISTINCT CASE WHEN ra.acceptability = 'NO ACEPTABLE' THEN r.id END) as critical
         FROM risk_categories rc
         LEFT JOIN risks r ON rc.id = r.category_id AND r.status = 'ACTIVE'
+        LEFT JOIN risk_assessments ra ON ra.risk_id = r.id AND ra.status = 'ACTIVE'
         GROUP BY rc.id
       `)
             .all();

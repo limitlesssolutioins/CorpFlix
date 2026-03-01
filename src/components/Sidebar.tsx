@@ -94,6 +94,7 @@ const Sidebar = () => {
             <div className="mt-1 pl-2 flex flex-col gap-1">
               {subLink('/administracion/general', 'General', FaCog, true)}
               {subLink('/administracion/suscripcion', 'Suscripción', FaCreditCard, true)}
+              {subLink('/tickets', 'Soporte', FaTicketAlt, true)}
             </div>
           )}
         </div>
@@ -112,7 +113,6 @@ const Sidebar = () => {
               {subLink('/riesgos', 'Riesgos', FaExclamationTriangle)}
               {subLink('/auditoria', 'Auditoría', FaClipboardList)}
               {subLink('/mejora-continua', 'Mejora Continua', FaChartLine)}
-              {subLink('/tickets', 'Tickets', FaTicketAlt)}
               {subLink('/biblioteca', 'Biblioteca', FaFolderOpen)}
             </div>
           )}

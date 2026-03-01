@@ -17,9 +17,6 @@ import {
   FaImage,
   FaUpload,
   FaChevronDown,
-  FaShieldAlt,
-  FaFilePdf,
-  FaExternalLinkAlt
 } from 'react-icons/fa';
 
 const CIUDADES_COLOMBIA = [
@@ -68,56 +65,9 @@ export default function AdminGeneralPage() {
   const [logoTimestamp, setLogoTimestamp] = useState(Date.now());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Data policy state
-  const [policy, setPolicy] = useState({ pdfUrl: '', textContent: '', version: '1', updatedAt: '' });
-  const [savingPolicy, setSavingPolicy] = useState(false);
-  const [uploadingPolicyPdf, setUploadingPolicyPdf] = useState(false);
-
   useEffect(() => {
     fetchSettings();
-    fetchPolicy();
   }, []);
-
-  const fetchPolicy = async () => {
-    try {
-      const res = await axios.get('/api/platform/data-policy');
-      setPolicy(res.data);
-    } catch { /* ignore */ }
-  };
-
-  const handleSavePolicy = async () => {
-    setSavingPolicy(true);
-    try {
-      const res = await axios.post('/api/platform/data-policy', {
-        pdfUrl: policy.pdfUrl,
-        textContent: policy.textContent,
-      });
-      setPolicy(res.data);
-      toast.success('Política de datos guardada correctamente');
-    } catch {
-      toast.error('Error al guardar la política');
-    } finally {
-      setSavingPolicy(false);
-    }
-  };
-
-  const handlePolicyPdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0]) return;
-    setUploadingPolicyPdf(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', e.target.files[0]);
-      const res = await axios.post('/api/admin/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setPolicy(prev => ({ ...prev, pdfUrl: res.data.url }));
-      toast.success('PDF subido correctamente');
-    } catch {
-      toast.error('Error al subir el PDF');
-    } finally {
-      setUploadingPolicyPdf(false);
-    }
-  };
 
   const fetchSettings = async () => {
     try {
@@ -449,71 +399,6 @@ export default function AdminGeneralPage() {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Tarjeta: Tratamiento de Datos Personales */}
-          <div className="bg-white p-8 rounded-[2rem] shadow-lg shadow-slate-200/50 border border-slate-100 relative group overflow-hidden transition-all hover:shadow-xl">
-            <div className="absolute top-0 left-0 w-1 h-full bg-violet-500 transform origin-top scale-y-0 group-hover:scale-y-100 transition-transform duration-300" />
-
-            <h2 className="text-xl font-bold text-slate-800 mb-2 flex items-center gap-3">
-              <div className="p-3 bg-violet-50 text-violet-600 rounded-xl">
-                <FaShieldAlt size={20} />
-              </div>
-              Tratamiento de Datos Personales
-            </h2>
-            <p className="text-xs text-slate-400 font-medium mb-6 ml-14">
-              Esta política se mostrará a los usuarios antes de iniciar sesión. Versión actual: <span className="font-black text-violet-600">v{policy.version}</span>
-              {policy.updatedAt && <> · Actualizada: {new Date(policy.updatedAt).toLocaleDateString('es-CO')}</>}
-            </p>
-
-            <div className="space-y-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                  Contenido de la Política
-                </label>
-                <textarea
-                  className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-medium text-slate-700 outline-none focus:bg-white focus:border-violet-500 transition-all placeholder:text-slate-300 shadow-sm text-sm"
-                  placeholder="Escribe aquí la política de tratamiento de datos personales y seguridad de la información que los usuarios deberán aceptar antes de ingresar..."
-                  rows={8}
-                  value={policy.textContent}
-                  onChange={e => setPolicy(prev => ({ ...prev, textContent: e.target.value }))}
-                />
-              </div>
-
-              <div className="flex items-center gap-4 flex-wrap">
-                <label className="flex items-center gap-2 px-4 py-2.5 bg-violet-50 text-violet-700 rounded-xl font-bold text-sm cursor-pointer hover:bg-violet-100 transition-colors">
-                  <FaFilePdf />
-                  {uploadingPolicyPdf ? 'Subiendo...' : policy.pdfUrl ? 'Cambiar PDF' : 'Subir PDF de la Política'}
-                  <input
-                    type="file"
-                    accept="application/pdf"
-                    className="hidden"
-                    disabled={uploadingPolicyPdf}
-                    onChange={handlePolicyPdfUpload}
-                  />
-                </label>
-                {policy.pdfUrl && (
-                  <a
-                    href={policy.pdfUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-blue-600 font-bold hover:underline"
-                  >
-                    <FaExternalLinkAlt size={12} /> Ver PDF actual
-                  </a>
-                )}
-              </div>
-
-              <button
-                type="button"
-                onClick={handleSavePolicy}
-                disabled={savingPolicy}
-                className="flex items-center gap-2 px-6 py-3 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 disabled:opacity-50 transition-all shadow-md"
-              >
-                {savingPolicy ? <FaSpinner className="animate-spin" /> : <FaSave />}
-                {savingPolicy ? 'Guardando...' : 'Guardar Política'}
-              </button>
             </div>
           </div>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Shield, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowRight, Shield, AlertTriangle, CheckCircle2, Award, HardHat, Leaf, Lock, TrendingUp, Car } from 'lucide-react';
 
 interface CategoryKPI {
     name: string;
@@ -22,13 +22,13 @@ interface DashboardKPIs {
     risksByAcceptability: Array<{ acceptability: string; count: number }>;
 }
 
-const CATEGORY_META: Record<string, { slug: string; emoji: string; tagline: string; description: string }> = {
-    CALIDAD:         { slug: 'calidad',         emoji: '🏆', tagline: 'Calidad del producto y servicio', description: 'Riesgos que afectan la satisfacción del cliente, procesos, proveedores y cumplimiento.' },
-    SST:             { slug: 'sst',             emoji: '🦺', tagline: 'Seguridad y Salud en el Trabajo', description: 'Peligros y condiciones que pueden causar accidentes, enfermedades o incidentes laborales.' },
-    AMBIENTAL:       { slug: 'ambiental',       emoji: '🌿', tagline: 'Impacto ambiental', description: 'Efectos de la operación sobre el medio ambiente: residuos, agua, aire y energía.' },
-    CIBERSEGURIDAD:  { slug: 'ciberseguridad',  emoji: '🔒', tagline: 'Seguridad de la información', description: 'Amenazas digitales: accesos no autorizados, fraudes, pérdida de datos y ataques.' },
-    FINANCIERO:      { slug: 'financiero',      emoji: '💰', tagline: 'Estabilidad financiera', description: 'Riesgos de liquidez, crédito, fraude, tributario y dependencia de clientes o proveedores.' },
-    SEGURIDAD_VIAL:  { slug: 'seguridad-vial',  emoji: '🚗', tagline: 'Seguridad en carretera', description: 'Riesgos en el uso de vehículos: accidentes, fatiga, mantenimiento y conductas viales.' },
+const CATEGORY_META: Record<string, { slug: string; icon: any; tagline: string; description: string }> = {
+    CALIDAD:         { slug: 'calidad',         icon: Award,      tagline: 'Calidad del producto y servicio', description: 'Riesgos que afectan la satisfacción del cliente, procesos, proveedores y cumplimiento.' },
+    SST:             { slug: 'sst',             icon: HardHat,    tagline: 'Seguridad y Salud en el Trabajo', description: 'Peligros y condiciones que pueden causar accidentes, enfermedades o incidentes laborales.' },
+    AMBIENTAL:       { slug: 'ambiental',       icon: Leaf,       tagline: 'Impacto ambiental', description: 'Efectos de la operación sobre el medio ambiente: residuos, agua, aire y energía.' },
+    CIBERSEGURIDAD:  { slug: 'ciberseguridad',  icon: Lock,       tagline: 'Seguridad de la información', description: 'Amenazas digitales: accesos no autorizados, fraudes, pérdida de datos y ataques.' },
+    FINANCIERO:      { slug: 'financiero',      icon: TrendingUp, tagline: 'Estabilidad financiera', description: 'Riesgos de liquidez, crédito, fraude, tributario y dependencia de clientes o proveedores.' },
+    SEGURIDAD_VIAL:  { slug: 'seguridad-vial',  icon: Car,        tagline: 'Seguridad en carretera', description: 'Riesgos en el uso de vehículos: accidentes, fatiga, mantenimiento y conductas viales.' },
 };
 
 export default function RiesgosPage() {
@@ -103,24 +103,20 @@ export default function RiesgosPage() {
                     const catData = categories.find(c => c.code === code);
                     const count = catData?.count || 0;
                     const critical = catData?.critical || 0;
-                    const color = catData?.color || '#6b7280';
 
+                    const Icon = meta.icon;
                     return (
                         <Link
                             key={code}
                             href={`/riesgos/${meta.slug}`}
-                            className="group bg-white rounded-2xl p-6 border-2 border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+                            className="group bg-white rounded-2xl p-6 border-2 border-slate-100 hover:border-slate-300 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
                         >
                             {/* Left accent bar */}
-                            <div
-                                className="absolute left-0 top-0 bottom-0 w-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l-2xl"
-                                style={{ backgroundColor: color }}
-                            />
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l-2xl" />
 
                             <div className="flex items-start justify-between mb-4">
-                                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-                                    style={{ backgroundColor: color + '18' }}>
-                                    {meta.emoji}
+                                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-slate-100 group-hover:bg-slate-200 transition-colors">
+                                    <Icon className="w-6 h-6 text-slate-600" />
                                 </div>
                                 <div className="flex flex-col items-end gap-1">
                                     {count > 0 && (
@@ -137,7 +133,7 @@ export default function RiesgosPage() {
                             </div>
 
                             <div className="mb-0.5">
-                                <span className="text-xs font-black uppercase tracking-widest" style={{ color }}>
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
                                     {meta.tagline}
                                 </span>
                             </div>
@@ -158,7 +154,7 @@ export default function RiesgosPage() {
                                         )}
                                     </div>
                                 )}
-                                <div className="flex items-center gap-1 text-sm font-bold" style={{ color }}>
+                                <div className="flex items-center gap-1 text-sm font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">
                                     {count === 0 ? 'Identificar riesgos' : 'Ver y gestionar'}
                                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                 </div>

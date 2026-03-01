@@ -93,18 +93,12 @@ export default function AuditoriaPage() {
                                     href={`/auditoria/${standard.code.toLowerCase()}`}
                                     className="group bg-white rounded-2xl p-6 border-2 border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
                                 >
-                                    {/* Color accent bar */}
-                                    <div
-                                        className="absolute left-0 top-0 bottom-0 w-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l-2xl"
-                                        style={{ backgroundColor: standard.color }}
-                                    />
+                                    {/* Accent bar */}
+                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l-2xl" />
 
                                     <div className="flex items-start justify-between mb-4">
-                                        <div
-                                            className="w-12 h-12 rounded-xl flex items-center justify-center"
-                                            style={{ backgroundColor: standard.color + '20' }}
-                                        >
-                                            <Icon className="w-6 h-6" style={{ color: standard.color }} />
+                                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-slate-100 group-hover:bg-slate-200 transition-colors">
+                                            <Icon className="w-6 h-6 text-slate-600" />
                                         </div>
                                         <div className="text-right">
                                             {standard.total_audits > 0 && (
@@ -116,10 +110,7 @@ export default function AuditoriaPage() {
                                     </div>
 
                                     <div className="mb-1">
-                                        <span
-                                            className="text-xs font-black uppercase tracking-widest"
-                                            style={{ color: standard.color }}
-                                        >
+                                        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
                                             {standard.name}
                                         </span>
                                     </div>
@@ -134,7 +125,7 @@ export default function AuditoriaPage() {
                                         <span className="text-xs text-slate-400 font-semibold">
                                             {standard.total_requirements} requisitos
                                         </span>
-                                        <div className="flex items-center gap-1 text-sm font-bold" style={{ color: standard.color }}>
+                                        <div className="flex items-center gap-1 text-sm font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">
                                             Auditar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                         </div>
                                     </div>

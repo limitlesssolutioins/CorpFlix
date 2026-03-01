@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/api/companies'];
+const PUBLIC_PATHS = ['/login', '/api/companies', '/api/platform/data-policy'];
 const PUBLIC_FILES = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'];
 
 export function middleware(request: NextRequest) {

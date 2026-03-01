@@ -69,6 +69,7 @@ export interface BulkFindingItem {
     finding_description?: string;
     evidence?: string;
     observations?: string;
+    is_op?: number;
 }
 
 export interface CorrectiveAction {
@@ -110,6 +111,7 @@ class ISOAuditService {
                 const schema = fs.readFileSync(SCHEMA_PATH, 'utf-8');
                 this.db.exec(schema);
                 console.log('✅ Audit database initialized with multi-standard support');
+                this.ensureColumns();
                 return;
             }
 
@@ -121,6 +123,8 @@ class ISOAuditService {
             if (!standardsTableExists) {
                 this.runMigration();
             }
+            // Always run additive column migrations (safe for both fresh and migrated DBs)
+            this.ensureColumns();
         } catch (error) {
             console.error('❌ Error initializing audit database:', error);
             throw error;
@@ -267,6 +271,14 @@ class ISOAuditService {
             this.db.exec('ROLLBACK');
             console.error('❌ Migration failed:', error);
             throw error;
+        }
+    }
+
+    private ensureColumns() {
+        const findingCols = this.db.prepare("PRAGMA table_info(audit_findings)").all() as any[];
+        if (!findingCols.some(c => c.name === 'is_op')) {
+            this.db.exec('ALTER TABLE audit_findings ADD COLUMN is_op INTEGER DEFAULT 0');
+            console.log('✅ Added is_op column to audit_findings');
         }
     }
 
@@ -437,7 +449,7 @@ class ISOAuditService {
         const profile = audit.company_profile;
         let reqQuery = `
             SELECT req.*, ch.chapter_number, ch.chapter_title, ch.standard_id,
-                af.id as finding_id, af.finding_type_id, af.finding_description, af.evidence, af.observations,
+                af.id as finding_id, af.finding_type_id, af.finding_description, af.evidence, af.observations, af.is_op,
                 ft.type_name as finding_type_name, ft.color as finding_color, ft.type_code, ft.requires_action
             FROM iso_requirements req
             INNER JOIN iso_chapters ch ON req.chapter_id = ch.id
@@ -458,13 +470,14 @@ class ISOAuditService {
 
     saveBulkFindings(auditId: number, findings: BulkFindingItem[]): { saved: number; actionsCreated: number } {
         const upsert = this.db.prepare(`
-            INSERT INTO audit_findings (audit_id, requirement_id, finding_type_id, finding_description, evidence, observations)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO audit_findings (audit_id, requirement_id, finding_type_id, finding_description, evidence, observations, is_op)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(audit_id, requirement_id) DO UPDATE SET
                 finding_type_id = excluded.finding_type_id,
                 finding_description = excluded.finding_description,
                 evidence = excluded.evidence,
-                observations = excluded.observations
+                observations = excluded.observations,
+                is_op = excluded.is_op
         `);
 
         const deleteFind = this.db.prepare('DELETE FROM audit_findings WHERE audit_id = ? AND requirement_id = ?');
@@ -492,7 +505,8 @@ class ISOAuditService {
                     f.finding_type_id,
                     f.finding_description || null,
                     f.evidence || null,
-                    f.observations || null
+                    f.observations || null,
+                    f.is_op ?? 0
                 );
                 saved++;
 

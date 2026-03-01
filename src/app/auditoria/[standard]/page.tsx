@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Calendar, ClipboardCheck, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, ClipboardCheck, AlertTriangle, CheckCircle2, Clock, FileText, Award, ClipboardList } from 'lucide-react';
 
 interface AuditStandard {
     id: number; code: string; name: string; full_name: string;
@@ -196,13 +196,21 @@ export default function StandardDashboardPage() {
                                         </div>
                                         <p className="text-sm text-slate-600">{formatDate(audit.audit_date)} · {audit.auditor_name || 'Sin auditor'}</p>
                                     </div>
-                                    <Link
-                                        href={`${standardPath}/checklist?audit_id=${audit.id}`}
-                                        className="text-xs px-3 py-1.5 rounded-lg font-semibold text-white hover:opacity-90"
-                                        style={{ backgroundColor: accentColor }}
-                                    >
-                                        Checklist
-                                    </Link>
+                                    <div className="flex gap-1.5">
+                                        <Link
+                                            href={`${standardPath}/checklist?audit_id=${audit.id}`}
+                                            className="text-xs px-2.5 py-1.5 rounded-lg font-semibold text-white hover:opacity-90 flex items-center gap-1"
+                                            style={{ backgroundColor: accentColor }}
+                                        >
+                                            <ClipboardList size={12} /> Checklist
+                                        </Link>
+                                        <Link
+                                            href={`${standardPath}/reporte?audit_id=${audit.id}`}
+                                            className="text-xs px-2.5 py-1.5 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 flex items-center gap-1"
+                                        >
+                                            <FileText size={12} /> Informe
+                                        </Link>
+                                    </div>
                                 </div>
                             ))}
                         </div>

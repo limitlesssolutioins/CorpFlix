@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS audit_findings (
     evidence TEXT,
     observations TEXT,
     auditor_notes TEXT,
+    is_op INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(audit_id, requirement_id),
     FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,

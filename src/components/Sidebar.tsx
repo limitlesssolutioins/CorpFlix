@@ -15,19 +15,25 @@ import {
   FaBullseye,
   FaChevronDown,
   FaProjectDiagram,
-  FaClock,
   FaMoneyBillWave,
-  FaIdCard,
   FaCreditCard,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaShieldAlt,
+  FaClock,
+  FaHome,
+  FaChartPie,
+  FaCalculator,
+  FaWrench,
+  FaTicketAlt
 } from 'react-icons/fa';
 
 const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [isAdministracionOpen, setAdministracionOpen] = useState(true);
-  const [isRecursosHumanosOpen, setRecursosHumanosOpen] = useState(true); // New state
   const [isGestionOpen, setGestionOpen] = useState(true);
+  const [isGestionHumanaOpen, setGestionHumanaOpen] = useState(true);
+  const [isFinanzasOpen, setFinanzasOpen] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const isActive = (path: string) => {
@@ -46,6 +52,19 @@ const Sidebar = () => {
     }
   };
 
+  const subLink = (href: string, label: string, Icon: any, exact = false) => {
+    const active = exact ? pathname === href : isActive(href);
+    return (
+      <Link
+        href={href}
+        className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${active ? 'bg-slate-800 text-white' : ''}`}
+      >
+        <Icon className="mr-3 shrink-0" />
+        {label}
+      </Link>
+    );
+  };
+
   return (
     <aside className="w-64 min-h-screen bg-slate-900 text-white flex flex-col fixed top-0 left-0 h-screen overflow-y-auto z-50">
       <div className="p-5 border-b border-slate-700">
@@ -54,28 +73,14 @@ const Sidebar = () => {
           <img src="/TEXTO.png" alt="Lidus" className="h-6 w-auto" />
         </Link>
       </div>
+
       <nav className="flex-grow p-4 flex flex-col gap-2">
+
         {/* Perfil Corporativo */}
         <div className="mb-2">
-          <Link href="/" className={`flex items-center p-3 rounded-lg font-semibold text-white transition-colors hover:bg-slate-700 ${isActive('/') && pathname === '/' ? 'bg-blue-600' : ''}`}>
+          <Link href="/" className={`flex items-center p-3 rounded-lg font-semibold text-white transition-colors hover:bg-slate-700 ${pathname === '/' ? 'bg-blue-600' : ''}`}>
             <FaUserTie className="mr-3 text-lg" />
             Perfil Corporativo
-          </Link>
-        </div>
-
-        {/* Gestión Humana */}
-        <div className="mb-2">
-          <Link href="/gestion-humana" className={`flex items-center p-3 rounded-lg font-semibold text-white transition-colors hover:bg-slate-700 ${isActive('/gestion-humana') ? 'bg-blue-600' : ''}`}>
-            <FaUsers className="mr-3 text-lg" />
-            Gestión Humana
-          </Link>
-        </div>
-
-        {/* Finanzas */}
-        <div className="mb-2">
-          <Link href="/financiero" className={`flex items-center p-3 rounded-lg font-semibold text-white transition-colors hover:bg-slate-700 ${isActive('/financiero') && pathname === '/financiero' ? 'bg-blue-600' : ''}`}>
-            <FaMoneyBillWave className="mr-3 text-lg" />
-            Finanzas
           </Link>
         </div>
 
@@ -86,15 +91,9 @@ const Sidebar = () => {
             <FaChevronDown className={`transition-transform duration-300 ${isAdministracionOpen ? 'rotate-180' : ''}`} />
           </button>
           {isAdministracionOpen && (
-            <div className="mt-2 pl-2 flex flex-col gap-1">
-              <Link href="/administracion/general" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/administracion/general' ? 'bg-slate-800 text-white' : ''}`}>
-                <FaCog className="mr-3" />
-                General
-              </Link>
-<Link href="/administracion/suscripcion" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/administracion/suscripcion' ? 'bg-slate-800 text-white' : ''}`}>
-                <FaCreditCard className="mr-3" />
-                Suscripción
-              </Link>
+            <div className="mt-1 pl-2 flex flex-col gap-1">
+              {subLink('/administracion/general', 'General', FaCog, true)}
+              {subLink('/administracion/suscripcion', 'Suscripción', FaCreditCard, true)}
             </div>
           )}
         </div>
@@ -106,19 +105,51 @@ const Sidebar = () => {
             <FaChevronDown className={`transition-transform duration-300 ${isGestionOpen ? 'rotate-180' : ''}`} />
           </button>
           {isGestionOpen && (
-            <div className="mt-2 pl-2 flex flex-col gap-1">
-              <Link href="/gestion/planeacion-estrategica" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/gestion/planeacion-estrategica' ? 'bg-slate-800 text-white' : ''}`}><FaBullseye className="mr-3" />Planeación Estratégica</Link>
-              <Link href="/gestion/procesos" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/gestion/procesos' ? 'bg-slate-800 text-white' : ''}`}><FaProjectDiagram className="mr-3" />Procesos</Link>
-              <Link href="/gestion/indicadores" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${pathname === '/gestion/indicadores' ? 'bg-slate-800 text-white' : ''}`}><FaTachometerAlt className="mr-3" />Indicadores</Link>
-              <Link href="/riesgos" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${isActive('/riesgos') ? 'bg-slate-800 text-white' : ''}`}><FaExclamationTriangle className="mr-3" />Riesgos</Link>
-              <Link href="/auditoria" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${isActive('/auditoria') ? 'bg-slate-800 text-white' : ''}`}><FaClipboardList className="mr-3" />Auditoría</Link>
-              <Link href="/mejora-continua" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${isActive('/mejora-continua') ? 'bg-slate-800 text-white' : ''}`}><FaChartLine className="mr-3" />Mejora Continua</Link>
-              <Link href="/biblioteca" className={`flex items-center p-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${isActive('/biblioteca') ? 'bg-slate-800 text-white' : ''}`}><FaFolderOpen className="mr-3" />Biblioteca</Link>
-
+            <div className="mt-1 pl-2 flex flex-col gap-1">
+              {subLink('/gestion/planeacion-estrategica', 'Planeación Estratégica', FaBullseye, true)}
+              {subLink('/gestion/procesos', 'Procesos', FaProjectDiagram, true)}
+              {subLink('/gestion/indicadores', 'Indicadores', FaTachometerAlt, true)}
+              {subLink('/riesgos', 'Riesgos', FaExclamationTriangle)}
+              {subLink('/auditoria', 'Auditoría', FaClipboardList)}
+              {subLink('/mejora-continua', 'Mejora Continua', FaChartLine)}
+              {subLink('/tickets', 'Tickets', FaTicketAlt)}
+              {subLink('/biblioteca', 'Biblioteca', FaFolderOpen)}
             </div>
           )}
         </div>
+
+        {/* Gestión Humana */}
+        <div className="mb-2">
+          <button onClick={() => setGestionHumanaOpen(!isGestionHumanaOpen)} className="w-full flex justify-between items-center p-3 text-xs font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none cursor-pointer rounded-lg hover:bg-slate-800 hover:text-white transition-colors">
+            <span>Gestión Humana</span>
+            <FaChevronDown className={`transition-transform duration-300 ${isGestionHumanaOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {isGestionHumanaOpen && (
+            <div className="mt-1 pl-2 flex flex-col gap-1">
+              {subLink('/gestion-humana/extras', 'Liquidación Extras', FaClock)}
+              {subLink('/gestion-humana/seguridad-social', 'Seguridad Social', FaShieldAlt)}
+              {subLink('/gestion-humana/domesticas', 'Personal Doméstico', FaHome)}
+            </div>
+          )}
+        </div>
+
+        {/* Finanzas */}
+        <div className="mb-2">
+          <button onClick={() => setFinanzasOpen(!isFinanzasOpen)} className="w-full flex justify-between items-center p-3 text-xs font-bold text-slate-400 uppercase tracking-widest bg-transparent border-none cursor-pointer rounded-lg hover:bg-slate-800 hover:text-white transition-colors">
+            <span>Finanzas</span>
+            <FaChevronDown className={`transition-transform duration-300 ${isFinanzasOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {isFinanzasOpen && (
+            <div className="mt-1 pl-2 flex flex-col gap-1">
+              {subLink('/financiero', 'Diagnóstico', FaChartPie, true)}
+              {subLink('/financiero/calculadora', 'Calculadora', FaCalculator)}
+              {subLink('/financiero/configuracion', 'Configuración', FaWrench)}
+            </div>
+          )}
+        </div>
+
       </nav>
+
       <div className="p-4 border-t border-slate-700">
         <button
           onClick={handleLogout}

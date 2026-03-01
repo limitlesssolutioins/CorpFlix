@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Calendar, Filter, Search, Clock, CheckCircle2, ClipboardList } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, Filter, Search, Clock, CheckCircle2, ClipboardList, FileText, Award } from 'lucide-react';
 
 interface AuditStandard { id: number; code: string; name: string; color: string; }
 interface Audit {
@@ -159,7 +159,7 @@ export default function StandardAuditoriasPage() {
                                     <div className="text-slate-700 truncate">{audit.scope || 'No definido'}</div>
                                 </div>
                             </div>
-                            <div className="flex gap-3">
+                            <div className="flex gap-2 flex-wrap">
                                 <Link
                                     href={`${standardPath}/checklist?audit_id=${audit.id}`}
                                     className="flex items-center gap-1.5 px-4 py-2 text-white rounded-lg text-sm font-semibold hover:opacity-90"
@@ -168,10 +168,16 @@ export default function StandardAuditoriasPage() {
                                     <ClipboardList size={14} /> Lista de Chequeo
                                 </Link>
                                 <Link
-                                    href={`/auditoria/hallazgos?audit_id=${audit.id}`}
-                                    className="flex items-center gap-1.5 px-4 py-2 bg-slate-600 text-white rounded-lg text-sm font-semibold hover:bg-slate-700"
+                                    href={`${standardPath}/autoevaluacion?audit_id=${audit.id}`}
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-semibold hover:bg-emerald-800"
                                 >
-                                    Registrar Hallazgos
+                                    <Award size={14} /> Autoevaluación
+                                </Link>
+                                <Link
+                                    href={`${standardPath}/reporte?audit_id=${audit.id}`}
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-slate-700 text-white rounded-lg text-sm font-semibold hover:bg-slate-800"
+                                >
+                                    <FileText size={14} /> Informe Detallado
                                 </Link>
                             </div>
                         </div>

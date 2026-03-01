@@ -18,8 +18,8 @@ export const ProcessAIWizard: React.FC<Props> = ({
 
   const getTitle = () => {
     switch (type) {
-      case 'ESTRATEGICO_PLANIFICACION': return 'Proceso Estrategico 1';
-      case 'ESTRATEGICO_GERENCIAL': return 'Proceso Estrategico 2';
+      case 'ESTRATÉGICO_PLANIFICACION': return 'Proceso Estrategico 1';
+      case 'ESTRATÉGICO_GERENCIAL': return 'Proceso Estrategico 2';
       case 'MISIONAL_COMERCIAL': return 'Proceso Misional 1';
       case 'MISIONAL_COMPRAS': return 'Proceso Misional 2';
       case 'MISIONAL_OPERATIVO': return 'Proceso Misional 3';
@@ -35,9 +35,9 @@ export const ProcessAIWizard: React.FC<Props> = ({
 
   const getColor = () => {
     switch (type) {
-      case 'ESTRATEGICO':
-      case 'ESTRATEGICO_PLANIFICACION':
-      case 'ESTRATEGICO_GERENCIAL':
+      case 'ESTRATÉGICO':
+      case 'ESTRATÉGICO_PLANIFICACION':
+      case 'ESTRATÉGICO_GERENCIAL':
         return 'from-purple-600 to-indigo-600';
       case 'MISIONAL':
       case 'MISIONAL_COMERCIAL':
@@ -60,8 +60,8 @@ export const ProcessAIWizard: React.FC<Props> = ({
 
   const getQuestion = (): string | null => {
     const questions: Record<string, string> = {
-      'ESTRATEGICO_PLANIFICACION': 'En su empresa se realiza formalmente la planeacion estrategica? (incluyendo mision, vision, politicas, objetivos, indicadores y estrategias)',
-      'ESTRATEGICO_GERENCIAL': 'En su empresa se realizan de manera periodica comites gerenciales, reuniones de la alta direccion y espacios formales de rendicion de cuentas sobre los resultados de la gestion?',
+      'ESTRATÉGICO_PLANIFICACION': 'En su empresa se realiza formalmente la planeacion estrategica? (incluyendo mision, vision, politicas, objetivos, indicadores y estrategias)',
+      'ESTRATÉGICO_GERENCIAL': 'En su empresa se realizan de manera periodica comites gerenciales, reuniones de la alta direccion y espacios formales de rendicion de cuentas sobre los resultados de la gestion?',
       'MISIONAL_COMERCIAL': 'En su empresa se realiza una labor comercial para ofrecer sus productos y/o servicios?',
       'MISIONAL_COMPRAS': 'Su empresa realiza compras para el desarrollo de sus actividades operativas y administrativas? Proveedores nacionales o internacionales?',
       'MISIONAL_OPERATIVO': 'Cual es la actividad principal de su empresa: produccion de bienes, prestacion de servicios, comercializacion o una combinacion?',

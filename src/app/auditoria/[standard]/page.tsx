@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Calendar, ClipboardCheck, AlertTriangle, CheckCircle2, Clock, FileText, Award, ClipboardList } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, ClipboardCheck, AlertTriangle, CheckCircle2, Clock, FileText, Award, ClipboardList, LayoutList, Users } from 'lucide-react';
 
 interface AuditStandard {
     id: number; code: string; name: string; full_name: string;
@@ -138,6 +138,26 @@ export default function StandardDashboardPage() {
                         </div>
                     );
                 })}
+            </div>
+
+            {/* Quick links */}
+            <div className="flex flex-wrap gap-3 mb-6">
+                <Link href={`${standardPath}/auditorias`}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
+                    <ClipboardList size={16} className="text-slate-500" /> Auditorías
+                </Link>
+                <Link href={`${standardPath}/checklist`}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
+                    <ClipboardCheck size={16} className="text-slate-500" /> Lista de Chequeo
+                </Link>
+                <Link href={`${standardPath}/programa`}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
+                    <LayoutList size={16} className="text-slate-500" /> Programa de Auditoría
+                </Link>
+                <Link href="/auditoria/equipo"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
+                    <Users size={16} className="text-slate-500" /> Equipo Auditor
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

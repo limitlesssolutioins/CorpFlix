@@ -226,6 +226,93 @@ INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requiremen
 ((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='10'), '10.3', 'Mejora continua');
 
 -- =====================================================
+-- ISO 9001:2015 — SUB-REQUISITOS (3er nivel)
+-- Los requisitos padre que tienen sub-items se marcan is_auditable=0
+-- =====================================================
+
+-- Marcar padres con sub-requisitos como no auditables individualmente
+UPDATE iso_requirements SET is_auditable=0
+WHERE chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001'))
+AND requirement_code IN ('4.4','5.1','5.2','6.1','6.2','7.1','7.5','8.2','8.3','8.4','8.5','8.7','9.1','9.2','9.3','10.2');
+
+-- Capítulo 4 — sub-requisitos
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='4'), '4.4.1', 'SGC — Establecer, implementar, mantener y mejorar procesos', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='4'), '4.4.2', 'SGC — Información documentada de procesos', 1);
+
+-- Capítulo 5 — sub-requisitos
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='5'), '5.1.1', 'Liderazgo y compromiso para el SGC', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='5'), '5.1.2', 'Enfoque al cliente', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='5'), '5.2.1', 'Desarrollar la política de la calidad', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='5'), '5.2.2', 'Comunicar la política de la calidad', 1);
+
+-- Capítulo 6 — sub-requisitos
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='6'), '6.1.1', 'Riesgos y oportunidades — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='6'), '6.1.2', 'Planificación de acciones ante riesgos y oportunidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='6'), '6.2.1', 'Objetivos de la calidad', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='6'), '6.2.2', 'Planificación para lograr los objetivos de la calidad', 1);
+
+-- Capítulo 7 — sub-requisitos
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.1', 'Recursos — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.2', 'Personas', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.3', 'Infraestructura', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.4', 'Ambiente para la operación de los procesos', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.5', 'Recursos de seguimiento y medición', 0),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.5.1', 'Recursos de seguimiento y medición — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.5.2', 'Trazabilidad de las mediciones', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.1.6', 'Conocimientos de la organización', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.5.1', 'Información documentada — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.5.2', 'Creación y actualización de información documentada', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.5.3', 'Control de la información documentada', 0),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.5.3.1', 'Control de información documentada — Controles requeridos', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='7'), '7.5.3.2', 'Control de información documentada — Actividades de control', 1);
+
+-- Capítulo 8 — sub-requisitos
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.2.1', 'Comunicación con el cliente', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.2.2', 'Determinación de los requisitos para los productos y servicios', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.2.3', 'Revisión de los requisitos para los productos y servicios', 0),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.2.3.1', 'Revisión de requisitos — Capacidad de cumplimiento', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.2.3.2', 'Revisión de requisitos — Información documentada', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.2.4', 'Cambios en los requisitos para los productos y servicios', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.3.1', 'Diseño y desarrollo — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.3.2', 'Planificación del diseño y desarrollo', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.3.3', 'Elementos de entrada del diseño y desarrollo', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.3.4', 'Controles del diseño y desarrollo', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.3.5', 'Elementos de salida del diseño y desarrollo', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.3.6', 'Cambios del diseño y desarrollo', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.4.1', 'Control de proveedores externos — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.4.2', 'Tipo y alcance del control de la provisión externa', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.4.3', 'Información para los proveedores externos', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.5.1', 'Control de la producción y de la prestación del servicio', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.5.2', 'Identificación y trazabilidad', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.5.3', 'Propiedad perteneciente a los clientes o proveedores externos', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.5.4', 'Preservación', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.5.5', 'Actividades posteriores a la entrega', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.5.6', 'Control de los cambios en la producción', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.7.1', 'Salidas no conformes — Identificación y control', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='8'), '8.7.2', 'Salidas no conformes — Información documentada', 1);
+
+-- Capítulo 9 — sub-requisitos
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.1.1', 'Seguimiento, medición, análisis y evaluación — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.1.2', 'Satisfacción del cliente', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.1.3', 'Análisis y evaluación', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.2.1', 'Auditoría interna — Programa', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.2.2', 'Auditoría interna — Realización', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.3.1', 'Revisión por la dirección — Generalidades', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.3.2', 'Entradas de la revisión por la dirección', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='9'), '9.3.3', 'Salidas de la revisión por la dirección', 1);
+
+-- Capítulo 10 — sub-requisitos
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='10'), '10.2.1', 'No conformidad y acción correctiva — Respuesta y tratamiento', 1),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='ISO9001') AND chapter_number='10'), '10.2.2', 'No conformidad y acción correctiva — Información documentada', 1);
+
+-- =====================================================
 -- ISO 14001:2015 — CAPÍTULOS Y REQUISITOS
 -- =====================================================
 
@@ -628,3 +715,78 @@ INSERT OR IGNORE INTO finding_types (type_code, type_name, severity_level, color
 ('O', 'OBSERVACIÓN', 1, '#f59e0b', 0),
 ('NC_MENOR', 'NO CONFORMIDAD MENOR', 2, '#f97316', 1),
 ('NC_MAYOR', 'NO CONFORMIDAD MAYOR', 3, '#ef4444', 1);
+
+-- =====================================================
+-- EQUIPO AUDITOR Y PROGRAMA/PLAN
+-- =====================================================
+
+-- Directorio global de auditores
+CREATE TABLE IF NOT EXISTS audit_auditors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT,
+    role TEXT DEFAULT 'Auditor',
+    area TEXT,
+    phone TEXT,
+    status TEXT DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Equipo asignado a cada auditoría (many-to-many)
+CREATE TABLE IF NOT EXISTS audit_team (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    audit_id INTEGER NOT NULL,
+    auditor_id INTEGER NOT NULL,
+    role_in_audit TEXT DEFAULT 'Auditor',
+    UNIQUE(audit_id, auditor_id),
+    FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
+    FOREIGN KEY (auditor_id) REFERENCES audit_auditors(id) ON DELETE CASCADE
+);
+
+-- Programa anual de auditorías (por estándar)
+CREATE TABLE IF NOT EXISTS audit_programs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    standard_id INTEGER,
+    year INTEGER NOT NULL,
+    objectives TEXT,
+    scope TEXT,
+    criteria TEXT,
+    resources TEXT,
+    methodology TEXT,
+    status TEXT DEFAULT 'DRAFT',
+    approved_by TEXT,
+    approved_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (standard_id) REFERENCES audit_standards(id)
+);
+
+-- Plan de auditoría (específico por auditoría)
+CREATE TABLE IF NOT EXISTS audit_plans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    audit_id INTEGER NOT NULL UNIQUE,
+    opening_meeting_datetime TEXT,
+    closing_meeting_datetime TEXT,
+    location TEXT,
+    criteria TEXT,
+    documents_to_review TEXT,
+    confidentiality TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE
+);
+
+-- Agenda de actividades del plan
+CREATE TABLE IF NOT EXISTS audit_plan_activities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    plan_id INTEGER NOT NULL,
+    activity_date DATE,
+    start_time TEXT,
+    end_time TEXT,
+    activity TEXT NOT NULL,
+    process_area TEXT,
+    auditor_ids TEXT,
+    documents TEXT,
+    sort_order INTEGER DEFAULT 0,
+    FOREIGN KEY (plan_id) REFERENCES audit_plans(id) ON DELETE CASCADE
+);

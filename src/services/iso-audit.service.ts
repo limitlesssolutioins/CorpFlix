@@ -47,6 +47,7 @@ export interface Audit {
     auditor_id?: number;
     scope?: string;
     objectives?: string;
+    criteria?: string;
     company_profile?: string;
     status?: string;
     created_by?: number;
@@ -70,6 +71,65 @@ export interface BulkFindingItem {
     evidence?: string;
     observations?: string;
     is_op?: number;
+}
+
+export interface AuditAuditor {
+    id?: number;
+    name: string;
+    email?: string;
+    role?: string;
+    area?: string;
+    phone?: string;
+    status?: string;
+}
+
+export interface AuditTeamMember {
+    id?: number;
+    audit_id: number;
+    auditor_id: number;
+    role_in_audit?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+    area?: string;
+}
+
+export interface AuditProgram {
+    id?: number;
+    standard_id?: number;
+    year: number;
+    objectives?: string;
+    scope?: string;
+    criteria?: string;
+    resources?: string;
+    methodology?: string;
+    status?: string;
+    approved_by?: string;
+    approved_date?: string;
+}
+
+export interface AuditPlan {
+    id?: number;
+    audit_id: number;
+    opening_meeting_datetime?: string;
+    closing_meeting_datetime?: string;
+    location?: string;
+    criteria?: string;
+    documents_to_review?: string;
+    confidentiality?: string;
+}
+
+export interface AuditPlanActivity {
+    id?: number;
+    plan_id?: number;
+    activity_date?: string;
+    start_time?: string;
+    end_time?: string;
+    activity: string;
+    process_area?: string;
+    auditor_ids?: string;
+    documents?: string;
+    sort_order?: number;
 }
 
 export interface CorrectiveAction {
@@ -274,12 +334,198 @@ class ISOAuditService {
         }
     }
 
+    private ensureISO9001SubRequirements() {
+        // Check if sub-requirements already exist (use 4.4.1 as sentinel)
+        const std = this.db.prepare("SELECT id FROM audit_standards WHERE code='ISO9001'").get() as any;
+        if (!std) return;
+
+        const chapter4 = this.db.prepare("SELECT id FROM iso_chapters WHERE standard_id=? AND chapter_number='4'").get(std.id) as any;
+        if (!chapter4) return;
+
+        const alreadyHasSub = this.db.prepare("SELECT id FROM iso_requirements WHERE chapter_id=? AND requirement_code='4.4.1'").get(chapter4.id);
+        if (alreadyHasSub) return; // Already migrated
+
+        console.log('🔄 Adding ISO 9001 sub-requirements (3-level hierarchy)...');
+
+        // Mark parent requirements as non-auditable where they have sub-items
+        const parentCodes = ['4.4','5.1','5.2','6.1','6.2','7.1','7.5','8.2','8.3','8.4','8.5','8.7','9.1','9.2','9.3','10.2'];
+        const placeholders = parentCodes.map(() => '?').join(',');
+        const chapters = this.db.prepare(`SELECT id FROM iso_chapters WHERE standard_id=?`).all(std.id) as any[];
+        const chapterIds = chapters.map(c => c.id);
+        if (chapterIds.length > 0) {
+            const chPlaceholders = chapterIds.map(() => '?').join(',');
+            this.db.prepare(`UPDATE iso_requirements SET is_auditable=0 WHERE chapter_id IN (${chPlaceholders}) AND requirement_code IN (${placeholders})`).run(...chapterIds, ...parentCodes);
+        }
+
+        // Helper to get chapter id
+        const getChapterId = (num: string) => {
+            const ch = this.db.prepare("SELECT id FROM iso_chapters WHERE standard_id=? AND chapter_number=?").get(std.id, num) as any;
+            return ch?.id;
+        };
+
+        const insertReq = this.db.prepare(`INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, is_auditable) VALUES (?, ?, ?, ?)`);
+
+        this.db.transaction(() => {
+            const ch4 = getChapterId('4');
+            const ch5 = getChapterId('5');
+            const ch6 = getChapterId('6');
+            const ch7 = getChapterId('7');
+            const ch8 = getChapterId('8');
+            const ch9 = getChapterId('9');
+            const ch10 = getChapterId('10');
+
+            const rows: [number, string, string, number][] = [
+                // Cap 4
+                [ch4, '4.4.1', 'SGC — Establecer, implementar, mantener y mejorar procesos', 1],
+                [ch4, '4.4.2', 'SGC — Información documentada de procesos', 1],
+                // Cap 5
+                [ch5, '5.1.1', 'Liderazgo y compromiso para el SGC', 1],
+                [ch5, '5.1.2', 'Enfoque al cliente', 1],
+                [ch5, '5.2.1', 'Desarrollar la política de la calidad', 1],
+                [ch5, '5.2.2', 'Comunicar la política de la calidad', 1],
+                // Cap 6
+                [ch6, '6.1.1', 'Riesgos y oportunidades — Generalidades', 1],
+                [ch6, '6.1.2', 'Planificación de acciones ante riesgos y oportunidades', 1],
+                [ch6, '6.2.1', 'Objetivos de la calidad', 1],
+                [ch6, '6.2.2', 'Planificación para lograr los objetivos de la calidad', 1],
+                // Cap 7
+                [ch7, '7.1.1', 'Recursos — Generalidades', 1],
+                [ch7, '7.1.2', 'Personas', 1],
+                [ch7, '7.1.3', 'Infraestructura', 1],
+                [ch7, '7.1.4', 'Ambiente para la operación de los procesos', 1],
+                [ch7, '7.1.5', 'Recursos de seguimiento y medición', 0],
+                [ch7, '7.1.5.1', 'Recursos de seguimiento y medición — Generalidades', 1],
+                [ch7, '7.1.5.2', 'Trazabilidad de las mediciones', 1],
+                [ch7, '7.1.6', 'Conocimientos de la organización', 1],
+                [ch7, '7.5.1', 'Información documentada — Generalidades', 1],
+                [ch7, '7.5.2', 'Creación y actualización de información documentada', 1],
+                [ch7, '7.5.3', 'Control de la información documentada', 0],
+                [ch7, '7.5.3.1', 'Control de información documentada — Controles requeridos', 1],
+                [ch7, '7.5.3.2', 'Control de información documentada — Actividades de control', 1],
+                // Cap 8
+                [ch8, '8.2.1', 'Comunicación con el cliente', 1],
+                [ch8, '8.2.2', 'Determinación de los requisitos para los productos y servicios', 1],
+                [ch8, '8.2.3', 'Revisión de los requisitos para los productos y servicios', 0],
+                [ch8, '8.2.3.1', 'Revisión de requisitos — Capacidad de cumplimiento', 1],
+                [ch8, '8.2.3.2', 'Revisión de requisitos — Información documentada', 1],
+                [ch8, '8.2.4', 'Cambios en los requisitos para los productos y servicios', 1],
+                [ch8, '8.3.1', 'Diseño y desarrollo — Generalidades', 1],
+                [ch8, '8.3.2', 'Planificación del diseño y desarrollo', 1],
+                [ch8, '8.3.3', 'Elementos de entrada del diseño y desarrollo', 1],
+                [ch8, '8.3.4', 'Controles del diseño y desarrollo', 1],
+                [ch8, '8.3.5', 'Elementos de salida del diseño y desarrollo', 1],
+                [ch8, '8.3.6', 'Cambios del diseño y desarrollo', 1],
+                [ch8, '8.4.1', 'Control de proveedores externos — Generalidades', 1],
+                [ch8, '8.4.2', 'Tipo y alcance del control de la provisión externa', 1],
+                [ch8, '8.4.3', 'Información para los proveedores externos', 1],
+                [ch8, '8.5.1', 'Control de la producción y de la prestación del servicio', 1],
+                [ch8, '8.5.2', 'Identificación y trazabilidad', 1],
+                [ch8, '8.5.3', 'Propiedad perteneciente a los clientes o proveedores externos', 1],
+                [ch8, '8.5.4', 'Preservación', 1],
+                [ch8, '8.5.5', 'Actividades posteriores a la entrega', 1],
+                [ch8, '8.5.6', 'Control de los cambios en la producción', 1],
+                [ch8, '8.7.1', 'Salidas no conformes — Identificación y control', 1],
+                [ch8, '8.7.2', 'Salidas no conformes — Información documentada', 1],
+                // Cap 9
+                [ch9, '9.1.1', 'Seguimiento, medición, análisis y evaluación — Generalidades', 1],
+                [ch9, '9.1.2', 'Satisfacción del cliente', 1],
+                [ch9, '9.1.3', 'Análisis y evaluación', 1],
+                [ch9, '9.2.1', 'Auditoría interna — Programa', 1],
+                [ch9, '9.2.2', 'Auditoría interna — Realización', 1],
+                [ch9, '9.3.1', 'Revisión por la dirección — Generalidades', 1],
+                [ch9, '9.3.2', 'Entradas de la revisión por la dirección', 1],
+                [ch9, '9.3.3', 'Salidas de la revisión por la dirección', 1],
+                // Cap 10
+                [ch10, '10.2.1', 'No conformidad y acción correctiva — Respuesta y tratamiento', 1],
+                [ch10, '10.2.2', 'No conformidad y acción correctiva — Información documentada', 1],
+            ];
+
+            for (const [chapterId, code, title, auditable] of rows) {
+                if (chapterId) insertReq.run(chapterId, code, title, auditable);
+            }
+        })();
+
+        console.log('✅ ISO 9001 sub-requirements added');
+    }
+
     private ensureColumns() {
         const findingCols = this.db.prepare("PRAGMA table_info(audit_findings)").all() as any[];
         if (!findingCols.some(c => c.name === 'is_op')) {
             this.db.exec('ALTER TABLE audit_findings ADD COLUMN is_op INTEGER DEFAULT 0');
             console.log('✅ Added is_op column to audit_findings');
         }
+        const auditCols = this.db.prepare("PRAGMA table_info(audits)").all() as any[];
+        if (!auditCols.some(c => c.name === 'criteria')) {
+            this.db.exec('ALTER TABLE audits ADD COLUMN criteria TEXT');
+            console.log('✅ Added criteria column to audits');
+        }
+        // Ensure ISO 9001 sub-requirements exist (3-level hierarchy from Excel)
+        this.ensureISO9001SubRequirements();
+
+        // Ensure new tables exist (additive, safe to run on existing DBs)
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS audit_auditors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT,
+                role TEXT DEFAULT 'Auditor',
+                area TEXT,
+                phone TEXT,
+                status TEXT DEFAULT 'ACTIVE',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS audit_team (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                audit_id INTEGER NOT NULL,
+                auditor_id INTEGER NOT NULL,
+                role_in_audit TEXT DEFAULT 'Auditor',
+                UNIQUE(audit_id, auditor_id),
+                FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
+                FOREIGN KEY (auditor_id) REFERENCES audit_auditors(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS audit_programs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                standard_id INTEGER,
+                year INTEGER NOT NULL,
+                objectives TEXT,
+                scope TEXT,
+                criteria TEXT,
+                resources TEXT,
+                methodology TEXT,
+                status TEXT DEFAULT 'DRAFT',
+                approved_by TEXT,
+                approved_date DATE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (standard_id) REFERENCES audit_standards(id)
+            );
+            CREATE TABLE IF NOT EXISTS audit_plans (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                audit_id INTEGER NOT NULL UNIQUE,
+                opening_meeting_datetime TEXT,
+                closing_meeting_datetime TEXT,
+                location TEXT,
+                criteria TEXT,
+                documents_to_review TEXT,
+                confidentiality TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS audit_plan_activities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                plan_id INTEGER NOT NULL,
+                activity_date DATE,
+                start_time TEXT,
+                end_time TEXT,
+                activity TEXT NOT NULL,
+                process_area TEXT,
+                auditor_ids TEXT,
+                documents TEXT,
+                sort_order INTEGER DEFAULT 0,
+                FOREIGN KEY (plan_id) REFERENCES audit_plans(id) ON DELETE CASCADE
+            );
+        `);
     }
 
     // ===================================================
@@ -384,8 +630,8 @@ class ISOAuditService {
     createAudit(audit: Audit): any {
         const code = audit.audit_code || `AUD-${Date.now()}`;
         const stmt = this.db.prepare(`
-            INSERT INTO audits (audit_code, standard_id, audit_type_id, audit_date, planned_date, auditor_name, scope, objectives, company_profile, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO audits (audit_code, standard_id, audit_type_id, audit_date, planned_date, auditor_name, scope, objectives, criteria, company_profile, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
         const result = stmt.run(
             code,
@@ -396,6 +642,7 @@ class ISOAuditService {
             audit.auditor_name || null,
             audit.scope || null,
             audit.objectives || null,
+            audit.criteria || null,
             audit.company_profile || null,
             audit.status || 'PLANNED'
         );
@@ -406,7 +653,7 @@ class ISOAuditService {
         const existing = this.getAuditById(id);
         if (!existing) return null;
         const stmt = this.db.prepare(`
-            UPDATE audits SET standard_id=?, audit_type_id=?, audit_date=?, planned_date=?, auditor_name=?, scope=?, objectives=?, company_profile=?, status=?, updated_at=CURRENT_TIMESTAMP
+            UPDATE audits SET standard_id=?, audit_type_id=?, audit_date=?, planned_date=?, auditor_name=?, scope=?, objectives=?, criteria=?, company_profile=?, status=?, updated_at=CURRENT_TIMESTAMP
             WHERE id=?
         `);
         stmt.run(
@@ -417,6 +664,7 @@ class ISOAuditService {
             audit.auditor_name ?? existing.auditor_name,
             audit.scope ?? existing.scope,
             audit.objectives ?? existing.objectives,
+            audit.criteria ?? existing.criteria,
             audit.company_profile ?? existing.company_profile,
             audit.status ?? existing.status,
             id
@@ -619,6 +867,188 @@ class ISOAuditService {
             id
         );
         return this.db.prepare('SELECT * FROM corrective_actions WHERE id = ?').get(id);
+    }
+
+    // ===================================================
+    // AUDITORS DIRECTORY
+    // ===================================================
+
+    getAuditors(): AuditAuditor[] {
+        return this.db.prepare('SELECT * FROM audit_auditors ORDER BY name').all() as AuditAuditor[];
+    }
+
+    createAuditor(data: AuditAuditor): AuditAuditor {
+        const result = this.db.prepare(`
+            INSERT INTO audit_auditors (name, email, role, area, phone, status)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `).run(
+            data.name,
+            data.email || null,
+            data.role || 'Auditor',
+            data.area || null,
+            data.phone || null,
+            data.status || 'ACTIVE'
+        );
+        return this.db.prepare('SELECT * FROM audit_auditors WHERE id = ?').get(result.lastInsertRowid) as AuditAuditor;
+    }
+
+    updateAuditor(id: number, data: Partial<AuditAuditor>): AuditAuditor | null {
+        const existing = this.db.prepare('SELECT * FROM audit_auditors WHERE id = ?').get(id) as AuditAuditor | undefined;
+        if (!existing) return null;
+        this.db.prepare(`
+            UPDATE audit_auditors SET name=?, email=?, role=?, area=?, phone=?, status=? WHERE id=?
+        `).run(
+            data.name ?? existing.name,
+            data.email ?? existing.email,
+            data.role ?? existing.role,
+            data.area ?? existing.area,
+            data.phone ?? existing.phone,
+            data.status ?? existing.status,
+            id
+        );
+        return this.db.prepare('SELECT * FROM audit_auditors WHERE id = ?').get(id) as AuditAuditor;
+    }
+
+    deleteAuditor(id: number): { success: boolean; reason?: string } {
+        const inUse = this.db.prepare('SELECT COUNT(*) as count FROM audit_team WHERE auditor_id = ?').get(id) as any;
+        if (inUse.count > 0) {
+            return { success: false, reason: 'El auditor está asignado a una o más auditorías.' };
+        }
+        this.db.prepare('DELETE FROM audit_auditors WHERE id = ?').run(id);
+        return { success: true };
+    }
+
+    // ===================================================
+    // AUDIT TEAM
+    // ===================================================
+
+    getAuditTeam(auditId: number): AuditTeamMember[] {
+        return this.db.prepare(`
+            SELECT at.*, aa.name, aa.email, aa.role, aa.area
+            FROM audit_team at
+            INNER JOIN audit_auditors aa ON at.auditor_id = aa.id
+            WHERE at.audit_id = ?
+            ORDER BY aa.name
+        `).all(auditId) as AuditTeamMember[];
+    }
+
+    setAuditTeam(auditId: number, members: { auditorId: number; roleInAudit?: string }[]): void {
+        const deleteStmt = this.db.prepare('DELETE FROM audit_team WHERE audit_id = ?');
+        const insertStmt = this.db.prepare('INSERT OR IGNORE INTO audit_team (audit_id, auditor_id, role_in_audit) VALUES (?, ?, ?)');
+        this.db.transaction(() => {
+            deleteStmt.run(auditId);
+            for (const m of members) {
+                insertStmt.run(auditId, m.auditorId, m.roleInAudit || 'Auditor');
+            }
+        })();
+    }
+
+    // ===================================================
+    // AUDIT PROGRAMS
+    // ===================================================
+
+    getPrograms(standardId?: number, year?: number): AuditProgram[] {
+        let query = 'SELECT * FROM audit_programs WHERE 1=1';
+        const params: any[] = [];
+        if (standardId) { query += ' AND standard_id = ?'; params.push(standardId); }
+        if (year) { query += ' AND year = ?'; params.push(year); }
+        query += ' ORDER BY year DESC, id DESC';
+        return this.db.prepare(query).all(...params) as AuditProgram[];
+    }
+
+    createProgram(data: AuditProgram): AuditProgram {
+        const result = this.db.prepare(`
+            INSERT INTO audit_programs (standard_id, year, objectives, scope, criteria, resources, methodology, status, approved_by, approved_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+            data.standard_id || null, data.year,
+            data.objectives || null, data.scope || null, data.criteria || null,
+            data.resources || null, data.methodology || null,
+            data.status || 'DRAFT', data.approved_by || null, data.approved_date || null
+        );
+        return this.db.prepare('SELECT * FROM audit_programs WHERE id = ?').get(result.lastInsertRowid) as AuditProgram;
+    }
+
+    updateProgram(id: number, data: Partial<AuditProgram>): AuditProgram | null {
+        const existing = this.db.prepare('SELECT * FROM audit_programs WHERE id = ?').get(id) as AuditProgram | undefined;
+        if (!existing) return null;
+        this.db.prepare(`
+            UPDATE audit_programs SET objectives=?, scope=?, criteria=?, resources=?, methodology=?,
+            status=?, approved_by=?, approved_date=?, updated_at=CURRENT_TIMESTAMP WHERE id=?
+        `).run(
+            data.objectives ?? existing.objectives,
+            data.scope ?? existing.scope,
+            data.criteria ?? existing.criteria,
+            data.resources ?? existing.resources,
+            data.methodology ?? existing.methodology,
+            data.status ?? existing.status,
+            data.approved_by ?? existing.approved_by,
+            data.approved_date ?? existing.approved_date,
+            id
+        );
+        return this.db.prepare('SELECT * FROM audit_programs WHERE id = ?').get(id) as AuditProgram;
+    }
+
+    // ===================================================
+    // AUDIT PLANS
+    // ===================================================
+
+    getAuditPlan(auditId: number): { plan: AuditPlan | null; activities: AuditPlanActivity[] } {
+        const plan = this.db.prepare('SELECT * FROM audit_plans WHERE audit_id = ?').get(auditId) as AuditPlan | null;
+        if (!plan) return { plan: null, activities: [] };
+        const activities = this.db.prepare('SELECT * FROM audit_plan_activities WHERE plan_id = ? ORDER BY sort_order, id').all((plan as any).id) as AuditPlanActivity[];
+        return { plan, activities };
+    }
+
+    saveAuditPlan(auditId: number, planData: Partial<AuditPlan>, activities: Omit<AuditPlanActivity, 'id' | 'plan_id'>[]): { plan: AuditPlan; activities: AuditPlanActivity[] } {
+        let planId: number;
+        const existing = this.db.prepare('SELECT id FROM audit_plans WHERE audit_id = ?').get(auditId) as any;
+
+        if (existing) {
+            planId = existing.id;
+            this.db.prepare(`
+                UPDATE audit_plans SET opening_meeting_datetime=?, closing_meeting_datetime=?, location=?,
+                criteria=?, documents_to_review=?, confidentiality=?, updated_at=CURRENT_TIMESTAMP
+                WHERE id=?
+            `).run(
+                planData.opening_meeting_datetime || null,
+                planData.closing_meeting_datetime || null,
+                planData.location || null,
+                planData.criteria || null,
+                planData.documents_to_review || null,
+                planData.confidentiality || null,
+                planId
+            );
+        } else {
+            const result = this.db.prepare(`
+                INSERT INTO audit_plans (audit_id, opening_meeting_datetime, closing_meeting_datetime, location, criteria, documents_to_review, confidentiality)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `).run(
+                auditId,
+                planData.opening_meeting_datetime || null,
+                planData.closing_meeting_datetime || null,
+                planData.location || null,
+                planData.criteria || null,
+                planData.documents_to_review || null,
+                planData.confidentiality || null
+            );
+            planId = result.lastInsertRowid as number;
+        }
+
+        // Replace activities
+        this.db.prepare('DELETE FROM audit_plan_activities WHERE plan_id = ?').run(planId);
+        const insertAct = this.db.prepare(`
+            INSERT INTO audit_plan_activities (plan_id, activity_date, start_time, end_time, activity, process_area, auditor_ids, documents, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `);
+        this.db.transaction(() => {
+            activities.forEach((act, i) => {
+                insertAct.run(planId, act.activity_date || null, act.start_time || null, act.end_time || null,
+                    act.activity, act.process_area || null, act.auditor_ids || null, act.documents || null, act.sort_order ?? i);
+            });
+        })();
+
+        return this.getAuditPlan(auditId) as any;
     }
 
     // ===================================================

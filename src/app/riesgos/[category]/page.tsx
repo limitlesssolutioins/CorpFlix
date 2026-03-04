@@ -12,74 +12,212 @@ import {
 const CATEGORY_CONFIG: Record<string, {
     code: string; name: string; emoji: string; color: string;
     tagline: string;
-    questions: Array<{ id: string; text: string; hint?: string }>;
+    questions: Array<{ id: string; tipo: string; text: string; hint?: string }>;
 }> = {
     calidad: {
         code: 'CALIDAD', name: 'Calidad', emoji: '🏆', color: '#3b82f6',
         tagline: 'Calidad del producto y servicio',
         questions: [
-            { id: 'q1', text: '¿Has recibido quejas, reclamos o devoluciones de clientes en el último año?', hint: 'Por ejemplo: clientes insatisfechos, solicitudes de cambio o devoluciones de dinero.' },
-            { id: 'q2', text: '¿Dependes de proveedores o contratistas para fabricar o entregar tu producto o servicio?', hint: 'Si falla un proveedor clave, ¿tu empresa no puede operar?' },
-            { id: 'q3', text: '¿Los procesos y tareas de tu empresa están documentados y el personal los sigue de forma consistente?' },
-            { id: 'q4', text: '¿Ha habido errores o fallas en tu producto o servicio que llegaron al cliente?', hint: 'Errores de calidad, entregas tardías, productos defectuosos.' },
-            { id: 'q5', text: '¿Utilizas sistemas, software o tecnología importante para tu operación diaria?', hint: 'Por ejemplo: software de facturación, inventario, producción, etc.' },
-            { id: 'q6', text: '¿Tu empresa requiere permisos, licencias o debe cumplir normativas oficiales para operar?', hint: 'Certificaciones, normas técnicas, permisos de funcionamiento.' },
+            {
+                id: 'imagen', tipo: 'IMAGEN',
+                text: '¿Tu empresa tiene trato directo con clientes y gestiona quejas, reclamos, cotizaciones o tiempos de respuesta?',
+                hint: 'Riesgos de pérdida de clientes, mala imagen o credibilidad por fallas en la atención.',
+            },
+            {
+                id: 'legalidad', tipo: 'LEGALIDAD',
+                text: '¿Tu empresa debe cumplir requisitos legales, permisos, licencias o normativas para operar o participar en contratos?',
+                hint: 'Incumplimientos pueden generar sanciones económicas, pérdida de contratos o problemas judiciales.',
+            },
+            {
+                id: 'financiero', tipo: 'FINANCIERO',
+                text: '¿En tu operación manejas fondos, documentos de valor económico, presupuestos o recursos financieros críticos?',
+                hint: 'Riesgos de apropiación indebida, deterioro de documentos o falta de recursos para operar.',
+            },
+            {
+                id: 'calidad', tipo: 'CALIDAD',
+                text: '¿Tu empresa planifica el uso de sus recursos, documenta sus procesos y gestiona su dirección estratégica o sistema de calidad?',
+                hint: 'Riesgos de reprocesos, incumplimiento a clientes, pérdida de mercado o documentación desactualizada.',
+            },
+            {
+                id: 'tecnologia', tipo: 'TECNOLOGÍA',
+                text: '¿Utilizas software, maquinaria, equipos electrónicos o sistemas tecnológicos esenciales para tu operación diaria?',
+                hint: 'La obsolescencia o falla de estos sistemas puede paralizar la operación o afectar la calidad del servicio.',
+            },
         ]
     },
     sst: {
         code: 'SST', name: 'SST', emoji: '🦺', color: '#f59e0b',
         tagline: 'Seguridad y Salud en el Trabajo',
         questions: [
-            { id: 'q1', text: '¿Tus empleados realizan tareas con esfuerzo físico, levantamiento de cargas o movimientos repetitivos?', hint: 'Por ejemplo: cargar objetos pesados, usar herramientas manuales, trabajar de pie mucho tiempo.' },
-            { id: 'q2', text: '¿Existe riesgo de caídas, golpes, cortes o atrapamientos en el lugar de trabajo?', hint: 'Pisos resbalosos, alturas, maquinaria, espacios reducidos.' },
-            { id: 'q3', text: '¿Se trabaja con equipos eléctricos, maquinaria pesada o herramientas de riesgo?', hint: 'Soldadura, sierras, equipos de presión, instalaciones eléctricas.' },
-            { id: 'q4', text: '¿El trabajo genera estrés, presión mental alta, carga emocional o situaciones de conflicto?', hint: 'Atención al público difícil, presión por metas, trabajo bajo presión.' },
-            { id: 'q5', text: '¿Se trabaja con químicos, gases, humos, polvo o en condiciones de temperatura extrema?', hint: 'Soldadura, pintura, limpieza con ácidos, hornos, cuartos fríos.' },
-            { id: 'q6', text: '¿Tu empresa tiene un plan de emergencias actualizado y el personal lo conoce?', hint: 'Simulacros de evacuación, puntos de encuentro, primeros auxilios.' },
+            {
+                id: 'biologico', tipo: 'BIOLÓGICO',
+                text: '¿El personal tiene contacto con personas externas, fluidos corporales, animales, vegetación de campo o alimentos en su trabajo?',
+                hint: 'Exposición a virus, bacterias, hongos, picaduras o mordeduras que pueden causar enfermedades.',
+            },
+            {
+                id: 'biomecanico', tipo: 'BIOMECÁNICO',
+                text: '¿Las labores implican levantar cargas, esfuerzos físicos, movimientos repetitivos o mantener posturas incómodas por largo tiempo?',
+                hint: 'Lesiones músculo-esqueléticas, fatiga, alteraciones lumbares, cervicales o del sistema vascular.',
+            },
+            {
+                id: 'fenomenos', tipo: 'FENÓMENOS NATURALES',
+                text: '¿La empresa opera en zonas o realiza actividades expuestas a lluvias fuertes, inundaciones, sismos, tormentas eléctricas o vendavales?',
+                hint: 'Riesgo de arroyos, derrumbes, inundaciones u otros eventos naturales que afecten al personal.',
+            },
+            {
+                id: 'fisico', tipo: 'FÍSICO',
+                text: '¿Hay exposición a ruido intenso, temperaturas extremas (frío o calor), mala iluminación, radiaciones o vibraciones en el trabajo?',
+                hint: 'Daño auditivo, estrés térmico, fatiga visual, trastornos por vibración o presión atmosférica anormal.',
+            },
+            {
+                id: 'psicosocial', tipo: 'PSICOSOCIAL',
+                text: '¿El trabajo implica turnos nocturnos, horas extra, alta carga emocional, exigencia de responsabilidades o relaciones de conflicto?',
+                hint: 'Estrés laboral, ansiedad, depresión o enfermedades psicosomáticas por demandas laborales excesivas.',
+            },
+            {
+                id: 'publico', tipo: 'PÚBLICO',
+                text: '¿Los empleados trabajan en la calle, atienden público de forma directa o realizan actividades en lugares de acceso abierto?',
+                hint: 'Riesgo de agresiones de usuarios, asaltos, hurtos o situaciones de orden público.',
+            },
+            {
+                id: 'quimico', tipo: 'QUÍMICO',
+                text: '¿Se usan, almacenan o transportan productos químicos, gases, solventes, combustibles, polvos o aerosoles en la operación?',
+                hint: 'Intoxicaciones, irritaciones, quemaduras químicas, explosiones o enfermedades respiratorias.',
+            },
+            {
+                id: 'seguridad', tipo: 'SEGURIDAD',
+                text: '¿Existen riesgos de caídas, cortes, golpes, choques eléctricos, trabajo en alturas, con maquinaria o accidentes de tránsito?',
+                hint: 'Accidentes locativos, mecánicos, eléctricos, de tránsito o en espacios confinados.',
+            },
         ]
     },
     ambiental: {
         code: 'AMBIENTAL', name: 'Ambiental', emoji: '🌿', color: '#10b981',
         tagline: 'Impacto ambiental',
         questions: [
-            { id: 'q1', text: '¿Tu empresa genera residuos sólidos, líquidos o peligrosos durante su operación?', hint: 'Basura, aceites, envases químicos, aguas residuales.' },
-            { id: 'q2', text: '¿Consumes agua en tus procesos productivos o de limpieza?', hint: 'Lavado, refrigeración, producción, servicios sanitarios.' },
-            { id: 'q3', text: '¿Tu operación genera ruido, olores, vapores, polvo o emisiones al ambiente?', hint: 'Maquinaria ruidosa, chimeneas, hornos, generadores.' },
-            { id: 'q4', text: '¿Tu empresa consume energía eléctrica o combustibles de manera significativa?', hint: 'Maquinaria, vehículos, climatización, iluminación.' },
-            { id: 'q5', text: '¿Tus actividades podrían afectar a comunidades vecinas, ecosistemas o zonas naturales cercanas?', hint: 'Ruido que molesta vecinos, descargas cerca de ríos, olores.' },
+            {
+                id: 'agua', tipo: 'AGUA',
+                text: '¿En tu operación se consume agua o se generan aguas residuales domésticas o industriales (baños, aseo, procesos productivos)?',
+                hint: 'Riesgos de consumo excesivo, fugas, aguas residuales o impacto en fuentes hídricas cercanas.',
+            },
+            {
+                id: 'derrames', tipo: 'SUELO / AGUA',
+                text: '¿Se almacenan, transportan o usan sustancias como aceites, combustibles o químicos que puedan derramarse accidentalmente?',
+                hint: 'Los derrames contaminan suelo y agua; generan sanciones ambientales y daños al ecosistema.',
+            },
+            {
+                id: 'aire', tipo: 'AIRE',
+                text: '¿Las actividades generan emisiones al aire como gases, material particulado, olores ofensivos, ruido ambiental o vapores?',
+                hint: 'Fuentes fijas (chimeneas) o móviles (vehículos), gases efecto invernadero, ruido que afecte comunidades.',
+            },
+            {
+                id: 'residuos', tipo: 'SUELO / RESIDUOS',
+                text: '¿Se generan residuos sólidos de cualquier tipo: ordinarios, aprovechables, especiales o peligrosos (baterías, tóner, EPP contaminados, equipos)?',
+                hint: 'Residuos mal gestionados contaminan el suelo y generan multas por incumplimiento ambiental.',
+            },
+            {
+                id: 'energia', tipo: 'ENERGÍA',
+                text: '¿Existe consumo significativo de energía eléctrica, gas natural u otros combustibles fósiles en la operación?',
+                hint: 'Agotamiento de recursos naturales y huella de carbono asociada al consumo energético.',
+            },
+            {
+                id: 'ecosistema', tipo: 'FLORA / FAUNA / PAISAJE',
+                text: '¿Las actividades de tu empresa pueden afectar zonas verdes, cobertura vegetal, fauna silvestre, paisaje o ecosistemas cercanos?',
+                hint: 'Impactos en biodiversidad, alteración del paisaje o afectación de hábitats naturales próximos.',
+            },
         ]
     },
     ciberseguridad: {
         code: 'CIBERSEGURIDAD', name: 'Ciberseguridad', emoji: '🔒', color: '#8b5cf6',
         tagline: 'Seguridad de la información',
         questions: [
-            { id: 'q1', text: '¿Manejas información confidencial de clientes, empleados o datos financieros en sistemas digitales?', hint: 'Bases de datos de clientes, nóminas, estados financieros, contratos.' },
-            { id: 'q2', text: '¿Tu equipo usa correo electrónico, redes sociales o navega en internet para trabajar?', hint: 'Casi siempre esto abre la puerta a correos fraudulentos o virus.' },
-            { id: 'q3', text: '¿Las contraseñas de los sistemas son compartidas, no se cambian regularmente o no tienen reglas definidas?', hint: 'Contraseñas simples como "123456", compartidas entre compañeros.' },
-            { id: 'q4', text: '¿NO realizas copias de seguridad (backups) periódicas de tu información importante?', hint: 'Si tu computador se daña o es secuestrado, ¿perderías todo?' },
-            { id: 'q5', text: '¿Proveedores, técnicos u otras personas externas tienen acceso a tus sistemas o datos?', hint: 'Soporte técnico externo, contadores, asesores con acceso a sistemas.' },
+            {
+                id: 'datos', tipo: 'DATOS SENSIBLES',
+                text: '¿Manejas información confidencial de clientes, empleados o datos financieros almacenados en sistemas digitales?',
+                hint: 'Bases de datos, nóminas, contratos digitales o registros con información personal o estratégica.',
+            },
+            {
+                id: 'acceso', tipo: 'CONTROL DE ACCESO',
+                text: '¿El acceso a tus sistemas se controla con contraseñas seguras y perfiles de usuario, sin compartir credenciales entre empleados?',
+                hint: 'Contraseñas débiles o compartidas permiten accesos no autorizados a información crítica.',
+            },
+            {
+                id: 'amenazas', tipo: 'AMENAZAS EXTERNAS',
+                text: '¿Tu equipo usa correo electrónico, internet o redes sociales para trabajar, recibiendo archivos o enlaces externos?',
+                hint: 'Phishing, malware, ransomware o ingeniería social a través de comunicaciones digitales.',
+            },
+            {
+                id: 'continuidad', tipo: 'CONTINUIDAD DIGITAL',
+                text: '¿Realizas copias de seguridad periódicas de tu información crítica y puedes recuperarla ante una falla o pérdida de datos?',
+                hint: 'Sin backups, una falla o ataque puede significar la pérdida definitiva de información vital.',
+            },
+            {
+                id: 'terceros', tipo: 'ACCESO DE TERCEROS',
+                text: '¿Proveedores, técnicos externos, contadores o asesores tienen acceso a tus sistemas, redes o datos empresariales?',
+                hint: 'Acceso externo no controlado puede comprometer la confidencialidad o integridad de la información.',
+            },
         ]
     },
     financiero: {
         code: 'FINANCIERO', name: 'Financiero', emoji: '💰', color: '#ef4444',
         tagline: 'Estabilidad financiera',
         questions: [
-            { id: 'q1', text: '¿Tienes clientes que te pagan a crédito, a plazos o que se han atrasado en sus pagos?', hint: 'Facturas a 30, 60 o 90 días; clientes morosos.' },
-            { id: 'q2', text: '¿Necesitas flujo de caja regular para cubrir nómina, proveedores u otras obligaciones?', hint: 'Si los pagos se retrasan, ¿tienes problemas para pagar?' },
-            { id: 'q3', text: '¿Tus ingresos dependen principalmente de uno o muy pocos clientes o contratos grandes?', hint: 'Si ese cliente se va, ¿representa más del 30% de tus ventas?' },
-            { id: 'q4', text: '¿Tienes obligaciones tributarias, impuestos o multas pendientes o de difícil cumplimiento?', hint: 'IVA, retenciones, contribuciones, sanciones fiscales.' },
-            { id: 'q5', text: '¿Han ocurrido pérdidas por fraudes, robos, errores contables o faltantes de inventario?', hint: 'Empleados deshonestos, errores en caja, robos de mercancía.' },
+            {
+                id: 'cartera', tipo: 'CARTERA',
+                text: '¿Tienes clientes que te pagan a crédito, a plazos o que han presentado retrasos en sus pagos?',
+                hint: 'Cartera vencida que afecta el flujo de caja y la capacidad de cumplir tus propias obligaciones.',
+            },
+            {
+                id: 'liquidez', tipo: 'LIQUIDEZ',
+                text: '¿Dependes de flujo de caja regular para cubrir nómina, proveedores, arriendo u otras obligaciones fijas mensuales?',
+                hint: 'Si los ingresos se retrasan, ¿tienes dificultades para pagar tus compromisos a tiempo?',
+            },
+            {
+                id: 'concentracion', tipo: 'CONCENTRACIÓN',
+                text: '¿Tus ingresos dependen principalmente de uno o muy pocos clientes o contratos que representen más del 30% de tus ventas?',
+                hint: 'La pérdida de ese cliente o contrato tendría un impacto grave e inmediato en tu empresa.',
+            },
+            {
+                id: 'tributario', tipo: 'TRIBUTARIO',
+                text: '¿Tienes obligaciones tributarias, declaraciones de impuestos, retenciones o aportes de seguridad social que deban gestionarse periódicamente?',
+                hint: 'Errores u omisiones generan sanciones, intereses de mora y problemas con los entes de control.',
+            },
+            {
+                id: 'fraude', tipo: 'FRAUDE / PÉRDIDA',
+                text: '¿Existe riesgo o han ocurrido pérdidas por fraudes, robos, errores contables, faltantes de inventario o conductas deshonestas?',
+                hint: 'Empleados deshonestos, errores de caja, robo de activos o irregularidades en el manejo de recursos.',
+            },
         ]
     },
     'seguridad-vial': {
         code: 'SEGURIDAD_VIAL', name: 'Seguridad Vial', emoji: '🚗', color: '#06b6d4',
         tagline: 'Seguridad en el transporte',
         questions: [
-            { id: 'q1', text: '¿Tu empresa usa vehículos propios o arrendados para transportar personas, materiales o equipos?', hint: 'Camiones, furgonetas, motos, carros de la empresa.' },
-            { id: 'q2', text: '¿Los conductores realizan viajes largos, en horario nocturno o bajo presión de tiempo?', hint: 'Entregas urgentes, rutas de más de 2 horas, turnos nocturnos.' },
-            { id: 'q3', text: '¿Los vehículos cuentan con mantenimiento preventivo programado y documentado?', hint: 'Revisiones periódicas de frenos, llantas, aceite, luces.' },
-            { id: 'q4', text: '¿Los conductores han recibido capacitación en manejo seguro y normas de tránsito?', hint: 'Cursos de conducción, primeros auxilios viales, normas de seguridad.' },
-            { id: 'q5', text: '¿Se controla que los conductores no manejen con cansancio, bajo efectos del alcohol u otras sustancias?', hint: 'Pruebas de alcoholemia, control de horas de conducción, descanso.' },
+            {
+                id: 'flota', tipo: 'FLOTA VEHICULAR',
+                text: '¿Tu empresa usa vehículos propios o contratados para transportar personas, materiales o equipos como parte habitual de la operación?',
+                hint: 'El uso regular de vehículos en la operación expone a la empresa a riesgos de accidentes de tránsito.',
+            },
+            {
+                id: 'conductores', tipo: 'CONDUCTORES',
+                text: '¿Los conductores realizan viajes largos, en horario nocturno, bajo presión de tiempo o sin entrenamiento formal en manejo seguro?',
+                hint: 'Fatiga, exceso de velocidad, conducción bajo presión o sin capacitación aumentan el riesgo de accidentes.',
+            },
+            {
+                id: 'mantenimiento', tipo: 'MANTENIMIENTO',
+                text: '¿Los vehículos tienen un programa de mantenimiento preventivo documentado y se verifica su estado antes de cada uso?',
+                hint: 'La falta de revisiones periódicas provoca fallas mecánicas que pueden causar accidentes graves.',
+            },
+            {
+                id: 'normativa', tipo: 'NORMATIVA VIAL',
+                text: '¿Los conductores y vehículos tienen al día licencias, documentos, revisión técnico-mecánica y SOAT vigentes?',
+                hint: 'Incumplir la normativa vial genera multas, inmovilizaciones y responsabilidad legal ante accidentes.',
+            },
+            {
+                id: 'condiciones', tipo: 'CONDICIONES DE RUTA',
+                text: '¿Los vehículos circulan por vías en mal estado, zonas de alto riesgo, en condiciones climáticas adversas o transportan cargas especiales?',
+                hint: 'Vías peligrosas, lluvia intensa, derrumbes o cargas indebidas incrementan el riesgo de accidentes.',
+            },
         ]
     },
 };
@@ -87,7 +225,7 @@ const CATEGORY_CONFIG: Record<string, {
 // ─── Types ────────────────────────────────────────────────────────────
 type WizardStep = 'intro' | 'questions' | 'generating' | 'review' | 'action_plans' | 'saving' | 'done';
 
-interface WizardAnswer { questionId: string; question: string; answer: 'si' | 'no'; }
+interface WizardAnswer { questionId: string; tipo: string; question: string; answer: 'si' | 'no'; }
 
 interface GeneratedRisk {
     type: string; description: string; caused_by: string;
@@ -177,7 +315,7 @@ export default function CategoryPage() {
     // ── Wizard logic ──
     const handleAnswer = (answer: 'si' | 'no') => {
         const q = config.questions[questionIdx];
-        const newAnswers = [...answers, { questionId: q.id, question: q.text, answer }];
+        const newAnswers = [...answers, { questionId: q.id, tipo: q.tipo, question: q.text, answer }];
         setAnswers(newAnswers);
 
         if (questionIdx < config.questions.length - 1) {
@@ -445,8 +583,9 @@ export default function CategoryPage() {
                                 <div className="text-5xl mb-4">{config.emoji}</div>
                                 <h2 className="text-xl font-black text-slate-900 mb-3">Identificar riesgos de {config.name}</h2>
                                 <p className="text-slate-500 mb-6 leading-relaxed">
-                                    Te haré <strong>{config.questions.length} preguntas simples</strong> sobre tu empresa.
-                                    Con tus respuestas generaré una lista de riesgos específicos para tu operación.
+                                    Teniendo en cuenta los posibles <strong>peligros y riesgos</strong> que se presentan
+                                    en las empresas, te haremos unas preguntas para identificar cuáles aplican
+                                    a tu operación.
                                 </p>
                                 <div className="bg-slate-50 rounded-xl p-4 mb-6 text-left">
                                     <p className="text-xs font-bold text-slate-500 uppercase mb-2">¿Cómo funciona?</p>
@@ -477,6 +616,10 @@ export default function CategoryPage() {
                                     </div>
                                 )}
                                 <div style={{ animation: animDir === 'in' ? 'fadeSlideIn 0.25s ease' : 'fadeSlideOut 0.2s ease' }}>
+                                    <span className="inline-block text-xs font-black px-3 py-1 rounded-full text-white mb-3"
+                                        style={{ backgroundColor: color }}>
+                                        {config.questions[questionIdx].tipo}
+                                    </span>
                                     <p className="text-xl font-bold text-slate-900 mb-3 leading-snug">
                                         {config.questions[questionIdx].text}
                                     </p>

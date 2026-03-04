@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface WizardAnswer {
     questionId: string;
+    tipo: string;
     question: string;
     answer: 'si' | 'no';
 }
@@ -54,8 +55,12 @@ export async function POST(request: Request) {
 
         // Only include "si" answers — those indicate relevant risks
         const relevantAnswers = answers.filter(a => a.answer === 'si');
-        const allAnswers = answers.map(a => `- "${a.question}" → ${a.answer === 'si' ? 'SÍ' : 'NO'}`).join('\n');
+        const noAnswers = answers.filter(a => a.answer === 'no');
         const categoryName = CATEGORY_NAMES[categoryCode] || categoryCode;
+
+        // Build context: types confirmed (SÍ) and ruled out (NO)
+        const tiposAplicables = relevantAnswers.map(a => `- Tipo ${a.tipo}: "${a.question}"`).join('\n');
+        const tiposNoAplicables = noAnswers.map(a => `- Tipo ${a.tipo}`).join('\n');
 
         const prompt = `
 Eres un consultor experto en gestión de riesgos empresariales. Tu tarea es generar riesgos CONCRETOS y PRÁCTICOS para una empresa.
@@ -63,11 +68,17 @@ Eres un consultor experto en gestión de riesgos empresariales. Tu tarea es gene
 Categoría de riesgo: ${categoryName}
 Empresa: ${companyName || 'Empresa pequeña o mediana colombiana'}
 
-El usuario respondió estas preguntas sobre su empresa:
-${allAnswers}
+Se evaluaron los siguientes tipos de riesgo de la categoría ${categoryName} y el usuario confirmó cuáles aplican a su empresa:
 
-Basándote SOLO en las respuestas "SÍ" (que indican que esa situación aplica), genera entre ${Math.max(2, relevantAnswers.length)} y ${Math.min(6, relevantAnswers.length + 2)} riesgos específicos.
-Si no hay respuestas "SÍ", genera 3 riesgos comunes de la categoría ${categoryName}.
+TIPOS DE RIESGO QUE SÍ APLICAN A LA EMPRESA:
+${tiposAplicables || '(ninguno confirmado explícitamente)'}
+
+TIPOS DE RIESGO QUE NO APLICAN:
+${tiposNoAplicables || '(ninguno descartado)'}
+
+Genera ${relevantAnswers.length > 0 ? `entre ${Math.max(2, relevantAnswers.length)} y ${Math.min(6, relevantAnswers.length + 2)} riesgos` : '3 riesgos comunes'} ESPECÍFICOS para los tipos confirmados.
+Cada riesgo generado debe tener en el campo "type" el nombre exacto del tipo de riesgo al que corresponde (ej: "BIOLÓGICO", "PSICOSOCIAL", "IMAGEN", etc.).
+Si no hay tipos confirmados, genera 3 riesgos representativos de la categoría ${categoryName}.
 
 Reglas:
 1. Usa lenguaje SIMPLE y CLARO, sin tecnicismos. El usuario no es experto.
@@ -80,7 +91,7 @@ Reglas:
 
 Estructura de cada objeto:
 {
-  "type": "Tipo corto (1-3 palabras)",
+  "type": "Nombre exacto del tipo de riesgo (ej: BIOLÓGICO, IMAGEN, FINANCIERO)",
   "description": "Descripción clara del riesgo (máx 15 palabras)",
   "caused_by": "Causa principal en lenguaje simple",
   "impact": "Consecuencia concreta para la empresa",

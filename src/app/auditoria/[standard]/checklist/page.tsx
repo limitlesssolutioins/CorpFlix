@@ -43,6 +43,20 @@ function groupByChapter(items: ChecklistItem[]) {
     );
 }
 
+// Returns indent level based on dots in requirement_code
+// "4.1" → 0, "4.4.1" → 1, "7.1.5.1" → 2
+function getIndentLevel(code: string): number {
+    const dots = (code.match(/\./g) || []).length;
+    return Math.max(0, dots - 1);
+}
+
+// Group consecutive items under their parent code prefix for visual grouping
+function getParentCode(code: string): string | null {
+    const parts = code.split('.');
+    if (parts.length <= 2) return null;
+    return parts.slice(0, -1).join('.');
+}
+
 export default function ChecklistPage() {
     const params = useParams();
     const searchParams = useSearchParams();
@@ -335,24 +349,41 @@ export default function ChecklistPage() {
                             {/* Requirements */}
                             {!isCollapsed && (
                                 <div className="border-t border-slate-100">
-                                    {chapter.items.map((item) => {
+                                    {chapter.items.map((item, itemIdx) => {
                                         const f = findings.get(item.id);
                                         const isCumple = f?.type_id === CUMPLE_ID;
                                         const isNC = f?.type_id === NC_ID;
                                         const isExpanded = expandedItems.has(item.id);
                                         const bgColor = isCumple ? '#10b98108' : isNC ? '#ef444408' : 'transparent';
+                                        const indent = getIndentLevel(item.requirement_code);
+                                        const parentCode = getParentCode(item.requirement_code);
+
+                                        // Show section divider when starting a new parent group
+                                        const prevItem = chapter.items[itemIdx - 1];
+                                        const prevParent = prevItem ? getParentCode(prevItem.requirement_code) : null;
+                                        const showGroupHeader = indent > 0 && parentCode !== prevParent;
 
                                         return (
+                                            <div key={item.id}>
+                                                {showGroupHeader && parentCode && (
+                                                    <div className="px-4 py-1.5 bg-slate-50 border-b border-slate-100 border-t border-slate-100">
+                                                        <span className="text-xs font-mono font-bold text-slate-400">{parentCode}</span>
+                                                    </div>
+                                                )}
                                             <div
-                                                key={item.id}
                                                 className="border-b border-slate-50 last:border-0"
-                                                style={{ backgroundColor: bgColor }}
+                                                style={{ backgroundColor: bgColor, paddingLeft: indent > 0 ? `${indent * 16 + 4}px` : undefined }}
                                             >
-                                                <div className="p-4">
+                                                <div className="p-4" style={indent > 0 ? { paddingLeft: '16px' } : {}}>
                                                     <div className="flex items-start gap-3">
-                                                        {/* Code badge */}
-                                                        <div className="shrink-0 mt-0.5">
-                                                            <span className="text-xs font-mono font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                                                        {/* Indent indicator + Code badge */}
+                                                        <div className="shrink-0 mt-0.5 flex items-center gap-1.5">
+                                                            {indent > 0 && <div className="w-3 h-px bg-slate-300 shrink-0" />}
+                                                            <span className={`text-xs font-mono font-black px-2 py-0.5 rounded ${
+                                                                indent === 0 ? 'text-slate-600 bg-slate-100' :
+                                                                indent === 1 ? 'text-slate-500 bg-slate-50 border border-slate-200' :
+                                                                'text-slate-400 bg-white border border-slate-200'
+                                                            }`}>
                                                                 {item.requirement_code}
                                                             </span>
                                                         </div>
@@ -476,6 +507,7 @@ export default function ChecklistPage() {
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
                                             </div>
                                         );
                                     })}

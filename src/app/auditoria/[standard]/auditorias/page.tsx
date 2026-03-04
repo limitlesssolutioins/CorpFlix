@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Calendar, Filter, Search, Clock, CheckCircle2, ClipboardList, FileText, Award } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, Filter, Search, Clock, CheckCircle2, ClipboardList, FileText, Award, FileCheck } from 'lucide-react';
 
 interface AuditStandard { id: number; code: string; name: string; color: string; }
+interface TeamMember { auditorId: number; name: string; role: string; role_in_audit: string; }
 interface Audit {
     id: number; audit_code: string; audit_type_name: string;
     audit_date: string; auditor_name: string; scope: string; status: string;
+    team?: TeamMember[];
 }
 
 export default function StandardAuditoriasPage() {
@@ -45,8 +47,21 @@ export default function StandardAuditoriasPage() {
 
             if (found) {
                 const res = await fetch(`/api/auditoria/audits?standard_id=${found.id}`);
-                const data = await res.json();
-                setAudits(Array.isArray(data) ? data : []);
+                const data: Audit[] = await res.json();
+                const list = Array.isArray(data) ? data : [];
+
+                // Load teams in parallel
+                const withTeams = await Promise.all(list.map(async audit => {
+                    try {
+                        const teamRes = await fetch(`/api/auditoria/audit-team?audit_id=${audit.id}`);
+                        const team = await teamRes.json();
+                        return { ...audit, team: Array.isArray(team) ? team : [] };
+                    } catch {
+                        return { ...audit, team: [] };
+                    }
+                }));
+
+                setAudits(withTeams);
             }
         } catch (e) { console.error(e); }
         finally { setLoading(false); }
@@ -145,21 +160,37 @@ export default function StandardAuditoriasPage() {
                                     <h3 className="font-bold text-slate-900">{audit.audit_type_name || 'Auditoría Interna'}</h3>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4 text-sm">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3 text-sm">
                                 <div>
                                     <div className="text-xs font-bold text-slate-400 uppercase mb-0.5">Fecha</div>
                                     <div className="text-slate-700 font-semibold">{formatDate(audit.audit_date)}</div>
                                 </div>
                                 <div>
-                                    <div className="text-xs font-bold text-slate-400 uppercase mb-0.5">Auditor</div>
-                                    <div className="text-slate-700">{audit.auditor_name || 'No asignado'}</div>
-                                </div>
-                                <div>
                                     <div className="text-xs font-bold text-slate-400 uppercase mb-0.5">Alcance</div>
                                     <div className="text-slate-700 truncate">{audit.scope || 'No definido'}</div>
                                 </div>
+                                <div>
+                                    <div className="text-xs font-bold text-slate-400 uppercase mb-0.5">Equipo Auditor</div>
+                                    {audit.team && audit.team.length > 0 ? (
+                                        <div className="flex flex-wrap gap-1">
+                                            {audit.team.map((m: any) => (
+                                                <span key={m.auditor_id || m.auditorId} className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                                                    {m.name}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-slate-500 text-sm">{audit.auditor_name || 'Sin asignar'}</div>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex gap-2 flex-wrap">
+                                <Link
+                                    href={`${standardPath}/plan?audit_id=${audit.id}`}
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700"
+                                >
+                                    <FileCheck size={14} /> Plan de Auditoría
+                                </Link>
                                 <Link
                                     href={`${standardPath}/checklist?audit_id=${audit.id}`}
                                     className="flex items-center gap-1.5 px-4 py-2 text-white rounded-lg text-sm font-semibold hover:opacity-90"

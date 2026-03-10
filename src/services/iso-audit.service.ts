@@ -467,6 +467,27 @@ class ISOAuditService {
         // Ensure ISO 9001 sub-requirements exist (3-level hierarchy from Excel)
         this.ensureISO9001SubRequirements();
 
+        // Ensure requirement variables tables
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS requirement_variables (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                requirement_id INTEGER NOT NULL,
+                variable_text TEXT NOT NULL,
+                variable_order INTEGER DEFAULT 0,
+                FOREIGN KEY (requirement_id) REFERENCES iso_requirements(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS finding_variable_answers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                audit_id INTEGER NOT NULL,
+                requirement_id INTEGER NOT NULL,
+                variable_id INTEGER NOT NULL,
+                answer TEXT DEFAULT NULL,
+                UNIQUE(audit_id, requirement_id, variable_id),
+                FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
+                FOREIGN KEY (variable_id) REFERENCES requirement_variables(id) ON DELETE CASCADE
+            );
+        `);
+
         // Ensure new tables exist (additive, safe to run on existing DBs)
         this.db.exec(`
             CREATE TABLE IF NOT EXISTS audit_auditors (
@@ -1062,6 +1083,42 @@ class ISOAuditService {
     // DASHBOARD
     // ===================================================
 
+    // ===================================================
+    // REQUIREMENT VARIABLES
+    // ===================================================
+
+    getRequirementVariables(requirementId: number): any[] {
+        return this.db.prepare(
+            'SELECT * FROM requirement_variables WHERE requirement_id = ? ORDER BY variable_order'
+        ).all(requirementId);
+    }
+
+    saveRequirementVariables(requirementId: number, variables: string[]): any[] {
+        this.db.prepare('DELETE FROM requirement_variables WHERE requirement_id = ?').run(requirementId);
+        const stmt = this.db.prepare(
+            'INSERT INTO requirement_variables (requirement_id, variable_text, variable_order) VALUES (?, ?, ?)'
+        );
+        for (let i = 0; i < variables.length; i++) {
+            stmt.run(requirementId, variables[i], i);
+        }
+        return this.getRequirementVariables(requirementId);
+    }
+
+    getBulkVariableAnswers(auditId: number): any[] {
+        return this.db.prepare(
+            'SELECT * FROM finding_variable_answers WHERE audit_id = ?'
+        ).all(auditId);
+    }
+
+    saveVariableAnswer(auditId: number, requirementId: number, variableId: number, answer: string): void {
+        this.db.prepare(`
+            INSERT INTO finding_variable_answers (audit_id, requirement_id, variable_id, answer)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(audit_id, requirement_id, variable_id) DO UPDATE SET answer = excluded.answer
+        `).run(auditId, requirementId, variableId, answer);
+    }
+
+    // ===================================================
     getDashboardKPIs(standardId?: number) {
         const stdFilter = standardId ? ' AND a.standard_id = ?' : '';
         const stdParams = standardId ? [standardId] : [];

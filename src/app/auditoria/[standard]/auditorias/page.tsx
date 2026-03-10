@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
     ArrowLeft, Plus, Calendar, Search, Clock, CheckCircle2, ClipboardList,
-    FileText, Award, FileCheck, Activity, ChevronDown, Users, Loader2,
+    FileText, ShieldCheck, FileCheck, Activity, ChevronDown, Users, Loader2,
 } from 'lucide-react';
 
 interface AuditStandard { id: number; code: string; name: string; color: string; }
@@ -258,10 +258,10 @@ export default function StandardAuditoriasPage() {
                                             <ClipboardList size={13} /> Lista de Chequeo
                                         </Link>
                                         <Link
-                                            href={`${standardPath}/autoevaluacion?audit_id=${audit.id}`}
+                                            href={`${standardPath}/certificado?audit_id=${audit.id}`}
                                             className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors"
                                         >
-                                            <Award size={13} /> Autoevaluación
+                                            <ShieldCheck size={13} /> Certificado
                                         </Link>
                                         <Link
                                             href={`${standardPath}/reporte?audit_id=${audit.id}`}

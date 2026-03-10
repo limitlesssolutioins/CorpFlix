@@ -44,7 +44,24 @@ export class FinanceService {
         return DEFAULT_FINANZAS;
       }
       const fileContent = fs.readFileSync(this.dataPath, 'utf-8');
-      return JSON.parse(fileContent);
+      const saved = JSON.parse(fileContent);
+      // Deep-merge with defaults so missing nested fields never crash
+      return {
+        ...DEFAULT_FINANZAS,
+        ...saved,
+        configuracion: {
+          ...DEFAULT_FINANZAS.configuracion,
+          ...(saved.configuracion || {}),
+          prestaciones_sociales: {
+            ...DEFAULT_FINANZAS.configuracion.prestaciones_sociales,
+            ...(saved.configuracion?.prestaciones_sociales || {}),
+          },
+          overheads: {
+            ...DEFAULT_FINANZAS.configuracion.overheads,
+            ...(saved.configuracion?.overheads || {}),
+          },
+        },
+      };
     } catch {
       return DEFAULT_FINANZAS;
     }

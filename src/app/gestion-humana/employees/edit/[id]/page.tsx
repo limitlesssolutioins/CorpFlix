@@ -7,12 +7,12 @@ import { toast } from 'sonner';
 import { getEmployeeByIdAction, updateEmployeeAction } from '@/actions/employee';
 
 interface EditEmployeePageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function EditEmployeePage({ params }: EditEmployeePageProps) {
   const router = useRouter();
-  const { id } = params;
+  const { id } = React.use(params);
   const [employee, setEmployee] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -3,7 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Calendar, ClipboardCheck, AlertTriangle, CheckCircle2, Clock, FileText, Award, ClipboardList, LayoutList, Users } from 'lucide-react';
+import {
+    ArrowLeft, Plus, Calendar, ClipboardList, AlertTriangle, CheckCircle2,
+    Clock, FileText, LayoutList, Users, ChevronRight, XCircle,
+    TrendingUp, Activity, FileCheck, Award, Target,
+} from 'lucide-react';
 
 interface AuditStandard {
     id: number; code: string; name: string; full_name: string;
@@ -12,13 +16,20 @@ interface AuditStandard {
 }
 interface Audit {
     id: number; audit_code: string; audit_date: string;
-    auditor_name: string; status: string; audit_type_name: string;
+    auditor_name: string; status: string; audit_type_name: string; scope: string;
 }
 interface KPIs {
     totalAudits: number; auditsThisYear: number; totalFindings: number;
     nonConformities: number; openActions: number; overdueActions: number;
     complianceByChapter: Array<{ chapter_number: string; chapter_title: string; total_requirements: number; conformities: number; non_conformities: number }>;
+    findingsByType: Array<{ type_name: string; color: string; count: number }>;
 }
+
+const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string; icon: any }> = {
+    PLANNED: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Planificada', icon: Calendar },
+    IN_PROGRESS: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'En Ejecución', icon: Activity },
+    COMPLETED: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Completada', icon: CheckCircle2 },
+};
 
 export default function StandardDashboardPage() {
     const params = useParams();
@@ -29,9 +40,7 @@ export default function StandardDashboardPage() {
     const [kpis, setKPIs] = useState<KPIs | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadData();
-    }, [code]);
+    useEffect(() => { loadData(); }, [code]);
 
     const loadData = async () => {
         setLoading(true);
@@ -48,29 +57,15 @@ export default function StandardDashboardPage() {
 
             if (found) {
                 const filtered = allAudits.filter(a => a.standard_id === found.id);
-                setAudits(filtered.slice(0, 5));
-
+                setAudits(filtered.slice(0, 6));
                 const kpisRes = await fetch(`/api/auditoria/dashboard?standard_id=${found.id}`);
                 setKPIs(await kpisRes.json());
             }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
+        } catch (e) { console.error(e); }
+        finally { setLoading(false); }
     };
 
     const formatDate = (d: string) => new Date(d).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
-
-    const getStatusBadge = (status: string) => {
-        const map: Record<string, { bg: string; label: string }> = {
-            PLANNED: { bg: 'bg-blue-100 text-blue-700', label: 'Planificada' },
-            IN_PROGRESS: { bg: 'bg-yellow-100 text-yellow-700', label: 'En Progreso' },
-            COMPLETED: { bg: 'bg-green-100 text-green-700', label: 'Completada' },
-        };
-        const b = map[status] || map.PLANNED;
-        return <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${b.bg}`}>{b.label}</span>;
-    };
 
     if (loading) return (
         <div className="flex items-center justify-center min-h-[400px]">
@@ -86,155 +81,238 @@ export default function StandardDashboardPage() {
     );
 
     const standardPath = `/auditoria/${code.toLowerCase()}`;
-    const accentColor = standard.color;
+    const color = standard.color;
+
+    // Compliance analysis
+    const totalEvaluated = kpis?.complianceByChapter.reduce((s, c) => s + c.conformities + c.non_conformities, 0) ?? 0;
+    const totalConformities = kpis?.complianceByChapter.reduce((s, c) => s + c.conformities, 0) ?? 0;
+    const overallPct = totalEvaluated > 0 ? Math.round((totalConformities / totalEvaluated) * 100) : null;
+
+    const auditsByStatus = {
+        PLANNED: audits.filter(a => a.status === 'PLANNED').length,
+        IN_PROGRESS: audits.filter(a => a.status === 'IN_PROGRESS').length,
+        COMPLETED: audits.filter(a => a.status === 'COMPLETED').length,
+    };
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto space-y-5">
             {/* Back */}
-            <Link href="/auditoria" className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-semibold mb-6 transition-colors">
-                <ArrowLeft size={20} /> Volver a Normas
+            <Link href="/auditoria" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-semibold transition-colors text-sm">
+                <ArrowLeft size={16} /> Todos los estándares
             </Link>
 
-            {/* Header */}
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm mb-6 flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg" style={{ backgroundColor: accentColor }}>
-                        {standard.code.slice(0, 2)}
+            {/* Header card */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="h-1.5" style={{ backgroundColor: color }} />
+                <div className="p-6 flex items-start justify-between flex-wrap gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg shrink-0" style={{ backgroundColor: color }}>
+                            {standard.code.slice(0, 2)}
+                        </div>
+                        <div>
+                            <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color }}>{standard.name}</div>
+                            <h1 className="text-xl font-black text-slate-900 leading-tight">{standard.full_name.split(' - ')[1] || standard.full_name}</h1>
+                            <p className="text-sm text-slate-500 mt-1 max-w-xl">{standard.description}</p>
+                        </div>
                     </div>
-                    <div>
-                        <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: accentColor }}>{standard.name}</div>
-                        <h1 className="text-2xl font-black text-slate-900">{standard.full_name.split(' - ')[1] || standard.full_name}</h1>
-                        <p className="text-sm text-slate-500 mt-1">{standard.description}</p>
+                    <div className="flex flex-col items-end gap-2">
+                        <Link
+                            href={`${standardPath}/auditorias/nueva`}
+                            className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-semibold shadow-sm hover:opacity-90 transition-opacity whitespace-nowrap text-sm"
+                            style={{ backgroundColor: color }}
+                        >
+                            <Plus size={16} /> Nueva Auditoría
+                        </Link>
+                        {overallPct !== null && (
+                            <div className="text-right">
+                                <div className="text-2xl font-black" style={{ color }}>{overallPct}%</div>
+                                <div className="text-xs text-slate-400 font-semibold">cumplimiento evaluado</div>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <Link
-                    href={`${standardPath}/auditorias/nueva`}
-                    className="flex items-center gap-2 px-5 py-3 text-white rounded-xl font-semibold shadow-sm hover:opacity-90 transition-opacity whitespace-nowrap"
-                    style={{ backgroundColor: accentColor }}
-                >
-                    <Plus size={18} /> Nueva Auditoría
-                </Link>
             </div>
 
-            {/* KPI Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {/* KPIs */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: 'Auditorías', value: kpis?.totalAudits || 0, sub: `${kpis?.auditsThisYear || 0} este año`, icon: Calendar, bg: 'bg-blue-50', iconColor: 'text-blue-600' },
-                    { label: 'Hallazgos', value: kpis?.totalFindings || 0, sub: '', icon: ClipboardCheck, bg: 'bg-purple-50', iconColor: 'text-purple-600' },
-                    { label: 'No Conformidades', value: kpis?.nonConformities || 0, sub: '', icon: AlertTriangle, bg: 'bg-red-50', iconColor: 'text-red-600' },
-                    { label: 'Acciones Abiertas', value: kpis?.openActions || 0, sub: kpis && kpis.overdueActions > 0 ? `${kpis.overdueActions} vencidas` : '', icon: CheckCircle2, bg: 'bg-orange-50', iconColor: 'text-orange-600' },
+                    { label: 'Auditorías', value: kpis?.totalAudits ?? 0, sub: `${kpis?.auditsThisYear ?? 0} este año`, icon: Calendar, bg: 'bg-blue-50', iconColor: 'text-blue-600' },
+                    { label: 'Hallazgos', value: kpis?.totalFindings ?? 0, sub: 'total registrados', icon: ClipboardList, bg: 'bg-violet-50', iconColor: 'text-violet-600' },
+                    { label: 'No Conformidades', value: kpis?.nonConformities ?? 0, sub: 'requieren acción', icon: XCircle, bg: 'bg-red-50', iconColor: 'text-red-600' },
+                    { label: 'Acciones Abiertas', value: kpis?.openActions ?? 0, sub: kpis && kpis.overdueActions > 0 ? `⚠ ${kpis.overdueActions} vencidas` : 'sin vencer', icon: AlertTriangle, bg: kpis && kpis.overdueActions > 0 ? 'bg-orange-50' : 'bg-emerald-50', iconColor: kpis && kpis.overdueActions > 0 ? 'text-orange-600' : 'text-emerald-600' },
                 ].map(card => {
                     const Icon = card.icon;
                     return (
-                        <div key={card.label} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className={`w-10 h-10 ${card.bg} rounded-xl flex items-center justify-center`}>
-                                    <Icon className={`w-5 h-5 ${card.iconColor}`} />
-                                </div>
-                                <span className="text-2xl font-black text-slate-900">{card.value}</span>
+                        <div key={card.label} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                            <div className={`w-9 h-9 ${card.bg} rounded-xl flex items-center justify-center mb-3`}>
+                                <Icon className={`w-5 h-5 ${card.iconColor}`} />
                             </div>
-                            <p className="text-sm font-semibold text-slate-600">{card.label}</p>
-                            {card.sub && <p className="text-xs text-slate-400 mt-0.5">{card.sub}</p>}
+                            <div className="text-2xl font-black text-slate-900">{card.value}</div>
+                            <p className="text-xs font-bold text-slate-600 mt-0.5">{card.label}</p>
+                            <p className="text-xs text-slate-400">{card.sub}</p>
                         </div>
                     );
                 })}
             </div>
 
-            {/* Quick links */}
-            <div className="flex flex-wrap gap-3 mb-6">
-                <Link href={`${standardPath}/auditorias`}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
-                    <ClipboardList size={16} className="text-slate-500" /> Auditorías
-                </Link>
-                <Link href={`${standardPath}/checklist`}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
-                    <ClipboardCheck size={16} className="text-slate-500" /> Lista de Chequeo
-                </Link>
-                <Link href={`${standardPath}/programa`}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
-                    <LayoutList size={16} className="text-slate-500" /> Programa de Auditoría
-                </Link>
-                <Link href="/auditoria/equipo"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:border-slate-300 hover:shadow-sm transition-all">
-                    <Users size={16} className="text-slate-500" /> Equipo Auditor
-                </Link>
+            {/* Navigation actions */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                    { href: `${standardPath}/auditorias`, icon: ClipboardList, label: 'Auditorías', desc: 'Gestionar todas' },
+                    { href: `${standardPath}/programa`, icon: LayoutList, label: 'Programa', desc: 'Plan anual' },
+                    { href: '/auditoria/acciones-correctivas', icon: AlertTriangle, label: 'Acciones NC', desc: 'Seguimiento' },
+                    { href: '/auditoria/equipo', icon: Users, label: 'Equipo', desc: 'Auditores' },
+                ].map(item => {
+                    const Icon = item.icon;
+                    return (
+                        <Link key={item.href} href={item.href}
+                            className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}18`, color }}>
+                                <Icon size={16} />
+                            </div>
+                            <div className="min-w-0">
+                                <div className="text-sm font-bold text-slate-800">{item.label}</div>
+                                <div className="text-xs text-slate-400">{item.desc}</div>
+                            </div>
+                            <ChevronRight size={14} className="ml-auto text-slate-300 group-hover:text-slate-500 shrink-0" />
+                        </Link>
+                    );
+                })}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
                 {/* Compliance by chapter */}
                 {kpis && kpis.complianceByChapter.length > 0 && (
-                    <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                        <h2 className="text-lg font-bold text-slate-900 mb-4">Cumplimiento por Capítulo</h2>
+                    <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                        <div className="flex items-center gap-2 mb-5">
+                            <Target size={18} style={{ color }} />
+                            <h2 className="text-base font-bold text-slate-900">Cumplimiento por Capítulo</h2>
+                            {overallPct !== null && (
+                                <span className="ml-auto text-xs font-bold px-2 py-1 rounded-full" style={{ backgroundColor: `${color}18`, color }}>
+                                    {overallPct}% global
+                                </span>
+                            )}
+                        </div>
                         <div className="space-y-3">
                             {kpis.complianceByChapter.map(ch => {
-                                const pct = ch.total_requirements > 0 ? Math.round((ch.conformities / ch.total_requirements) * 100) : 0;
+                                const evaluated = ch.conformities + ch.non_conformities;
+                                const pct = evaluated > 0 ? Math.round((ch.conformities / evaluated) * 100) : null;
+                                const barColor = pct === null ? '#e2e8f0' : pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444';
+
                                 return (
-                                    <div key={ch.chapter_number}>
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-sm font-semibold text-slate-700 truncate max-w-[70%]">
-                                                {ch.chapter_number}. {ch.chapter_title}
-                                            </span>
-                                            <span className="text-sm font-black text-slate-900 ml-2">{pct}%</span>
+                                    <div key={ch.chapter_number} className="group">
+                                        <div className="flex items-center justify-between mb-1.5">
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <span className="text-xs font-black font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 shrink-0">{ch.chapter_number}</span>
+                                                <span className="text-xs font-semibold text-slate-700 truncate">{ch.chapter_title}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 ml-2 shrink-0">
+                                                {ch.non_conformities > 0 && (
+                                                    <span className="text-xs font-bold text-red-600">{ch.non_conformities} NC</span>
+                                                )}
+                                                <span className="text-sm font-black" style={{ color: pct === null ? '#94a3b8' : barColor }}>
+                                                    {pct === null ? '—' : `${pct}%`}
+                                                </span>
+                                            </div>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-2">
                                             <div
-                                                className={`h-2 rounded-full transition-all ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-400' : 'bg-red-400'}`}
-                                                style={{ width: `${pct}%` }}
+                                                className="h-2 rounded-full transition-all duration-500"
+                                                style={{ width: `${pct ?? 0}%`, backgroundColor: barColor }}
                                             />
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
+                        {kpis.complianceByChapter.every(c => c.conformities + c.non_conformities === 0) && (
+                            <p className="text-center text-sm text-slate-400 mt-4">Sin evaluaciones registradas aún</p>
+                        )}
                     </div>
                 )}
 
-                {/* Recent audits */}
-                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-bold text-slate-900">Últimas Auditorías</h2>
-                        <Link href={`${standardPath}/auditorias`} className="text-sm font-semibold" style={{ color: accentColor }}>
-                            Ver todas →
-                        </Link>
-                    </div>
-                    {audits.length === 0 ? (
-                        <div className="text-center py-8">
-                            <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                            <p className="text-slate-400 text-sm">No hay auditorías registradas</p>
-                            <Link href={`${standardPath}/auditorias/nueva`} className="mt-3 inline-flex items-center gap-1 text-sm font-semibold" style={{ color: accentColor }}>
-                                <Plus size={14} /> Crear primera auditoría
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="space-y-3">
-                            {audits.map(audit => (
-                                <div key={audit.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-0.5">
-                                            {getStatusBadge(audit.status)}
-                                            <span className="text-xs text-slate-400 font-mono">{audit.audit_code}</span>
+                {/* Recent audits + pipeline */}
+                <div className={`${kpis && kpis.complianceByChapter.length > 0 ? 'lg:col-span-2' : 'lg:col-span-5'} space-y-4`}>
+                    {/* Audit pipeline */}
+                    <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                        <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-3">Estado del Programa</h2>
+                        <div className="space-y-2">
+                            {[
+                                { key: 'PLANNED', label: 'Planificadas', count: auditsByStatus.PLANNED, icon: Calendar, color: '#3b82f6' },
+                                { key: 'IN_PROGRESS', label: 'En Ejecución', count: auditsByStatus.IN_PROGRESS, icon: Activity, color: '#f59e0b' },
+                                { key: 'COMPLETED', label: 'Completadas', count: auditsByStatus.COMPLETED, icon: CheckCircle2, color: '#22c55e' },
+                            ].map(s => {
+                                const Icon = s.icon;
+                                const total = Object.values(auditsByStatus).reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? (s.count / total) * 100 : 0;
+                                return (
+                                    <div key={s.key} className="flex items-center gap-3">
+                                        <Icon size={14} style={{ color: s.color }} className="shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-xs font-semibold text-slate-600">{s.label}</span>
+                                                <span className="text-xs font-black text-slate-800">{s.count}</span>
+                                            </div>
+                                            <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                                <div className="h-1.5 rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: s.color }} />
+                                            </div>
                                         </div>
-                                        <p className="text-sm text-slate-600">{formatDate(audit.audit_date)} · {audit.auditor_name || 'Sin auditor'}</p>
                                     </div>
-                                    <div className="flex gap-1.5">
-                                        <Link
-                                            href={`${standardPath}/checklist?audit_id=${audit.id}`}
-                                            className="text-xs px-2.5 py-1.5 rounded-lg font-semibold text-white hover:opacity-90 flex items-center gap-1"
-                                            style={{ backgroundColor: accentColor }}
-                                        >
-                                            <ClipboardList size={12} /> Checklist
-                                        </Link>
-                                        <Link
-                                            href={`${standardPath}/reporte?audit_id=${audit.id}`}
-                                            className="text-xs px-2.5 py-1.5 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 flex items-center gap-1"
-                                        >
-                                            <FileText size={12} /> Informe
-                                        </Link>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
-                    )}
+                        {kpis?.totalAudits === 0 && (
+                            <p className="text-center text-xs text-slate-400 mt-3">No hay auditorías registradas</p>
+                        )}
+                    </div>
+
+                    {/* Recent audits */}
+                    <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide">Últimas Auditorías</h2>
+                            <Link href={`${standardPath}/auditorias`} className="text-xs font-bold" style={{ color }}>Ver todas →</Link>
+                        </div>
+                        {audits.length === 0 ? (
+                            <div className="text-center py-6">
+                                <Calendar className="w-10 h-10 text-slate-200 mx-auto mb-2" />
+                                <p className="text-sm text-slate-400">Sin auditorías aún</p>
+                                <Link href={`${standardPath}/auditorias/nueva`}
+                                    className="mt-2 inline-flex items-center gap-1 text-xs font-bold" style={{ color }}>
+                                    <Plus size={12} /> Crear primera
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {audits.map(audit => {
+                                    const st = STATUS_CONFIG[audit.status] || STATUS_CONFIG.PLANNED;
+                                    const Icon = st.icon;
+                                    return (
+                                        <div key={audit.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center gap-2 mb-0.5">
+                                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>
+                                                        <Icon size={10} />{st.label}
+                                                    </span>
+                                                    <span className="text-xs text-slate-400 font-mono">{audit.audit_code}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-500 truncate">{formatDate(audit.audit_date)}</p>
+                                            </div>
+                                            <div className="flex gap-1 shrink-0 ml-2">
+                                                <Link href={`${standardPath}/checklist?audit_id=${audit.id}`}
+                                                    className="p-1.5 rounded-lg text-white text-xs font-bold hover:opacity-90" style={{ backgroundColor: color }} title="Checklist">
+                                                    <ClipboardList size={12} />
+                                                </Link>
+                                                <Link href={`${standardPath}/reporte?audit_id=${audit.id}`}
+                                                    className="p-1.5 rounded-lg text-white text-xs font-bold bg-slate-600 hover:bg-slate-700" title="Informe">
+                                                    <FileText size={12} />
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

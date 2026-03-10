@@ -5,8 +5,8 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
     ArrowLeft, Plus, Calendar, ClipboardList, AlertTriangle, CheckCircle2,
-    Clock, FileText, LayoutList, Users, ChevronRight, XCircle,
-    TrendingUp, Activity, FileCheck, Award, Target,
+    FileText, Users, ChevronRight, Activity, FileCheck, LayoutList,
+    ArrowRight, Target,
 } from 'lucide-react';
 
 interface AuditStandard {
@@ -16,20 +16,13 @@ interface AuditStandard {
 }
 interface Audit {
     id: number; audit_code: string; audit_date: string;
-    auditor_name: string; status: string; audit_type_name: string; scope: string;
+    auditor_name: string; status: string; scope: string;
 }
 interface KPIs {
     totalAudits: number; auditsThisYear: number; totalFindings: number;
     nonConformities: number; openActions: number; overdueActions: number;
     complianceByChapter: Array<{ chapter_number: string; chapter_title: string; total_requirements: number; conformities: number; non_conformities: number }>;
-    findingsByType: Array<{ type_name: string; color: string; count: number }>;
 }
-
-const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string; icon: any }> = {
-    PLANNED: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Planificada', icon: Calendar },
-    IN_PROGRESS: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'En Ejecución', icon: Activity },
-    COMPLETED: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Completada', icon: CheckCircle2 },
-};
 
 export default function StandardDashboardPage() {
     const params = useParams();
@@ -50,14 +43,18 @@ export default function StandardDashboardPage() {
                 fetch('/api/auditoria/audits'),
             ]);
             const stds: AuditStandard[] = await stdsRes.json();
-            const allAudits: any[] = await auditsRes.json();
-
+            const allAudits: Audit[] = await auditsRes.json();
             const found = stds.find(s => s.code === code);
             setStandard(found || null);
-
             if (found) {
-                const filtered = allAudits.filter(a => a.standard_id === found.id);
-                setAudits(filtered.slice(0, 6));
+                const filtered = allAudits
+                    .filter(a => (a as any).standard_id === found.id)
+                    .sort((a, b) => {
+                        // IN_PROGRESS first, then PLANNED, then COMPLETED
+                        const order: Record<string, number> = { IN_PROGRESS: 0, PLANNED: 1, COMPLETED: 2 };
+                        return (order[a.status] ?? 3) - (order[b.status] ?? 3);
+                    });
+                setAudits(filtered.slice(0, 8));
                 const kpisRes = await fetch(`/api/auditoria/dashboard?standard_id=${found.id}`);
                 setKPIs(await kpisRes.json());
             }
@@ -65,253 +62,278 @@ export default function StandardDashboardPage() {
         finally { setLoading(false); }
     };
 
-    const formatDate = (d: string) => new Date(d).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+    const formatDate = (d: string) => new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
 
     if (loading) return (
         <div className="flex items-center justify-center min-h-[400px]">
-            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
     );
 
     if (!standard) return (
-        <div className="max-w-2xl mx-auto text-center py-20">
-            <p className="text-slate-500 text-lg">Norma no encontrada: {code}</p>
-            <Link href="/auditoria" className="mt-4 inline-block text-blue-600 font-semibold">← Volver</Link>
+        <div className="max-w-xl mx-auto text-center py-20">
+            <p className="text-slate-500">Norma no encontrada: {code}</p>
+            <Link href="/auditoria" className="mt-3 inline-block text-blue-600 font-semibold text-sm">← Volver</Link>
         </div>
     );
 
+    const color = standard.color || '#3b82f6';
     const standardPath = `/auditoria/${code.toLowerCase()}`;
-    const color = standard.color;
 
-    // Compliance analysis
-    const totalEvaluated = kpis?.complianceByChapter.reduce((s, c) => s + c.conformities + c.non_conformities, 0) ?? 0;
-    const totalConformities = kpis?.complianceByChapter.reduce((s, c) => s + c.conformities, 0) ?? 0;
-    const overallPct = totalEvaluated > 0 ? Math.round((totalConformities / totalEvaluated) * 100) : null;
+    const activeAudit = audits.find(a => a.status === 'IN_PROGRESS');
+    const plannedAudits = audits.filter(a => a.status === 'PLANNED');
+    const completedAudits = audits.filter(a => a.status === 'COMPLETED');
 
-    const auditsByStatus = {
-        PLANNED: audits.filter(a => a.status === 'PLANNED').length,
-        IN_PROGRESS: audits.filter(a => a.status === 'IN_PROGRESS').length,
-        COMPLETED: audits.filter(a => a.status === 'COMPLETED').length,
-    };
+    const overallPct = (() => {
+        if (!kpis?.complianceByChapter?.length) return null;
+        const ev = kpis.complianceByChapter.reduce((s, c) => s + c.conformities + c.non_conformities, 0);
+        const conf = kpis.complianceByChapter.reduce((s, c) => s + c.conformities, 0);
+        return ev > 0 ? Math.round((conf / ev) * 100) : null;
+    })();
 
     return (
-        <div className="max-w-7xl mx-auto space-y-5">
+        <div className="max-w-5xl mx-auto space-y-5">
+
             {/* Back */}
-            <Link href="/auditoria" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-semibold transition-colors text-sm">
-                <ArrowLeft size={16} /> Todos los estándares
+            <Link href="/auditoria" className="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-700 text-sm font-semibold transition-colors">
+                <ArrowLeft size={15} /> Todas las normas
             </Link>
 
-            {/* Header card */}
+            {/* Standard header */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="h-1.5" style={{ backgroundColor: color }} />
-                <div className="p-6 flex items-start justify-between flex-wrap gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg shrink-0" style={{ backgroundColor: color }}>
-                            {standard.code.slice(0, 2)}
+                <div className="h-1" style={{ backgroundColor: color }} />
+                <div className="p-5 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shrink-0" style={{ backgroundColor: color }}>
+                            {standard.code.slice(0, 3)}
                         </div>
                         <div>
-                            <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color }}>{standard.name}</div>
-                            <h1 className="text-xl font-black text-slate-900 leading-tight">{standard.full_name.split(' - ')[1] || standard.full_name}</h1>
-                            <p className="text-sm text-slate-500 mt-1 max-w-xl">{standard.description}</p>
+                            <div className="text-xs font-black uppercase tracking-wide" style={{ color }}>{standard.name}</div>
+                            <h1 className="font-black text-slate-900">{standard.full_name.split(' - ')[1] || standard.full_name}</h1>
                         </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                        <Link
-                            href={`${standardPath}/auditorias/nueva`}
-                            className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-semibold shadow-sm hover:opacity-90 transition-opacity whitespace-nowrap text-sm"
-                            style={{ backgroundColor: color }}
-                        >
-                            <Plus size={16} /> Nueva Auditoría
-                        </Link>
-                        {overallPct !== null && (
-                            <div className="text-right">
-                                <div className="text-2xl font-black" style={{ color }}>{overallPct}%</div>
-                                <div className="text-xs text-slate-400 font-semibold">cumplimiento evaluado</div>
-                            </div>
-                        )}
-                    </div>
+                    <Link href={`${standardPath}/auditorias/nueva`}
+                        className="flex items-center gap-2 px-4 py-2.5 text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity shrink-0"
+                        style={{ backgroundColor: color }}>
+                        <Plus size={16} /> Nueva Auditoría
+                    </Link>
                 </div>
             </div>
 
-            {/* KPIs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: 'Auditorías', value: kpis?.totalAudits ?? 0, sub: `${kpis?.auditsThisYear ?? 0} este año`, icon: Calendar, bg: 'bg-blue-50', iconColor: 'text-blue-600' },
-                    { label: 'Hallazgos', value: kpis?.totalFindings ?? 0, sub: 'total registrados', icon: ClipboardList, bg: 'bg-violet-50', iconColor: 'text-violet-600' },
-                    { label: 'No Conformidades', value: kpis?.nonConformities ?? 0, sub: 'requieren acción', icon: XCircle, bg: 'bg-red-50', iconColor: 'text-red-600' },
-                    { label: 'Acciones Abiertas', value: kpis?.openActions ?? 0, sub: kpis && kpis.overdueActions > 0 ? `⚠ ${kpis.overdueActions} vencidas` : 'sin vencer', icon: AlertTriangle, bg: kpis && kpis.overdueActions > 0 ? 'bg-orange-50' : 'bg-emerald-50', iconColor: kpis && kpis.overdueActions > 0 ? 'text-orange-600' : 'text-emerald-600' },
-                ].map(card => {
-                    const Icon = card.icon;
-                    return (
-                        <div key={card.label} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
-                            <div className={`w-9 h-9 ${card.bg} rounded-xl flex items-center justify-center mb-3`}>
-                                <Icon className={`w-5 h-5 ${card.iconColor}`} />
+            {/* ─── AUDITORÍA EN CURSO ─── */}
+            {activeAudit && (
+                <div className="rounded-2xl border-2 overflow-hidden" style={{ borderColor: color }}>
+                    <div className="px-5 py-3 flex items-center gap-2 text-white text-sm font-bold" style={{ backgroundColor: color }}>
+                        <Activity size={15} className="animate-pulse" /> Auditoría en Ejecución
+                    </div>
+                    <div className="bg-white p-5 flex items-center justify-between gap-4 flex-wrap">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="font-mono text-xs text-slate-400">{activeAudit.audit_code}</span>
                             </div>
-                            <div className="text-2xl font-black text-slate-900">{card.value}</div>
-                            <p className="text-xs font-bold text-slate-600 mt-0.5">{card.label}</p>
-                            <p className="text-xs text-slate-400">{card.sub}</p>
+                            <p className="font-semibold text-slate-800">{formatDate(activeAudit.audit_date)}</p>
+                            {activeAudit.scope && <p className="text-sm text-slate-500 mt-0.5">{activeAudit.scope}</p>}
                         </div>
-                    );
-                })}
-            </div>
-
-            {/* Navigation actions */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                    { href: `${standardPath}/auditorias`, icon: ClipboardList, label: 'Auditorías', desc: 'Gestionar todas' },
-                    { href: `${standardPath}/programa`, icon: LayoutList, label: 'Programa', desc: 'Plan anual' },
-                    { href: '/auditoria/acciones-correctivas', icon: AlertTriangle, label: 'Acciones NC', desc: 'Seguimiento' },
-                    { href: '/auditoria/equipo', icon: Users, label: 'Equipo', desc: 'Auditores' },
-                ].map(item => {
-                    const Icon = item.icon;
-                    return (
-                        <Link key={item.href} href={item.href}
-                            className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group">
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}18`, color }}>
-                                <Icon size={16} />
-                            </div>
-                            <div className="min-w-0">
-                                <div className="text-sm font-bold text-slate-800">{item.label}</div>
-                                <div className="text-xs text-slate-400">{item.desc}</div>
-                            </div>
-                            <ChevronRight size={14} className="ml-auto text-slate-300 group-hover:text-slate-500 shrink-0" />
-                        </Link>
-                    );
-                })}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-                {/* Compliance by chapter */}
-                {kpis && kpis.complianceByChapter.length > 0 && (
-                    <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                        <div className="flex items-center gap-2 mb-5">
-                            <Target size={18} style={{ color }} />
-                            <h2 className="text-base font-bold text-slate-900">Cumplimiento por Capítulo</h2>
-                            {overallPct !== null && (
-                                <span className="ml-auto text-xs font-bold px-2 py-1 rounded-full" style={{ backgroundColor: `${color}18`, color }}>
-                                    {overallPct}% global
-                                </span>
-                            )}
+                        <div className="flex gap-2 shrink-0">
+                            <Link href={`${standardPath}/checklist?audit_id=${activeAudit.id}`}
+                                className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-bold hover:opacity-90 transition-opacity"
+                                style={{ backgroundColor: color }}>
+                                <ClipboardList size={16} /> Ir al Checklist
+                            </Link>
+                            <Link href={`${standardPath}/reporte?audit_id=${activeAudit.id}`}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">
+                                <FileText size={15} /> Informe
+                            </Link>
                         </div>
-                        <div className="space-y-3">
-                            {kpis.complianceByChapter.map(ch => {
-                                const evaluated = ch.conformities + ch.non_conformities;
-                                const pct = evaluated > 0 ? Math.round((ch.conformities / evaluated) * 100) : null;
-                                const barColor = pct === null ? '#e2e8f0' : pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444';
+                    </div>
+                </div>
+            )}
 
-                                return (
-                                    <div key={ch.chapter_number} className="group">
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <div className="flex items-center gap-2 min-w-0">
-                                                <span className="text-xs font-black font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 shrink-0">{ch.chapter_number}</span>
-                                                <span className="text-xs font-semibold text-slate-700 truncate">{ch.chapter_title}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 ml-2 shrink-0">
-                                                {ch.non_conformities > 0 && (
-                                                    <span className="text-xs font-bold text-red-600">{ch.non_conformities} NC</span>
-                                                )}
-                                                <span className="text-sm font-black" style={{ color: pct === null ? '#94a3b8' : barColor }}>
-                                                    {pct === null ? '—' : `${pct}%`}
-                                                </span>
-                                            </div>
+            {/* ─── Sin auditorías → CTA prominente ─── */}
+            {audits.length === 0 && (
+                <div className="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-10 text-center">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg mx-auto mb-4" style={{ backgroundColor: `${color}20` }}>
+                        <ClipboardList className="w-7 h-7" style={{ color }} />
+                    </div>
+                    <h3 className="font-black text-slate-800 text-lg mb-1">Comienza tu primera auditoría</h3>
+                    <p className="text-slate-500 text-sm mb-5">Crea una auditoría, completa el checklist y genera el informe</p>
+                    <Link href={`${standardPath}/auditorias/nueva`}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 text-white rounded-xl font-bold hover:opacity-90"
+                        style={{ backgroundColor: color }}>
+                        <Plus size={16} /> Crear auditoría
+                    </Link>
+                </div>
+            )}
+
+            {/* ─── FLUJO DE TRABAJO (solo si no hay activa) ─── */}
+            {!activeAudit && audits.length > 0 && (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4">Flujo de Auditoría</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        {[
+                            { num: '1', label: 'Planificar', sub: 'Datos, equipo, alcance', icon: Calendar, href: `${standardPath}/auditorias/nueva` },
+                            { num: '2', label: 'Ejecutar Checklist', sub: 'Evaluar requisito a requisito', icon: ClipboardList, href: `${standardPath}/auditorias` },
+                            { num: '3', label: 'Generar Informe', sub: 'Documento de hallazgos', icon: FileText, href: `${standardPath}/auditorias` },
+                            { num: '4', label: 'Seguimiento NC', sub: 'Acciones correctivas', icon: AlertTriangle, href: '/auditoria/acciones-correctivas' },
+                        ].map((step, i) => {
+                            const Icon = step.icon;
+                            return (
+                                <div key={i} className="flex items-center gap-2">
+                                    <Link href={step.href}
+                                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:bg-slate-100 transition-all group">
+                                        <span className="w-5 h-5 rounded-full text-white text-xs font-black flex items-center justify-center shrink-0" style={{ backgroundColor: color }}>
+                                            {step.num}
+                                        </span>
+                                        <div>
+                                            <div className="text-xs font-bold text-slate-700">{step.label}</div>
+                                            <div className="text-xs text-slate-400 hidden sm:block">{step.sub}</div>
                                         </div>
-                                        <div className="w-full bg-slate-100 rounded-full h-2">
-                                            <div
-                                                className="h-2 rounded-full transition-all duration-500"
-                                                style={{ width: `${pct ?? 0}%`, backgroundColor: barColor }}
-                                            />
+                                    </Link>
+                                    {i < 3 && <ArrowRight size={14} className="text-slate-300 shrink-0" />}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                {/* ─── Auditorías ─── */}
+                <div className="lg:col-span-2 space-y-3">
+                    {/* Planificadas */}
+                    {plannedAudits.length > 0 && (
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                            <p className="text-xs font-bold text-blue-600 uppercase tracking-wide mb-3">Planificadas ({plannedAudits.length})</p>
+                            <div className="space-y-2">
+                                {plannedAudits.map(a => (
+                                    <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-blue-50 border border-blue-100">
+                                        <div>
+                                            <span className="font-mono text-xs text-slate-400">{a.audit_code}</span>
+                                            <p className="text-sm font-semibold text-slate-700">{formatDate(a.audit_date)}</p>
+                                            {a.scope && <p className="text-xs text-slate-500 truncate max-w-xs">{a.scope}</p>}
+                                        </div>
+                                        <Link href={`${standardPath}/plan?audit_id=${a.id}`}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shrink-0">
+                                            <FileCheck size={12} /> Ver Plan
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Completadas */}
+                    {completedAudits.length > 0 && (
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                            <p className="text-xs font-bold text-emerald-600 uppercase tracking-wide mb-3">Completadas ({completedAudits.length})</p>
+                            <div className="space-y-2">
+                                {completedAudits.map(a => (
+                                    <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                        <div>
+                                            <span className="font-mono text-xs text-slate-400">{a.audit_code}</span>
+                                            <p className="text-sm font-semibold text-slate-700">{formatDate(a.audit_date)}</p>
+                                        </div>
+                                        <div className="flex gap-1.5 shrink-0">
+                                            <Link href={`${standardPath}/checklist?audit_id=${a.id}`}
+                                                className="flex items-center gap-1 px-2.5 py-1.5 text-white rounded-lg text-xs font-bold hover:opacity-90" style={{ backgroundColor: color }}>
+                                                <ClipboardList size={12} /> Checklist
+                                            </Link>
+                                            <Link href={`${standardPath}/reporte?audit_id=${a.id}`}
+                                                className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-800">
+                                                <FileText size={12} /> Informe
+                                            </Link>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                ))}
+                            </div>
                         </div>
-                        {kpis.complianceByChapter.every(c => c.conformities + c.non_conformities === 0) && (
-                            <p className="text-center text-sm text-slate-400 mt-4">Sin evaluaciones registradas aún</p>
-                        )}
-                    </div>
-                )}
+                    )}
 
-                {/* Recent audits + pipeline */}
-                <div className={`${kpis && kpis.complianceByChapter.length > 0 ? 'lg:col-span-2' : 'lg:col-span-5'} space-y-4`}>
-                    {/* Audit pipeline */}
-                    <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                        <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide mb-3">Estado del Programa</h2>
+                    {audits.length > 0 && (
+                        <Link href={`${standardPath}/auditorias`}
+                            className="flex items-center justify-center gap-1.5 py-2.5 text-sm font-bold rounded-xl border-2 border-dashed border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 transition-all">
+                            Ver todas las auditorías <ChevronRight size={14} />
+                        </Link>
+                    )}
+                </div>
+
+                {/* ─── Panel lateral ─── */}
+                <div className="space-y-4">
+                    {/* KPIs simples */}
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Resumen</p>
                         <div className="space-y-2">
                             {[
-                                { key: 'PLANNED', label: 'Planificadas', count: auditsByStatus.PLANNED, icon: Calendar, color: '#3b82f6' },
-                                { key: 'IN_PROGRESS', label: 'En Ejecución', count: auditsByStatus.IN_PROGRESS, icon: Activity, color: '#f59e0b' },
-                                { key: 'COMPLETED', label: 'Completadas', count: auditsByStatus.COMPLETED, icon: CheckCircle2, color: '#22c55e' },
-                            ].map(s => {
-                                const Icon = s.icon;
-                                const total = Object.values(auditsByStatus).reduce((a, b) => a + b, 0);
-                                const pct = total > 0 ? (s.count / total) * 100 : 0;
-                                return (
-                                    <div key={s.key} className="flex items-center gap-3">
-                                        <Icon size={14} style={{ color: s.color }} className="shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="text-xs font-semibold text-slate-600">{s.label}</span>
-                                                <span className="text-xs font-black text-slate-800">{s.count}</span>
-                                            </div>
-                                            <div className="w-full bg-slate-100 rounded-full h-1.5">
-                                                <div className="h-1.5 rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: s.color }} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                { label: 'Total auditorías', value: kpis?.totalAudits ?? 0 },
+                                { label: 'No conformidades', value: kpis?.nonConformities ?? 0, alert: (kpis?.nonConformities ?? 0) > 0 },
+                                { label: 'Acciones abiertas', value: kpis?.openActions ?? 0, alert: (kpis?.openActions ?? 0) > 0 },
+                                ...(overallPct !== null ? [{ label: 'Cumplimiento', value: `${overallPct}%`, color: overallPct >= 80 ? '#22c55e' : overallPct >= 60 ? '#f59e0b' : '#ef4444' }] : []),
+                            ].map(row => (
+                                <div key={row.label} className="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                                    <span className="text-xs text-slate-500">{row.label}</span>
+                                    <span className={`text-sm font-black ${'alert' in row && row.alert ? 'text-orange-600' : 'color' in row ? '' : 'text-slate-800'}`}
+                                        style={'color' in row && row.color ? { color: row.color } : {}}>
+                                        {row.value}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
-                        {kpis?.totalAudits === 0 && (
-                            <p className="text-center text-xs text-slate-400 mt-3">No hay auditorías registradas</p>
-                        )}
                     </div>
 
-                    {/* Recent audits */}
-                    <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-sm font-bold text-slate-600 uppercase tracking-wide">Últimas Auditorías</h2>
-                            <Link href={`${standardPath}/auditorias`} className="text-xs font-bold" style={{ color }}>Ver todas →</Link>
-                        </div>
-                        {audits.length === 0 ? (
-                            <div className="text-center py-6">
-                                <Calendar className="w-10 h-10 text-slate-200 mx-auto mb-2" />
-                                <p className="text-sm text-slate-400">Sin auditorías aún</p>
-                                <Link href={`${standardPath}/auditorias/nueva`}
-                                    className="mt-2 inline-flex items-center gap-1 text-xs font-bold" style={{ color }}>
-                                    <Plus size={12} /> Crear primera
-                                </Link>
+                    {/* Cumplimiento por capítulo */}
+                    {kpis && kpis.complianceByChapter.some(c => c.conformities + c.non_conformities > 0) && (
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                            <div className="flex items-center gap-1.5 mb-3">
+                                <Target size={14} style={{ color }} />
+                                <p className="text-xs font-bold text-slate-600 uppercase tracking-wide">Por Capítulo</p>
                             </div>
-                        ) : (
                             <div className="space-y-2">
-                                {audits.map(audit => {
-                                    const st = STATUS_CONFIG[audit.status] || STATUS_CONFIG.PLANNED;
-                                    const Icon = st.icon;
+                                {kpis.complianceByChapter.filter(c => c.conformities + c.non_conformities > 0).map(ch => {
+                                    const ev = ch.conformities + ch.non_conformities;
+                                    const pct = Math.round((ch.conformities / ev) * 100);
+                                    const bar = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444';
                                     return (
-                                        <div key={audit.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors">
-                                            <div className="min-w-0 flex-1">
-                                                <div className="flex items-center gap-2 mb-0.5">
-                                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>
-                                                        <Icon size={10} />{st.label}
-                                                    </span>
-                                                    <span className="text-xs text-slate-400 font-mono">{audit.audit_code}</span>
-                                                </div>
-                                                <p className="text-xs text-slate-500 truncate">{formatDate(audit.audit_date)}</p>
+                                        <div key={ch.chapter_number}>
+                                            <div className="flex items-center justify-between mb-0.5">
+                                                <span className="text-xs text-slate-600 truncate max-w-[80%]">
+                                                    <span className="font-mono font-bold text-slate-400 mr-1">{ch.chapter_number}</span>
+                                                    {ch.chapter_title}
+                                                </span>
+                                                <span className="text-xs font-black ml-2" style={{ color: bar }}>{pct}%</span>
                                             </div>
-                                            <div className="flex gap-1 shrink-0 ml-2">
-                                                <Link href={`${standardPath}/checklist?audit_id=${audit.id}`}
-                                                    className="p-1.5 rounded-lg text-white text-xs font-bold hover:opacity-90" style={{ backgroundColor: color }} title="Checklist">
-                                                    <ClipboardList size={12} />
-                                                </Link>
-                                                <Link href={`${standardPath}/reporte?audit_id=${audit.id}`}
-                                                    className="p-1.5 rounded-lg text-white text-xs font-bold bg-slate-600 hover:bg-slate-700" title="Informe">
-                                                    <FileText size={12} />
-                                                </Link>
+                                            <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                                <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: bar }} />
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
-                        )}
+                        </div>
+                    )}
+
+                    {/* Links secundarios */}
+                    <div className="space-y-1.5">
+                        {[
+                            { href: `${standardPath}/programa`, icon: LayoutList, label: 'Programa anual' },
+                            { href: '/auditoria/acciones-correctivas', icon: AlertTriangle, label: 'Acciones correctivas', badge: kpis?.openActions },
+                            { href: '/auditoria/equipo', icon: Users, label: 'Equipo auditor' },
+                        ].map(link => {
+                            const Icon = link.icon;
+                            return (
+                                <Link key={link.href} href={link.href}
+                                    className="flex items-center justify-between px-3 py-2.5 bg-white rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all">
+                                    <div className="flex items-center gap-2">
+                                        <Icon size={14} className="text-slate-400" /> {link.label}
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        {link.badge ? (
+                                            <span className="text-xs font-bold px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full">{link.badge}</span>
+                                        ) : null}
+                                        <ChevronRight size={13} className="text-slate-300" />
+                                    </div>
+                                </Link>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

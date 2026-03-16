@@ -32,6 +32,17 @@ app.prepare().then(() => {
       console.log(`Socket ${socket.id} se unió a la empresa: ${companyId}`);
     });
 
+    // Notificaciones Genéricas
+    socket.on('notification', (data) => {
+      // Si viene con companyId, se envía solo a esa empresa. Si no, a todos.
+      if (data.companyId) {
+        io.to(data.companyId).emit('notification', data);
+      } else {
+        io.emit('notification', data);
+      }
+      console.log('Notificación procesada:', data.title);
+    });
+
     // Notificaciones de progreso
     socket.on('task-progress', (data) => {
       // data: { companyId, taskId, progress, message }

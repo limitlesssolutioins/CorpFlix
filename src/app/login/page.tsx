@@ -36,12 +36,9 @@ export default function AuthPage() {
       }
 
       console.log('Navegando al dashboard...');
-      router.push('/');
-      // Forzamos un pequeño retraso para asegurar que el router inicie
-      setTimeout(() => {
-        router.refresh();
-        setLoading(false);
-      }, 1000);
+      // Usamos window.location.href para un "hard redirect" que limpie el estado del router
+      // y asegure que el middleware procese la nueva sesión.
+      window.location.href = '/';
     } catch (err) {
       console.error('Error en el submit:', err);
       setError('Error de conexión');

@@ -11,7 +11,7 @@ const SECRET_KEY = new TextEncoder().encode(
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow Next.js internals and static files
+  // 1. Permitir archivos estáticos e internos de Next.js
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon') ||
@@ -20,42 +20,54 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow public paths
+  // 2. Verificar sesión
+  const sessionToken = request.cookies.get('session')?.value;
+
+  // 3. Lógica para rutas públicas (/login, etc)
   if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+    if (sessionToken) {
+      try {
+        // Si ya tiene sesión, intentar mandarlo al dashboard en lugar de dejarlo en login
+        await jwtVerify(sessionToken, SECRET_KEY);
+        return NextResponse.redirect(new URL('/', request.url));
+      } catch (e) {
+        // Token inválido, dejar que entre a login
+        return NextResponse.next();
+      }
+    }
     return NextResponse.next();
   }
 
-  // Check session cookie
-  const sessionToken = request.cookies.get('session')?.value;
-
+  // 4. Lógica para rutas protegidas
   if (!sessionToken) {
     const loginUrl = new URL('/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
 
   try {
-    const { payload } = await jwtVerify(sessionToken, SECRET_KEY, {
+    const { payload }: any = await jwtVerify(sessionToken, SECRET_KEY, {
       algorithms: ['HS256'],
     });
 
-    // Valid session
     const companyId = payload.companyId;
 
-    // If no companyId and trying to access anything other than onboarding or its API, redirect to onboarding
+    // Si no tiene empresa y no está en onboarding, redirigir a onboarding
     if (!companyId && !pathname.startsWith('/onboarding') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth/logout')) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
 
-    // If has companyId and trying to access onboarding, redirect to home
+    // Si ya tiene empresa y está intentando entrar a onboarding, devolver a home
     if (companyId && pathname.startsWith('/onboarding')) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
     return NextResponse.next();
   } catch (error) {
-    // Invalid token
+    // Token expirado o corrupto
     const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.delete('session');
+    return response;
   }
 }
 

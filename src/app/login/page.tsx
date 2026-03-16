@@ -19,6 +19,7 @@ export default function AuthPage() {
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
 
     try {
+      console.log('Iniciando proceso:', endpoint);
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -26,6 +27,7 @@ export default function AuthPage() {
       });
 
       const data = await res.json();
+      console.log('Respuesta recibida:', data);
 
       if (!res.ok) {
         setError(data.error || 'Ocurrió un error');
@@ -33,12 +35,15 @@ export default function AuthPage() {
         return;
       }
 
-      // Both login and register create the session cookie.
-      // Next step depends on whether they have a company or not.
-      // Let's redirect to `/` and the middleware will handle the routing to `/onboarding` if no company.
+      console.log('Navegando al dashboard...');
       router.push('/');
-      router.refresh();
-    } catch {
+      // Forzamos un pequeño retraso para asegurar que el router inicie
+      setTimeout(() => {
+        router.refresh();
+        setLoading(false);
+      }, 1000);
+    } catch (err) {
+      console.error('Error en el submit:', err);
       setError('Error de conexión');
       setLoading(false);
     }

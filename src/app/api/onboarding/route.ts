@@ -22,8 +22,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'El nombre de la empresa es obligatorio' }, { status: 400 });
     }
 
-    // Comprobar que el usuario no tenga ya una empresa
-    const user: any = db.prepare('SELECT company_id, plan_id FROM users WHERE id = ?').get(session.userId);
+    // CRÍTICO: Añadido await
+    const user: any = await db.prepare('SELECT company_id, plan_id FROM users WHERE id = ?').get(session.userId);
     
     if (user.company_id) {
       return NextResponse.json({ error: 'El usuario ya tiene una empresa registrada' }, { status: 400 });
@@ -31,17 +31,14 @@ export async function POST(request: Request) {
 
     const companyId = uuidv4();
 
-    // Create company directory in file system for backward compatibility
     const companyDir = path.join(COMPANIES_DIR, companyId);
     fs.mkdirSync(companyDir, { recursive: true });
 
-    // Insert company in db
-    const insertCompanyStmt = db.prepare(`
+    // CRÍTICO: Añadido await
+    await db.prepare(`
       INSERT INTO companies (id, name, nit, sectorActividad, direccion, ciudad, telefono, email, sitioWeb)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    insertCompanyStmt.run(
+    `).run(
       companyId, 
       name.trim(), 
       nit || null, 
@@ -53,10 +50,9 @@ export async function POST(request: Request) {
       sitioWeb || null
     );
 
-    // Update user with company
-    db.prepare('UPDATE users SET company_id = ? WHERE id = ?').run(companyId, session.userId);
+    // CRÍTICO: Añadido await
+    await db.prepare('UPDATE users SET company_id = ? WHERE id = ?').run(companyId, session.userId);
 
-    // Add backwards-compatible entries to admin.json in company directory (so dashboard works)
     const adminPath = path.join(companyDir, 'admin.json');
     fs.writeFileSync(adminPath, JSON.stringify({
       nombreEmpresa: name.trim(),
@@ -69,7 +65,6 @@ export async function POST(request: Request) {
       sitioWeb: sitioWeb || ""
     }, null, 2));
 
-    // Update session
     await createSession({
       userId: session.userId,
       email: session.email,
@@ -78,8 +73,6 @@ export async function POST(request: Request) {
     });
 
     const response = NextResponse.json({ success: true, companyId });
-
-    // Backwards compatibility cookie
     response.cookies.set('selectedCompanyId', companyId, {
       path: '/',
       maxAge: 30 * 24 * 60 * 60

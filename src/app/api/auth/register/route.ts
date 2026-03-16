@@ -12,24 +12,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan credenciales' }, { status: 400 });
     }
 
-    // Check if user exists
-    const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    // CRÍTICO: Añadido await
+    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
     if (existingUser) {
       return NextResponse.json({ error: 'El usuario ya existe' }, { status: 409 });
     }
 
-    // Create user
     const id = uuidv4();
     const password_hash = await bcrypt.hash(password, 10);
 
-    const stmt = db.prepare(`
+    // CRÍTICO: Añadido await en el .run()
+    await db.prepare(`
       INSERT INTO users (id, email, password_hash, plan_id)
       VALUES (?, ?, ?, 'pro')
-    `);
-    
-    stmt.run(id, email, password_hash);
+    `).run(id, email, password_hash);
 
-    // Create session (JWT)
     await createSession({ userId: id, email, companyId: null });
 
     return NextResponse.json({ success: true, user: { id, email } }, { status: 201 });

@@ -11,7 +11,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan credenciales' }, { status: 400 });
     }
 
-    const user: any = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+    // CRÍTICO: Añadido await porque ahora db.prepare().get() devuelve una promesa
+    const user: any = await db.prepare('SELECT * FROM users WHERE email = ?').get(email);
 
     if (!user) {
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
@@ -23,14 +24,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
     }
 
-    // Set company cookie as well if they have one, to mimic old behavior if needed
-    // Old system used 'selectedCompanyId' cookie
-    if (user.company_id) {
-      // It's handled inside createSession but let's also set the classic cookie 
-      // just in case any legacy component needs it
-    }
-
-    // Create JWT
+    // Crear JWT
     await createSession({
       userId: user.id,
       email: user.email,
@@ -38,7 +32,6 @@ export async function POST(request: Request) {
       planId: user.plan_id
     });
 
-    // We can also set the old cookie to maintain compatibility with existing pages
     const response = NextResponse.json({ 
       success: true, 
       user: { id: user.id, email: user.email, companyId: user.company_id } 
@@ -49,8 +42,6 @@ export async function POST(request: Request) {
         path: '/',
         maxAge: 30 * 24 * 60 * 60
       });
-    } else {
-      response.cookies.delete('selectedCompanyId');
     }
 
     return response;

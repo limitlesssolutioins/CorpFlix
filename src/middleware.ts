@@ -1,35 +1,62 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
 
-const PUBLIC_PATHS = ['/login', '/api/companies', '/api/platform/data-policy'];
+const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/register', '/api/platform/data-policy'];
 const PUBLIC_FILES = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'];
+const SECRET_KEY = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'lidus-super-secret-development-key-12345!'
+);
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Allow Next.js internals and static files
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon') ||
+    PUBLIC_FILES.some((ext) => pathname.toLowerCase().endsWith(ext))
+  ) {
+    return NextResponse.next();
+  }
+
   // Allow public paths
-  if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
     return NextResponse.next();
   }
 
-  // Allow Next.js internals
-  if (pathname.startsWith('/_next') || pathname.startsWith('/favicon')) {
-    return NextResponse.next();
-  }
+  // Check session cookie
+  const sessionToken = request.cookies.get('session')?.value;
 
-  // Allow static image files (logos, etc.)
-  if (PUBLIC_FILES.some((ext) => pathname.toLowerCase().endsWith(ext))) {
-    return NextResponse.next();
-  }
-
-  // Check for company cookie
-  const companyId = request.cookies.get('lidus_company_id')?.value;
-  if (!companyId) {
+  if (!sessionToken) {
     const loginUrl = new URL('/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  try {
+    const { payload } = await jwtVerify(sessionToken, SECRET_KEY, {
+      algorithms: ['HS256'],
+    });
+
+    // Valid session
+    const companyId = payload.companyId;
+
+    // If no companyId and trying to access anything other than onboarding or its API, redirect to onboarding
+    if (!companyId && !pathname.startsWith('/onboarding') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth/logout')) {
+      return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
+
+    // If has companyId and trying to access onboarding, redirect to home
+    if (companyId && pathname.startsWith('/onboarding')) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    // Invalid token
+    const loginUrl = new URL('/login', request.url);
+    return NextResponse.redirect(loginUrl);
+  }
 }
 
 export const config = {

@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Lidus Data & Databases
+src/data/companies/
+src/data/*.db
+src/data/*.db-journal
+src/data/*.db-wal
+src/data/core.db
+public/uploads/*
+!public/uploads/.gitkeep

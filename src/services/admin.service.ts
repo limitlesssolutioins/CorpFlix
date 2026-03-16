@@ -12,7 +12,6 @@ export class AdminService {
     try {
       if (!fs.existsSync(this.dataPath)) {
         const defaults = { general: {}, roles: [], usuarios: [] };
-        // Crear directorio si no existe
         const dir = path.dirname(this.dataPath);
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
@@ -32,20 +31,21 @@ export class AdminService {
     fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2));
   }
 
-  async getGeneralSettings() {
+  getGeneralSettings() {
     const data = this.getData();
     return data.general || {};
   }
 
-  async updateGeneralSettings(settings: any) {
+  updateGeneralSettings(settings: any) {
     const data = this.getData();
     data.general = { ...data.general, ...settings };
     this.saveData(data);
     return data.general;
   }
 
-  async getRoles() {
-    return this.getData().roles || [];
+  getRoles() {
+    const data = this.getData();
+    return data.roles || [];
   }
 }
 

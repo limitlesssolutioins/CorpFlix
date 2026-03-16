@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Header from '@/components/Header';
 import CompanySummary from '@/components/CompanySummary';
 import About from '@/components/About';
@@ -22,12 +21,12 @@ export default function Home() {
   const fetchData = async () => {
     try {
       const [adminRes, gestionRes] = await Promise.all([
-        axios.get('/api/admin/general', { timeout: 10000 }),
-        axios.get('/api/gestion/planeacion', { timeout: 10000 })
+        fetch('/api/admin/general').then(res => res.ok ? res.json() : {}),
+        fetch('/api/gestion/planeacion').then(res => res.ok ? res.json() : {})
       ]);
 
-      setInfo(adminRes.data || {});
-      setStrategic(gestionRes.data || {});
+      setInfo(adminRes || {});
+      setStrategic(gestionRes || {});
     } catch (error) {
       console.error("Error fetching corporate profile data:", error);
       setInfo({});
@@ -46,10 +45,10 @@ export default function Home() {
     </div>
   );
 
-  // Adaptación de datos
+  // Adaptación de datos priorizando lo ingresado en el onboarding
   const displayInfo = {
     name: info?.nombreEmpresa || companyData.name,
-    summary: info?.resumenEjecutivo || strategic?.mision || companyData.summary, // Usamos Mision como resumen inicial si existe
+    summary: info?.resumenEjecutivo || strategic?.mision || companyData.summary,
     logoUrl: info?.logoUrl || companyData.logoUrl,
     razonSocial: info?.nombreEmpresa || companyData.companyInfo.razonSocial,
     nit: info?.nit || companyData.companyInfo.nit,
@@ -71,9 +70,8 @@ export default function Home() {
         <About 
           mission={strategic?.mision || companyData.mission} 
           vision={strategic?.vision || companyData.vision} 
-          policies={strategic?.politicas || []} // Nota: Verifica si en JSON es 'policies' o 'politicas'
+          policies={strategic?.politicas || []}
           objectives={strategic?.objetivos || []}
-          // FODA Data
           strengths={strategic?.strengths}
           weaknesses={strategic?.weaknesses}
           opportunities={strategic?.opportunities}
@@ -91,4 +89,3 @@ export default function Home() {
     </div>
   );
 }
-

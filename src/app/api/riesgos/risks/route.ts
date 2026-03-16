@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getCompanyDataDir } from '@/lib/companyContext';
+import { getCompanyDataDir, getCompanyId } from '@/lib/companyContext';
 import { getRiskService } from '@/services/risk.service';
+import { emitKpiUpdate } from '@/lib/socket-server';
 
 export async function GET(request: Request) {
     try {
@@ -35,6 +36,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        const companyId = await getCompanyId();
         const dataDir = await getCompanyDataDir();
         const riskService = getRiskService(dataDir);
         const body = await request.json();
@@ -47,6 +49,9 @@ export async function POST(request: Request) {
         }
 
         const newRisk = riskService.createRisk(body);
+        
+        if (companyId) emitKpiUpdate(companyId, 'riesgos');
+
         return NextResponse.json(newRisk, { status: 201 });
     } catch (error) {
         console.error('Error creating risk:', error);
@@ -56,6 +61,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
+        const companyId = await getCompanyId();
         const dataDir = await getCompanyDataDir();
         const riskService = getRiskService(dataDir);
         const body = await request.json();
@@ -70,6 +76,8 @@ export async function PUT(request: Request) {
             return NextResponse.json({ error: 'Risk not found' }, { status: 404 });
         }
 
+        if (companyId) emitKpiUpdate(companyId, 'riesgos');
+
         return NextResponse.json(updatedRisk);
     } catch (error) {
         console.error('Error updating risk:', error);
@@ -79,6 +87,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
+        const companyId = await getCompanyId();
         const dataDir = await getCompanyDataDir();
         const riskService = getRiskService(dataDir);
         const { searchParams } = new URL(request.url);
@@ -92,6 +101,8 @@ export async function DELETE(request: Request) {
         if (!deleted) {
             return NextResponse.json({ error: 'Risk not found' }, { status: 404 });
         }
+
+        if (companyId) emitKpiUpdate(companyId, 'riesgos');
 
         return NextResponse.json({ success: true });
     } catch (error) {

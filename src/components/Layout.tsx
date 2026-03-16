@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import { SocketProvider, useSocket } from '@/lib/socketContext';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import SupportChat from './SupportChat';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -65,6 +66,7 @@ const Layout = ({ children }: LayoutProps) => {
           {children}
         </main>
       </div>
+      <SupportChat />
     </SocketProvider>
   );
 };

@@ -13,6 +13,8 @@ import Link from 'next/link';
 import axios from 'axios';
 import RiskMatrix from './RiskMatrix';
 import IndicatorChart from './IndicatorChart';
+import { useSocket } from '@/lib/socketContext';
+import ReportAIWizard from './ReportAIWizard';
 
 // Componente de Tarjeta de Estadística Individual (Estilo Moderno)
 const StatCard = ({ title, value, icon, link, color }: { title: string; value: string | number; icon: React.ReactNode; link: string; color: string }) => (
@@ -31,10 +33,26 @@ const StatCard = ({ title, value, icon, link, color }: { title: string; value: s
 const Dashboard = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { socket } = useSocket();
 
   useEffect(() => {
     fetchStats();
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleKpiUpdate = (data: any) => {
+      console.log('KPI Update received:', data);
+      fetchStats(); // Re-fetch data silently
+    };
+
+    socket.on('kpi-update', handleKpiUpdate);
+
+    return () => {
+      socket.off('kpi-update', handleKpiUpdate);
+    };
+  }, [socket]);
 
   const fetchStats = async () => {
     try {
@@ -70,6 +88,8 @@ const Dashboard = () => {
         <div className="h-1 w-12 bg-slate-900 rounded-full"></div>
         <h2 className="text-3xl font-black text-slate-900 tracking-tight">Panel de Control de Gestión</h2>
       </div>
+
+      <ReportAIWizard />
       
       {/* Grid de Estadísticas Rápidas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getCompanyDataDir } from '@/lib/companyContext';
+import { getCompanyDataDir, getCompanyId } from '@/lib/companyContext';
 import { getManagementService } from '@/services/management.service';
+import { emitKpiUpdate } from '@/lib/socket-server';
 
 export async function GET() {
   const dataDir = await getCompanyDataDir();
@@ -10,9 +11,15 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const companyId = await getCompanyId();
   const dataDir = await getCompanyDataDir();
   const managementService = getManagementService(dataDir);
   const body = await request.json();
   const updated = managementService.updateStrategicPlan(body);
+  
+  if (companyId) {
+    emitKpiUpdate(companyId, 'planeacion');
+  }
+  
   return NextResponse.json(updated);
 }

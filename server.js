@@ -43,6 +43,13 @@ app.prepare().then(() => {
       console.log('Notificación procesada:', data.title);
     });
 
+    // Actualización de KPIs en vivo
+    socket.on('kpi-update', (data) => {
+      if (data.companyId) {
+        io.to(data.companyId).emit('kpi-update', data);
+      }
+    });
+
     // Notificaciones de progreso
     socket.on('task-progress', (data) => {
       // data: { companyId, taskId, progress, message }

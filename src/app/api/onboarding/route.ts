@@ -55,14 +55,18 @@ export async function POST(request: Request) {
 
     const adminPath = path.join(companyDir, 'admin.json');
     fs.writeFileSync(adminPath, JSON.stringify({
-      nombreEmpresa: name.trim(),
-      nit: nit || "",
-      sectorActividad: sectorActividad || "",
-      direccion: direccion || "",
-      ciudad: ciudad || "",
-      telefono: telefono || "",
-      email: email || "",
-      sitioWeb: sitioWeb || ""
+      general: {
+        nombreEmpresa: name.trim(),
+        nit: nit || "",
+        sectorActividad: sectorActividad || "",
+        direccion: direccion || "",
+        ciudad: ciudad || "",
+        telefono: telefono || "",
+        email: email || "",
+        sitioWeb: sitioWeb || ""
+      },
+      roles: [],
+      usuarios: []
     }, null, 2));
 
     await createSession({

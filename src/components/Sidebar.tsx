@@ -177,7 +177,7 @@ const Sidebar = () => {
               <NavItem href="/biblioteca" label="Biblioteca" icon={FolderTree} />
             </Section>
 
-            <Section title="Operaciones" id="humana" icon={Users2}>
+            <Section title="Gestión Humana" id="humana" icon={Users2}>
               <NavItem href="/gestion-humana/extras" label="Horas Extras" icon={Clock} />
               <NavItem href="/gestion-humana/seguridad-social" label="Seg. Social" icon={ShieldCheck} />
               <NavItem href="/gestion-humana/domesticas" label="Domésticas" icon={Home} />
@@ -202,7 +202,18 @@ const Sidebar = () => {
             <img src="/ISOLOGO.png" alt="Lidus" className="h-4" />
             <span className="text-[9px] font-black tracking-[0.3em] text-white">LIDUS</span>
           </div>
-          <p className="text-[8px] text-slate-600 font-bold uppercase">v0.1.0 © 2026</p>
+          <div className="flex flex-col items-center gap-0.5">
+            <p className="text-[7px] text-slate-500 font-bold uppercase tracking-widest">Una marca de</p>
+            <a 
+              href="https://vijalmar.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[9px] text-blue-400/60 font-black hover:text-blue-400 transition-colors tracking-tighter"
+            >
+              VIJALMAR SAS
+            </a>
+          </div>
+          <p className="text-[8px] text-slate-700 font-bold uppercase mt-1">v0.1.0 © 2026</p>
         </div>
       </div>
     </aside>

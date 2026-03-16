@@ -12,12 +12,18 @@ export class AdminService {
     try {
       if (!fs.existsSync(this.dataPath)) {
         const defaults = { general: {}, roles: [], usuarios: [] };
+        // Crear directorio si no existe
+        const dir = path.dirname(this.dataPath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
         fs.writeFileSync(this.dataPath, JSON.stringify(defaults, null, 2));
         return defaults;
       }
       const fileContent = fs.readFileSync(this.dataPath, 'utf-8');
       return JSON.parse(fileContent);
     } catch (error) {
+      console.error("Error reading admin.json:", error);
       return { general: {}, roles: [], usuarios: [] };
     }
   }
@@ -26,19 +32,20 @@ export class AdminService {
     fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2));
   }
 
-  getGeneralSettings() {
-    return this.getData().general;
+  async getGeneralSettings() {
+    const data = this.getData();
+    return data.general || {};
   }
 
-  updateGeneralSettings(settings: any) {
+  async updateGeneralSettings(settings: any) {
     const data = this.getData();
     data.general = { ...data.general, ...settings };
     this.saveData(data);
     return data.general;
   }
 
-  getRoles() {
-    return this.getData().roles;
+  async getRoles() {
+    return this.getData().roles || [];
   }
 }
 

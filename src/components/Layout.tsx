@@ -2,14 +2,38 @@
 
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
-import { SocketProvider } from '@/lib/socketContext';
+import { SocketProvider, useSocket } from '@/lib/socketContext';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const FULL_SCREEN_PATHS = ['/login', '/onboarding'];
+
+// Componente interno para acceder al hook useSocket
+const SocketListener = () => {
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // Escuchar notificaciones enviadas por el servidor
+    socket.on('notification', (data: { title: string, message: string, type?: 'success' | 'error' | 'info' | 'warning' }) => {
+      const type = data.type || 'info';
+      toast[type](data.title, {
+        description: data.message,
+      });
+    });
+
+    return () => {
+      socket.off('notification');
+    };
+  }, [socket]);
+
+  return null;
+};
 
 const Layout = ({ children }: LayoutProps) => {
   const pathname = usePathname();
@@ -34,6 +58,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <SocketProvider companyId={companyId}>
+      <SocketListener />
       <div className="app-container">
         <Sidebar />
         <main className="app-content">

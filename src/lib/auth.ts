@@ -16,7 +16,7 @@ export async function createSession(payload: any) {
   const cookieStore = await cookies();
   cookieStore.set('session', session, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Desactivado para permitir pruebas en IP/HTTP sin SSL
     expires: expires,
     sameSite: 'lax',
     path: '/',

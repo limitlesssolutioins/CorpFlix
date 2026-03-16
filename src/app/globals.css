@@ -24,8 +24,9 @@ code {
 
 .app-content {
   flex-grow: 1;
-  padding: 32px; /* p-8 */
-  margin-left: 256px; /* Compensate for fixed sidebar width */
+  padding: 40px; /* Aumentado de 32px para más elegancia */
+  margin-left: 288px; /* Ajustado exactamente a w-72 de la barra lateral */
+  min-height: 100vh;
 }
 
 /* Company Profile Card styles */

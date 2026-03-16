@@ -63,6 +63,7 @@ export default function AdminGeneralPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState<string | null>(null);
   const [logoTimestamp, setLogoTimestamp] = useState(Date.now());
+  const [localLogoPreview, setLocalLogoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -90,6 +91,11 @@ export default function AdminGeneralPage() {
     if (!e.target.files?.[0]) return;
 
     const file = e.target.files[0];
+    
+    // Crear vista previa local inmediata para evitar el 404 visual
+    const objectUrl = URL.createObjectURL(file);
+    setLocalLogoPreview(objectUrl);
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -102,14 +108,17 @@ export default function AdminGeneralPage() {
       const nextSettings = { ...settings, logoUrl: res.data.url as string };
       setSettings(nextSettings);
       setLogoTimestamp(Date.now());
+      
+      // Guardamos automáticamente el cambio del logo en el perfil
       await axios.post('/api/admin/general', nextSettings);
 
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      toast.success('Logo subido correctamente');
+      toast.success('Logo actualizado correctamente');
     } catch (error) {
       console.error(error);
+      setLocalLogoPreview(null); // Revertir si hay error
       toast.error('Error al subir la imagen');
     } finally {
       setUploading(false);
@@ -264,10 +273,10 @@ export default function AdminGeneralPage() {
              <div className="flex items-center gap-8">
                 {/* Preview Area */}
                 <div className="w-40 h-40 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex items-center justify-center relative overflow-hidden group/image">
-                  {settings.logoUrl ? (
+                  {localLogoPreview || settings.logoUrl ? (
                     <img
                       key={logoTimestamp}
-                      src={`${settings.logoUrl}?t=${logoTimestamp}`}
+                      src={localLogoPreview || `${settings.logoUrl}?t=${logoTimestamp}`}
                       alt="Logo Preview"
                       className="w-full h-full object-contain p-2"
                       onError={(e) => { (e.target as HTMLImageElement).src = ''; }}

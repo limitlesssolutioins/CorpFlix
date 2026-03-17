@@ -470,6 +470,29 @@ class ISOAuditService {
             console.log('✅ Added op_text column to audit_findings');
         }
 
+        // Ensure requirement variables tables exist before altering them
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS requirement_variables (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                requirement_id INTEGER NOT NULL,
+                variable_text TEXT NOT NULL,
+                variable_order INTEGER DEFAULT 0,
+                FOREIGN KEY (requirement_id) REFERENCES iso_requirements(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS finding_variable_answers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                audit_id INTEGER NOT NULL,
+                requirement_id INTEGER NOT NULL,
+                variable_id INTEGER NOT NULL,
+                answer TEXT DEFAULT NULL,
+                nc_text TEXT,
+                op_text TEXT,
+                UNIQUE(audit_id, requirement_id, variable_id),
+                FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
+                FOREIGN KEY (variable_id) REFERENCES requirement_variables(id) ON DELETE CASCADE
+            );
+        `);
+
         const varAnswerCols = this.db.prepare("PRAGMA table_info(finding_variable_answers)").all() as any[];
         if (!varAnswerCols.some(c => c.name === 'nc_text')) {
             this.db.exec('ALTER TABLE finding_variable_answers ADD COLUMN nc_text TEXT');
@@ -487,27 +510,6 @@ class ISOAuditService {
         }
         // Ensure ISO 9001 sub-requirements exist (3-level hierarchy from Excel)
         this.ensureISO9001SubRequirements();
-
-        // Ensure requirement variables tables
-        this.db.exec(`
-            CREATE TABLE IF NOT EXISTS requirement_variables (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                requirement_id INTEGER NOT NULL,
-                variable_text TEXT NOT NULL,
-                variable_order INTEGER DEFAULT 0,
-                FOREIGN KEY (requirement_id) REFERENCES iso_requirements(id) ON DELETE CASCADE
-            );
-            CREATE TABLE IF NOT EXISTS finding_variable_answers (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                audit_id INTEGER NOT NULL,
-                requirement_id INTEGER NOT NULL,
-                variable_id INTEGER NOT NULL,
-                answer TEXT DEFAULT NULL,
-                UNIQUE(audit_id, requirement_id, variable_id),
-                FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
-                FOREIGN KEY (variable_id) REFERENCES requirement_variables(id) ON DELETE CASCADE
-            );
-        `);
 
         // Ensure new tables exist (additive, safe to run on existing DBs)
         this.db.exec(`

@@ -78,6 +78,7 @@ export default function ChecklistPage() {
     const [editingVars, setEditingVars] = useState<Set<number>>(new Set());
     const [varDrafts, setVarDrafts] = useState<Map<number, string[]>>(new Map());
     const [savingVars, setSavingVars] = useState<Set<number>>(new Set());
+    const [activeVarInputs, setActiveVarInputs] = useState<Record<string, { nc?: boolean, op?: boolean }>>({});
 
     // AI opportunities
     const [showOpModal, setShowOpModal] = useState(false);
@@ -702,26 +703,49 @@ export default function ChecklistPage() {
                                                                                                             ))}
                                                                                                         </div>
 
-                                                                                                        {/* NC field */}
-                                                                                                        <div className="flex-1 min-w-[120px]">
-                                                                                                            <input 
-                                                                                                                type="text" 
-                                                                                                                placeholder="NC (No conformidad)"
-                                                                                                                value={data.nc_text}
-                                                                                                                onChange={e => setVarDetail(item.id, v.id, 'nc_text', e.target.value)}
-                                                                                                                className="w-full px-2 py-1.5 text-[10px] border border-red-100 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-red-300"
-                                                                                                            />
-                                                                                                        </div>
+                                                                                                        {/* NC / OP Buttons & Fields */}
+                                                                                                        <div className="flex flex-wrap items-center gap-2 flex-1">
+                                                                                                            <button onClick={() => {
+                                                                                                                const isActive = activeVarInputs[`${item.id}-${v.id}`]?.nc;
+                                                                                                                if (isActive && !data.nc_text) setVarDetail(item.id, v.id, 'nc_text', '');
+                                                                                                                setActiveVarInputs(prev => ({ ...prev, [`${item.id}-${v.id}`]: { ...prev[`${item.id}-${v.id}`], nc: !isActive } }));
+                                                                                                            }}
+                                                                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
+                                                                                                                NC
+                                                                                                            </button>
+                                                                                                            
+                                                                                                            <button onClick={() => {
+                                                                                                                const isActive = activeVarInputs[`${item.id}-${v.id}`]?.op;
+                                                                                                                if (isActive && !data.op_text) setVarDetail(item.id, v.id, 'op_text', '');
+                                                                                                                setActiveVarInputs(prev => ({ ...prev, [`${item.id}-${v.id}`]: { ...prev[`${item.id}-${v.id}`], op: !isActive } }));
+                                                                                                            }}
+                                                                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
+                                                                                                                OP
+                                                                                                            </button>
 
-                                                                                                        {/* OP field */}
-                                                                                                        <div className="flex-1 min-w-[120px]">
-                                                                                                            <input 
-                                                                                                                type="text" 
-                                                                                                                placeholder="OP (Oportunidad)"
-                                                                                                                value={data.op_text}
-                                                                                                                onChange={e => setVarDetail(item.id, v.id, 'op_text', e.target.value)}
-                                                                                                                className="w-full px-2 py-1.5 text-[10px] border border-amber-100 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-300"
-                                                                                                            />
+                                                                                                            {(activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text) && (
+                                                                                                                <div className="flex-1 min-w-[120px]">
+                                                                                                                    <input 
+                                                                                                                        type="text" 
+                                                                                                                        placeholder="Detalle de la No Conformidad..."
+                                                                                                                        value={data.nc_text}
+                                                                                                                        onChange={e => setVarDetail(item.id, v.id, 'nc_text', e.target.value)}
+                                                                                                                        className="w-full px-2 py-1.5 text-[10px] border border-red-200 bg-red-50 text-red-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-400 placeholder-red-300"
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            )}
+
+                                                                                                            {(activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text) && (
+                                                                                                                <div className="flex-1 min-w-[120px]">
+                                                                                                                    <input 
+                                                                                                                        type="text" 
+                                                                                                                        placeholder="Detalle de la Oportunidad de Mejora..."
+                                                                                                                        value={data.op_text}
+                                                                                                                        onChange={e => setVarDetail(item.id, v.id, 'op_text', e.target.value)}
+                                                                                                                        className="w-full px-2 py-1.5 text-[10px] border border-amber-200 bg-amber-50 text-amber-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder-amber-300"
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            )}
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -752,22 +776,13 @@ export default function ChecklistPage() {
                                                                     {/* Divider */}
                                                                     <div className="border-t border-slate-100" />
 
-                                                                    {/* Hallazgo y Observaciones Finales del Punto */}
-                                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                        <div>
-                                                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Hallazgo General del Requisito</label>
-                                                                            <textarea rows={2} value={f?.evidence || ''}
-                                                                                onChange={e => setFindingDetail(item.id, 'evidence', e.target.value)}
-                                                                                placeholder="Resumen del hallazgo para este punto..."
-                                                                                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
-                                                                        </div>
-                                                                        <div>
-                                                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones Finales</label>
-                                                                            <textarea rows={2} value={f?.observations || ''}
-                                                                                onChange={e => setFindingDetail(item.id, 'observations', e.target.value)}
-                                                                                placeholder="Notas adicionales sobre el cumplimiento..."
-                                                                                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
-                                                                        </div>
+                                                                    {/* Observaciones Finales del Punto */}
+                                                                    <div>
+                                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones Finales</label>
+                                                                        <textarea rows={2} value={f?.observations || ''}
+                                                                            onChange={e => setFindingDetail(item.id, 'observations', e.target.value)}
+                                                                            placeholder="Notas adicionales sobre el cumplimiento..."
+                                                                            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
                                                                     </div>
                                                                 </div>
                                                             )}

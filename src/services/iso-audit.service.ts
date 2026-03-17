@@ -469,6 +469,17 @@ class ISOAuditService {
             this.db.exec('ALTER TABLE audit_findings ADD COLUMN op_text TEXT');
             console.log('✅ Added op_text column to audit_findings');
         }
+
+        const varAnswerCols = this.db.prepare("PRAGMA table_info(finding_variable_answers)").all() as any[];
+        if (!varAnswerCols.some(c => c.name === 'nc_text')) {
+            this.db.exec('ALTER TABLE finding_variable_answers ADD COLUMN nc_text TEXT');
+            console.log('✅ Added nc_text column to finding_variable_answers');
+        }
+        if (!varAnswerCols.some(c => c.name === 'op_text')) {
+            this.db.exec('ALTER TABLE finding_variable_answers ADD COLUMN op_text TEXT');
+            console.log('✅ Added op_text column to finding_variable_answers');
+        }
+
         const auditCols = this.db.prepare("PRAGMA table_info(audits)").all() as any[];
         if (!auditCols.some(c => c.name === 'criteria')) {
             this.db.exec('ALTER TABLE audits ADD COLUMN criteria TEXT');
@@ -1125,12 +1136,15 @@ class ISOAuditService {
         ).all(auditId);
     }
 
-    saveVariableAnswer(auditId: number, requirementId: number, variableId: number, answer: string): void {
+    saveVariableAnswer(auditId: number, requirementId: number, variableId: number, answer: string, nc_text?: string, op_text?: string): void {
         this.db.prepare(`
-            INSERT INTO finding_variable_answers (audit_id, requirement_id, variable_id, answer)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(audit_id, requirement_id, variable_id) DO UPDATE SET answer = excluded.answer
-        `).run(auditId, requirementId, variableId, answer);
+            INSERT INTO finding_variable_answers (audit_id, requirement_id, variable_id, answer, nc_text, op_text)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(audit_id, requirement_id, variable_id) DO UPDATE SET 
+                answer = excluded.answer,
+                nc_text = excluded.nc_text,
+                op_text = excluded.op_text
+        `).run(auditId, requirementId, variableId, answer, nc_text || null, op_text || null);
     }
 
     // ===================================================

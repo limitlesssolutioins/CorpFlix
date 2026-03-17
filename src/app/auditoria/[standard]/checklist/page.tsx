@@ -27,6 +27,7 @@ interface ChecklistItem {
 interface Variable { id: number; requirement_id: number; variable_text: string; variable_order: number; }
 type FindingState = { type_id: number | null; description: string; evidence: string; observations: string; is_op: number; nc_text: string; op_text: string; };
 type VarAnswer = 'si' | 'no' | 'na';
+interface VarAnswerData { answer: VarAnswer; nc_text: string; op_text: string; }
 interface Opportunity { area: string; oportunidad: string; beneficio: string; }
 
 const CUMPLE_ID = 1;
@@ -71,7 +72,7 @@ export default function ChecklistPage() {
 
     // Variables state
     const [reqVariables, setReqVariables] = useState<Map<number, Variable[]>>(new Map());
-    const [varAnswers, setVarAnswers] = useState<Map<string, VarAnswer>>(new Map()); // key: `${reqId}-${varId}`
+    const [varAnswers, setVarAnswers] = useState<Map<string, VarAnswerData>>(new Map()); // key: `${reqId}-${varId}`
     const [loadingVars, setLoadingVars] = useState<Set<number>>(new Set());
     const [generatingVars, setGeneratingVars] = useState<Set<number>>(new Set());
     const [editingVars, setEditingVars] = useState<Set<number>>(new Set());
@@ -118,10 +119,14 @@ export default function ChecklistPage() {
             setFindings(map);
 
             // Initialize variable answers
-            const answerMap = new Map<string, VarAnswer>();
+            const answerMap = new Map<string, VarAnswerData>();
             if (Array.isArray(answersRes)) {
                 for (const a of answersRes) {
-                    answerMap.set(`${a.requirement_id}-${a.variable_id}`, a.answer as VarAnswer);
+                    answerMap.set(`${a.requirement_id}-${a.variable_id}`, {
+                        answer: a.answer as VarAnswer,
+                        nc_text: a.nc_text || '',
+                        op_text: a.op_text || '',
+                    });
                 }
             }
             setVarAnswers(answerMap);
@@ -130,38 +135,65 @@ export default function ChecklistPage() {
     };
 
     // Auto-compute compliance from variable answers
-    const computeComplianceFromVars = useCallback((reqId: number, vars: Variable[], currentAnswers: Map<string, VarAnswer>): number | null => {
+    const computeComplianceFromVars = useCallback((reqId: number, vars: Variable[], currentAnswers: Map<string, VarAnswerData>): number | null => {
         if (!vars.length) return null;
-        const hasNo = vars.some(v => currentAnswers.get(`${reqId}-${v.id}`) === 'no');
-        const allAnswered = vars.every(v => currentAnswers.has(`${reqId}-${v.id}`));
+        const answers = vars.map(v => currentAnswers.get(`${reqId}-${v.id}`)?.answer);
+        const hasNo = answers.some(a => a === 'no');
+        const allAnswered = answers.every(a => a !== undefined);
         if (hasNo) return NC_ID;
         if (allAnswered) return CUMPLE_ID;
         return null;
     }, []);
 
     const setVarAnswer = async (reqId: number, varId: number, answer: VarAnswer) => {
+        const key = `${reqId}-${varId}`;
+        const existing = varAnswers.get(key) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '' };
+        const newData = { ...existing, answer };
+
         const newAnswers = new Map(varAnswers);
-        newAnswers.set(`${reqId}-${varId}`, answer);
+        newAnswers.set(key, newData);
         setVarAnswers(newAnswers);
 
-        // Auto-update finding type
+        // Auto-update requirement finding type
         const vars = reqVariables.get(reqId) || [];
         const computed = computeComplianceFromVars(reqId, vars, newAnswers);
         if (computed !== null) {
             setFindings(prev => {
                 const next = new Map(prev);
-                const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, nc_text: '', op_text: '' };
-                const is_op = computed === NC_ID ? 0 : existing.is_op;
-                next.set(reqId, { ...existing, type_id: computed, is_op });
+                const fExisting = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, nc_text: '', op_text: '' };
+                next.set(reqId, { ...fExisting, type_id: computed });
                 return next;
             });
         }
 
-        // Save to server (fire and forget)
+        saveVarToDb(reqId, varId, newData);
+    };
+
+    const setVarDetail = (reqId: number, varId: number, field: 'nc_text' | 'op_text', value: string) => {
+        const key = `${reqId}-${varId}`;
+        const existing = varAnswers.get(key) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '' };
+        const newData = { ...existing, [field]: value };
+
+        const newAnswers = new Map(varAnswers);
+        newAnswers.set(key, newData);
+        setVarAnswers(newAnswers);
+        
+        // Debounced or direct save? Direct for now as per other fields
+        saveVarToDb(reqId, varId, newData);
+    };
+
+    const saveVarToDb = (reqId: number, varId: number, data: VarAnswerData) => {
         fetch('/api/auditoria/variable-answers', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ audit_id: parseInt(auditId!), requirement_id: reqId, variable_id: varId, answer }),
+            body: JSON.stringify({ 
+                audit_id: parseInt(auditId!), 
+                requirement_id: reqId, 
+                variable_id: varId, 
+                answer: data.answer,
+                nc_text: data.nc_text,
+                op_text: data.op_text
+            }),
         }).catch(console.error);
     };
 
@@ -646,21 +678,53 @@ export default function ChecklistPage() {
                                                                         ) : hasVars ? (
                                                                             <div className="space-y-2">
                                                                                 {vars.map(v => {
-                                                                                    const ans = varAnswers.get(`${item.id}-${v.id}`);
+                                                                                    const data = varAnswers.get(`${item.id}-${v.id}`) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '' };
+                                                                                    const ans = data.answer;
                                                                                     return (
-                                                                                        <div key={v.id} className={`flex items-start gap-3 p-2.5 rounded-xl border ${ans === 'si' ? 'bg-emerald-50 border-emerald-200' : ans === 'no' ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
-                                                                                            <p className="text-xs text-slate-700 flex-1 pt-0.5 leading-relaxed">{v.variable_text}</p>
-                                                                                            <div className="flex gap-1 shrink-0">
-                                                                                                {(['si', 'no', 'na'] as VarAnswer[]).map(a => (
-                                                                                                    <button key={a} onClick={() => setVarAnswer(item.id, v.id, a)}
-                                                                                                        className={`px-2 py-1 rounded-lg text-xs font-bold border-2 transition-all ${ans === a
-                                                                                                            ? a === 'si' ? 'bg-emerald-500 border-emerald-500 text-white'
-                                                                                                                : a === 'no' ? 'bg-red-500 border-red-500 text-white'
-                                                                                                                    : 'bg-slate-400 border-slate-400 text-white'
-                                                                                                            : 'border-slate-200 text-slate-500 hover:border-slate-300 bg-white'}`}>
-                                                                                                        {a === 'si' ? 'Sí' : a === 'no' ? 'No' : 'N/A'}
-                                                                                                    </button>
-                                                                                                ))}
+                                                                                        <div key={v.id} className={`p-3 rounded-xl border transition-all ${ans === 'si' ? 'bg-emerald-50/50 border-emerald-200' : ans === 'no' ? 'bg-red-50/50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
+                                                                                            <div className="flex flex-col md:flex-row gap-4">
+                                                                                                <p className="text-xs text-slate-700 flex-1 pt-1 leading-relaxed font-medium">{v.variable_text}</p>
+                                                                                                
+                                                                                                {/* Actions and inputs */}
+                                                                                                <div className="flex flex-col gap-2 shrink-0 md:w-2/3">
+                                                                                                    <div className="flex flex-wrap items-center gap-2">
+                                                                                                        {/* Buttons Si/No/NA */}
+                                                                                                        <div className="flex gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                                                                                                            {(['si', 'no', 'na'] as VarAnswer[]).map(a => (
+                                                                                                                <button key={a} onClick={() => setVarAnswer(item.id, v.id, a)}
+                                                                                                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${ans === a
+                                                                                                                        ? a === 'si' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
+                                                                                                                            : a === 'no' ? 'bg-red-500 text-white shadow-lg shadow-red-200'
+                                                                                                                                : 'bg-slate-500 text-white shadow-lg shadow-slate-200'
+                                                                                                                        : 'text-slate-400 hover:bg-slate-50'}`}>
+                                                                                                                    {a === 'si' ? 'Sí' : a === 'no' ? 'No' : 'N/A'}
+                                                                                                                </button>
+                                                                                                            ))}
+                                                                                                        </div>
+
+                                                                                                        {/* NC field */}
+                                                                                                        <div className="flex-1 min-w-[120px]">
+                                                                                                            <input 
+                                                                                                                type="text" 
+                                                                                                                placeholder="NC (No conformidad)"
+                                                                                                                value={data.nc_text}
+                                                                                                                onChange={e => setVarDetail(item.id, v.id, 'nc_text', e.target.value)}
+                                                                                                                className="w-full px-2 py-1.5 text-[10px] border border-red-100 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-red-300"
+                                                                                                            />
+                                                                                                        </div>
+
+                                                                                                        {/* OP field */}
+                                                                                                        <div className="flex-1 min-w-[120px]">
+                                                                                                            <input 
+                                                                                                                type="text" 
+                                                                                                                placeholder="OP (Oportunidad)"
+                                                                                                                value={data.op_text}
+                                                                                                                onChange={e => setVarDetail(item.id, v.id, 'op_text', e.target.value)}
+                                                                                                                className="w-full px-2 py-1.5 text-[10px] border border-amber-100 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-300"
+                                                                                                            />
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
                                                                                     );
@@ -688,36 +752,22 @@ export default function ChecklistPage() {
                                                                     {/* Divider */}
                                                                     <div className="border-t border-slate-100" />
 
-                                                                    {/* Hallazgo, NC y OP */}
+                                                                    {/* Hallazgo y Observaciones Finales del Punto */}
                                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                                        <div className="md:col-span-2">
-                                                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Hallazgo</label>
+                                                                        <div>
+                                                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Hallazgo General del Requisito</label>
                                                                             <textarea rows={2} value={f?.evidence || ''}
                                                                                 onChange={e => setFindingDetail(item.id, 'evidence', e.target.value)}
-                                                                                placeholder="Describe el hallazgo u observación detectada..."
+                                                                                placeholder="Resumen del hallazgo para este punto..."
                                                                                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
                                                                         </div>
                                                                         <div>
-                                                                            <label className="block text-xs font-bold text-red-500 uppercase mb-1">NC (No Conformidad)</label>
-                                                                            <textarea rows={2} value={f?.nc_text || ''}
-                                                                                onChange={e => setFindingDetail(item.id, 'nc_text', e.target.value)}
-                                                                                placeholder="Si aplica, describe la no conformidad..."
-                                                                                className="w-full px-3 py-2 text-sm border border-red-100 bg-red-50/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 resize-none" />
+                                                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones Finales</label>
+                                                                            <textarea rows={2} value={f?.observations || ''}
+                                                                                onChange={e => setFindingDetail(item.id, 'observations', e.target.value)}
+                                                                                placeholder="Notas adicionales sobre el cumplimiento..."
+                                                                                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
                                                                         </div>
-                                                                        <div>
-                                                                            <label className="block text-xs font-bold text-amber-600 uppercase mb-1">OP (Oportunidad de Mejora)</label>
-                                                                            <textarea rows={2} value={f?.op_text || ''}
-                                                                                onChange={e => setFindingDetail(item.id, 'op_text', e.target.value)}
-                                                                                placeholder="Si aplica, describe la oportunidad de mejora..."
-                                                                                className="w-full px-3 py-2 text-sm border border-amber-100 bg-amber-50/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none" />
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones Finales</label>
-                                                                        <textarea rows={2} value={f?.observations || ''}
-                                                                            onChange={e => setFindingDetail(item.id, 'observations', e.target.value)}
-                                                                            placeholder="Observaciones adicionales..."
-                                                                            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
                                                                     </div>
                                                                 </div>
                                                             )}

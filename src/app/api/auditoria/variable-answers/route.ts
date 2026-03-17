@@ -20,14 +20,14 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { audit_id, requirement_id, variable_id, answer } = body;
+        const { audit_id, requirement_id, variable_id, answer, nc_text, op_text } = body;
         if (!audit_id || !requirement_id || !variable_id || !answer) {
             return NextResponse.json({ error: 'audit_id, requirement_id, variable_id, answer required' }, { status: 400 });
         }
 
         const dataDir = await getCompanyDataDir();
         const service = getIsoAuditService(dataDir);
-        service.saveVariableAnswer(parseInt(audit_id), parseInt(requirement_id), parseInt(variable_id), answer);
+        service.saveVariableAnswer(parseInt(audit_id), parseInt(requirement_id), parseInt(variable_id), answer, nc_text, op_text);
         return NextResponse.json({ ok: true });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to save answer' }, { status: 500 });

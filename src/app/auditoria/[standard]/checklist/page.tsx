@@ -22,10 +22,10 @@ interface ChecklistItem {
     finding_id: number | null; finding_type_id: number | null;
     finding_description: string | null; evidence: string | null;
     observations: string | null; type_code: string | null;
-    is_op: number | null; responsible: string | null;
+    is_op: number | null; nc_text: string | null; op_text: string | null;
 }
 interface Variable { id: number; requirement_id: number; variable_text: string; variable_order: number; }
-type FindingState = { type_id: number | null; description: string; evidence: string; observations: string; is_op: number; responsible: string; };
+type FindingState = { type_id: number | null; description: string; evidence: string; observations: string; is_op: number; nc_text: string; op_text: string; };
 type VarAnswer = 'si' | 'no' | 'na';
 interface Opportunity { area: string; oportunidad: string; beneficio: string; }
 
@@ -111,7 +111,8 @@ export default function ChecklistPage() {
                     evidence: item.evidence || '',
                     observations: item.observations || '',
                     is_op: item.is_op || 0,
-                    responsible: item.responsible || '',
+                    nc_text: item.nc_text || '',
+                    op_text: item.op_text || '',
                 });
             }
             setFindings(map);
@@ -149,7 +150,7 @@ export default function ChecklistPage() {
         if (computed !== null) {
             setFindings(prev => {
                 const next = new Map(prev);
-                const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, responsible: '' };
+                const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, nc_text: '', op_text: '' };
                 const is_op = computed === NC_ID ? 0 : existing.is_op;
                 next.set(reqId, { ...existing, type_id: computed, is_op });
                 return next;
@@ -274,7 +275,7 @@ export default function ChecklistPage() {
     const setFindingType = (reqId: number, typeId: number | null) => {
         setFindings(prev => {
             const next = new Map(prev);
-            const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, responsible: '' };
+            const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, nc_text: '', op_text: '' };
             const is_op = typeId === NC_ID ? 0 : existing.is_op;
             next.set(reqId, { ...existing, type_id: typeId, is_op });
             return next;
@@ -284,7 +285,7 @@ export default function ChecklistPage() {
     const toggleOp = (reqId: number) => {
         setFindings(prev => {
             const next = new Map(prev);
-            const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, responsible: '' };
+            const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, nc_text: '', op_text: '' };
             next.set(reqId, { ...existing, is_op: existing.is_op ? 0 : 1 });
             return next;
         });
@@ -293,7 +294,7 @@ export default function ChecklistPage() {
     const setFindingDetail = (reqId: number, field: keyof FindingState, value: string) => {
         setFindings(prev => {
             const next = new Map(prev);
-            const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, responsible: '' };
+            const existing = next.get(reqId) || { type_id: null, description: '', evidence: '', observations: '', is_op: 0, nc_text: '', op_text: '' };
             next.set(reqId, { ...existing, [field]: value });
             return next;
         });
@@ -314,7 +315,8 @@ export default function ChecklistPage() {
                     evidence: f?.evidence || null,
                     observations: f?.observations || null,
                     is_op: f?.is_op ?? 0,
-                    responsible: f?.responsible || null,
+                    nc_text: f?.nc_text || null,
+                    op_text: f?.op_text || null,
                 };
             });
             const res = await fetch('/api/auditoria/checklist', {
@@ -576,7 +578,6 @@ export default function ChecklistPage() {
                                                                         </>
                                                                     )}
                                                                     {isNC && <span className="flex items-center gap-1 text-xs font-bold text-red-600"><AlertTriangle size={10} /> NC — acción correctiva</span>}
-                                                                    {f?.responsible && <span className="flex items-center gap-1 text-xs text-slate-400"><User size={10} /> {f.responsible}</span>}
                                                                 </div>
                                                             )}
 
@@ -687,37 +688,37 @@ export default function ChecklistPage() {
                                                                     {/* Divider */}
                                                                     <div className="border-t border-slate-100" />
 
-                                                                    {/* Responsable */}
-                                                                    <div>
-                                                                        <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase mb-1"><User size={11} /> Responsable</label>
-                                                                        <input type="text" value={f?.responsible || ''}
-                                                                            onChange={e => setFindingDetail(item.id, 'responsible', e.target.value)}
-                                                                            placeholder="Nombre del responsable..."
-                                                                            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                                                                    {/* Hallazgo, NC y OP */}
+                                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                        <div className="md:col-span-2">
+                                                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Hallazgo</label>
+                                                                            <textarea rows={2} value={f?.evidence || ''}
+                                                                                onChange={e => setFindingDetail(item.id, 'evidence', e.target.value)}
+                                                                                placeholder="Describe el hallazgo u observación detectada..."
+                                                                                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <label className="block text-xs font-bold text-red-500 uppercase mb-1">NC (No Conformidad)</label>
+                                                                            <textarea rows={2} value={f?.nc_text || ''}
+                                                                                onChange={e => setFindingDetail(item.id, 'nc_text', e.target.value)}
+                                                                                placeholder="Si aplica, describe la no conformidad..."
+                                                                                className="w-full px-3 py-2 text-sm border border-red-100 bg-red-50/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 resize-none" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <label className="block text-xs font-bold text-amber-600 uppercase mb-1">OP (Oportunidad de Mejora)</label>
+                                                                            <textarea rows={2} value={f?.op_text || ''}
+                                                                                onChange={e => setFindingDetail(item.id, 'op_text', e.target.value)}
+                                                                                placeholder="Si aplica, describe la oportunidad de mejora..."
+                                                                                className="w-full px-3 py-2 text-sm border border-amber-100 bg-amber-50/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none" />
+                                                                        </div>
                                                                     </div>
                                                                     <div>
-                                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Evidencia encontrada</label>
-                                                                        <textarea rows={2} value={f?.evidence || ''}
-                                                                            onChange={e => setFindingDetail(item.id, 'evidence', e.target.value)}
-                                                                            placeholder="Describe la evidencia observada..."
-                                                                            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones</label>
+                                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones Finales</label>
                                                                         <textarea rows={2} value={f?.observations || ''}
                                                                             onChange={e => setFindingDetail(item.id, 'observations', e.target.value)}
                                                                             placeholder="Observaciones adicionales..."
                                                                             className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
                                                                     </div>
-                                                                    {isNC && (
-                                                                        <div>
-                                                                            <label className="block text-xs font-bold text-red-500 uppercase mb-1">Descripción de la No Conformidad</label>
-                                                                            <textarea rows={2} value={f?.description || ''}
-                                                                                onChange={e => setFindingDetail(item.id, 'description', e.target.value)}
-                                                                                placeholder="Describe la no conformidad detectada..."
-                                                                                className="w-full px-3 py-2 text-sm border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-300 resize-none" />
-                                                                        </div>
-                                                                    )}
                                                                 </div>
                                                             )}
                                                         </div>

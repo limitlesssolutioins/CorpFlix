@@ -72,6 +72,8 @@ export interface BulkFindingItem {
     observations?: string;
     is_op?: number;
     responsible?: string;
+    nc_text?: string;
+    op_text?: string;
 }
 
 export interface AuditAuditor {
@@ -459,6 +461,14 @@ class ISOAuditService {
             this.db.exec('ALTER TABLE audit_findings ADD COLUMN responsible TEXT');
             console.log('✅ Added responsible column to audit_findings');
         }
+        if (!findingCols.some(c => c.name === 'nc_text')) {
+            this.db.exec('ALTER TABLE audit_findings ADD COLUMN nc_text TEXT');
+            console.log('✅ Added nc_text column to audit_findings');
+        }
+        if (!findingCols.some(c => c.name === 'op_text')) {
+            this.db.exec('ALTER TABLE audit_findings ADD COLUMN op_text TEXT');
+            console.log('✅ Added op_text column to audit_findings');
+        }
         const auditCols = this.db.prepare("PRAGMA table_info(audits)").all() as any[];
         if (!auditCols.some(c => c.name === 'criteria')) {
             this.db.exec('ALTER TABLE audits ADD COLUMN criteria TEXT');
@@ -724,6 +734,7 @@ class ISOAuditService {
         let reqQuery = `
             SELECT req.*, ch.chapter_number, ch.chapter_title, ch.standard_id,
                 af.id as finding_id, af.finding_type_id, af.finding_description, af.evidence, af.observations, af.is_op, af.responsible,
+                af.nc_text, af.op_text,
                 ft.type_name as finding_type_name, ft.color as finding_color, ft.type_code, ft.requires_action
             FROM iso_requirements req
             INNER JOIN iso_chapters ch ON req.chapter_id = ch.id
@@ -744,15 +755,17 @@ class ISOAuditService {
 
     saveBulkFindings(auditId: number, findings: BulkFindingItem[]): { saved: number; actionsCreated: number } {
         const upsert = this.db.prepare(`
-            INSERT INTO audit_findings (audit_id, requirement_id, finding_type_id, finding_description, evidence, observations, is_op, responsible)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO audit_findings (audit_id, requirement_id, finding_type_id, finding_description, evidence, observations, is_op, responsible, nc_text, op_text)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(audit_id, requirement_id) DO UPDATE SET
                 finding_type_id = excluded.finding_type_id,
                 finding_description = excluded.finding_description,
                 evidence = excluded.evidence,
                 observations = excluded.observations,
                 is_op = excluded.is_op,
-                responsible = excluded.responsible
+                responsible = excluded.responsible,
+                nc_text = excluded.nc_text,
+                op_text = excluded.op_text
         `);
 
         const deleteFind = this.db.prepare('DELETE FROM audit_findings WHERE audit_id = ? AND requirement_id = ?');
@@ -782,7 +795,9 @@ class ISOAuditService {
                     f.evidence || null,
                     f.observations || null,
                     f.is_op ?? 0,
-                    f.responsible || null
+                    f.responsible || null,
+                    f.nc_text || null,
+                    f.op_text || null
                 );
                 saved++;
 

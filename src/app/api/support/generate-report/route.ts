@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { verifySession, getCompanyId } from '@/lib/companyContext';
+import { getCompanyId } from '@/lib/companyContext';
+import { verifySession } from '@/lib/auth';
 import { emitTaskProgress } from '@/lib/socket-server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 

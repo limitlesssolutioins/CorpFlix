@@ -62,7 +62,7 @@ class CoreDatabase {
             },
             run: (...params: any[]) => {
                 return new Promise((resolve, reject) => {
-                    this.db.run(sql, params, function(err: any) {
+                    this.db.run(sql, params, function(this: any, err: any) {
                         if (err) reject(err);
                         else resolve({ lastID: this.lastID, changes: this.changes });
                     });

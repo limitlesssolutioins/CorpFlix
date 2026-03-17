@@ -148,6 +148,8 @@ export default function PlaneacionPage() {
     setWizardInputs({
       name: companyName,
       activity: companyActivity,
+      sector: companyActivity,
+      offerings: companyActivity,
       ...(existingSwot[type] ? { existingItems: existingSwot[type] } : {}),
       pestelContext: {
         political: data.political,

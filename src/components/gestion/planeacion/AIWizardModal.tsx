@@ -41,25 +41,12 @@ export const AIWizardModal: React.FC<Props> = ({
     if (wizardType === 'mission') {
       return (
         <>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">1. ¿Quiénes somos? (Nombre de la empresa)</label>
-            <input 
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              placeholder="Ej: Muebles del Valle S.A."
-              onChange={(e) => setWizardInputs(prev => ({...prev, name: e.target.value}))}
-            />
+          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4">
+            <p className="text-sm text-blue-800 font-bold mb-1">Empresa: {companyName}</p>
+            <p className="text-xs text-blue-600">Actividad: {companyActivity}</p>
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">2. ¿Qué ofrecemos? (Servicios o productos)</label>
-            <textarea 
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              rows={2}
-              placeholder="Ej: Fabricación de muebles de madera sostenible..."
-              onChange={(e) => setWizardInputs(prev => ({...prev, offerings: e.target.value}))}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">3. ¿Quiénes son tus clientes o mercado objetivo?</label>
+            <label className="block text-sm font-bold text-slate-700 mb-2">1. ¿Quiénes son tus clientes o mercado objetivo?</label>
             <input 
               className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               placeholder="Ej: Familias jóvenes en el área metropolitana..."
@@ -82,16 +69,12 @@ export const AIWizardModal: React.FC<Props> = ({
     if (wizardType === 'vision') {
         return (
           <>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">1. Nombre de la empresa</label>
-              <input 
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all"
-                placeholder="Ej: TechSolutions..."
-                onChange={(e) => setWizardInputs(prev => ({...prev, name: e.target.value}))}
-              />
+            <div className="bg-purple-50 p-4 rounded-xl border border-purple-100 mb-4">
+              <p className="text-sm text-purple-800 font-bold mb-1">Empresa: {companyName}</p>
+              <p className="text-xs text-purple-600">Proyectando el futuro de tu organización.</p>
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">2. Fecha objetivo (¿Para cuándo?)</label>
+              <label className="block text-sm font-bold text-slate-700 mb-2">1. Fecha objetivo (¿Para cuándo?)</label>
               <input 
                 className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none transition-all"
                 placeholder="Ej: 2030"
@@ -122,30 +105,10 @@ export const AIWizardModal: React.FC<Props> = ({
     if (wizardType === 'policies') {
         return (
           <>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Nombre de la Empresa</label>
-              <input 
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all"
-                placeholder="Ej: LIDUS S.A.S."
-                onChange={(e) => setWizardInputs(prev => ({...prev, name: e.target.value}))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Sector Económico</label>
-              <input 
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all"
-                placeholder="Ej: Tecnológico, Industrial, Servicios..."
-                onChange={(e) => setWizardInputs(prev => ({...prev, sector: e.target.value}))}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Actividad Económica</label>
-              <textarea 
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all"
-                rows={3}
-                placeholder="Ej: Desarrollo de software a medida y consultoría..."
-                onChange={(e) => setWizardInputs(prev => ({...prev, activity: e.target.value}))}
-              />
+            <div className="bg-pink-50 p-4 rounded-xl border border-pink-100 mb-4">
+              <p className="text-sm text-pink-800 font-bold mb-1">Empresa: {companyName}</p>
+              <p className="text-xs text-pink-600">Actividad: {companyActivity}</p>
+              <p className="text-xs text-pink-500 mt-2 font-medium">La IA analizará esta información para generar políticas acordes a tu negocio.</p>
             </div>
           </>
         );
@@ -155,13 +118,9 @@ export const AIWizardModal: React.FC<Props> = ({
         const hasPolicies = data.politicas && data.politicas.length > 0;
         return (
           <>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Nombre de la Empresa</label>
-              <input 
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                placeholder="Ej: LIDUS S.A.S."
-                onChange={(e) => setWizardInputs(prev => ({...prev, name: e.target.value}))}
-              />
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4">
+              <p className="text-sm text-blue-800 font-bold mb-1">Empresa: {companyName}</p>
+              <p className="text-xs text-blue-600">Actividad: {companyActivity}</p>
             </div>
   
             {hasPolicies && (
@@ -187,16 +146,9 @@ export const AIWizardModal: React.FC<Props> = ({
             )}
   
             {(!wizardInputs.usePolicies) && (
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Sector / Actividad</label>
-                <textarea 
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  rows={3}
-                  placeholder="Ej: Desarrollo de software, Construcción, Salud..."
-                  defaultValue={companyActivity}
-                  onChange={(e) => setWizardInputs(prev => ({...prev, activity: e.target.value || companyActivity}))}
-                />
-              </div>
+              <p className="text-xs text-blue-500 mt-2 font-medium">
+                La IA analizará la información de tu empresa para generar objetivos estratégicos.
+              </p>
             )}
           </>
         );
@@ -278,13 +230,9 @@ export const AIWizardModal: React.FC<Props> = ({
           )}
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Nombre de la Empresa</label>
-              <input 
-                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                defaultValue={companyName}
-                onChange={(e) => setWizardInputs(prev => ({...prev, name: e.target.value || companyName}))}
-              />
+            <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+              <p className="text-sm text-indigo-800 font-bold mb-1">Empresa: {companyName}</p>
+              <p className="text-xs text-indigo-600">Actividad: {companyActivity}</p>
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2 italic">Describe las Fortalezas y Debilidades (Análisis Interno):</label>
@@ -396,27 +344,12 @@ export const AIWizardModal: React.FC<Props> = ({
               </div>
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Nombre de la Empresa</label>
-            <input 
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-              placeholder="Ej: LIDUS S.A.S."
-              defaultValue={companyName}
-              onChange={(e) => setWizardInputs(prev => ({...prev, name: e.target.value || companyName}))}
-            />
+          <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-4">
+            <p className="text-sm text-indigo-800 font-bold mb-1">Empresa: {companyName}</p>
+            <p className="text-xs text-indigo-600">Actividad: {companyActivity}</p>
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Sector / Actividad</label>
-            <textarea 
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-              rows={2}
-              placeholder="Ej: Desarrollo de software, Construcción, Salud..."
-              defaultValue={companyActivity}
-              onChange={(e) => setWizardInputs(prev => ({...prev, activity: e.target.value || companyActivity}))}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2 italic">3. Describe tu observación o análisis para este sector:</label>
+            <label className="block text-sm font-bold text-slate-700 mb-2 italic">Describe tu observación o análisis para este sector (opcional):</label>
             <textarea 
               className="w-full p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
               rows={4}
@@ -431,23 +364,10 @@ export const AIWizardModal: React.FC<Props> = ({
 
     return (
         <>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Nombre de la Empresa</label>
-            <input 
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-              placeholder="Ej: LIDUS S.A.S."
-              onChange={(e) => setWizardInputs(prev => ({...prev, name: e.target.value}))}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Sector / Actividad</label>
-            <textarea 
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-              rows={3}
-              placeholder="Ej: Desarrollo de software, Construcción, Salud..."
-              defaultValue={companyActivity}
-              onChange={(e) => setWizardInputs(prev => ({...prev, activity: e.target.value || companyActivity}))}
-            />
+          <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-4">
+            <p className="text-sm text-indigo-800 font-bold mb-1">Empresa: {companyName}</p>
+            <p className="text-xs text-indigo-600">Actividad: {companyActivity}</p>
+            <p className="text-xs text-indigo-500 mt-2 font-medium">La IA generará propuestas usando esta información.</p>
           </div>
         </>
     );

@@ -22,13 +22,13 @@ import {
   Home, 
   PieChart, 
   Calculator, 
-  Wrench, 
+  Wrench,
   Ticket,
   User,
   ChevronRight,
-  Sparkles
-} from 'lucide-react';
-
+  Sparkles,
+  BrainCircuit
+  } from 'lucide-react';
 const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
@@ -169,6 +169,7 @@ const Sidebar = () => {
           <div className="pt-6 space-y-4">
             <Section title="Estrategia" id="gestión" icon={Target}>
               <NavItem href="/gestion/planeacion-estrategica" label="Planeación" icon={Sparkles} />
+              <NavItem href="/gestion/salud-mental" label="Salud Mental" icon={BrainCircuit} />
               <NavItem href="/gestion/procesos" label="Procesos" icon={Network} />
               <NavItem href="/gestion/indicadores" label="Indicadores" icon={BarChart3} />
               <NavItem href="/riesgos" label="Riesgos" icon={AlertTriangle} />

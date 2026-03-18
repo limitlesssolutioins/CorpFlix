@@ -575,6 +575,37 @@ class ISOAuditService {
                 FOREIGN KEY (plan_id) REFERENCES audit_plans(id) ON DELETE CASCADE
             );
         `);
+        
+        this.ensureMINTRABAJO();
+    }
+
+    private ensureMINTRABAJO() {
+        const std = this.db.prepare("SELECT id FROM audit_standards WHERE code='MINTRABAJO'").get() as any;
+        if (std) return; // Already migrated
+
+        console.log('🔄 Adding MINTRABAJO standard...');
+        try {
+            this.db.exec('BEGIN TRANSACTION');
+            const schema = fs.readFileSync(SCHEMA_PATH, 'utf-8');
+            const insertSection = schema.substring(schema.indexOf('-- MINTRABAJO: Inspección General'));
+            if (insertSection) {
+                const insertStatements = insertSection.match(/INSERT OR IGNORE INTO[\s\S]+?;/g);
+                if (insertStatements) {
+                    for (const stmt of insertStatements) {
+                        try {
+                            this.db.exec(stmt);
+                        } catch (e) {
+                            // Ignore individual insert errors
+                        }
+                    }
+                }
+            }
+            this.db.exec('COMMIT');
+            console.log('✅ MINTRABAJO standard added successfully');
+        } catch (error) {
+            this.db.exec('ROLLBACK');
+            console.error('❌ Failed to add MINTRABAJO standard:', error);
+        }
     }
 
     // ===================================================

@@ -1,18 +1,33 @@
 import fs from 'fs';
 import path from 'path';
 
+export interface EvaluacionToken {
+    token: string;
+    empleadoId: string;
+    empleadoNombre: string;
+    fechaCreacion: string;
+    formulario: 'A' | 'B';
+    estado: 'PENDIENTE' | 'COMPLETADO';
+}
+
 export interface SaludMentalRespuesta {
     id: string;
+    token: string;
     empleadoId: string;
     empleadoNombre: string;
     fecha: string;
-    formulario: 'intralaboral' | 'extralaboral' | 'estres';
-    respuestas: Record<string, number>;
-    puntajeTotal: number;
-    nivelRiesgo: 'Bajo' | 'Medio' | 'Alto' | 'Muy Alto';
+    formulario: 'A' | 'B';
+    respuestasIntralaboral: Record<string, number>;
+    respuestasExtralaboral: Record<string, number>;
+    respuestasEstres: Record<string, number>;
+    nivelRiesgoIntra: 'Sin Riesgo' | 'Bajo' | 'Medio' | 'Alto' | 'Muy Alto';
+    nivelRiesgoExtra: 'Sin Riesgo' | 'Bajo' | 'Medio' | 'Alto' | 'Muy Alto';
+    nivelRiesgoEstres: 'Sin Riesgo' | 'Bajo' | 'Medio' | 'Alto' | 'Muy Alto';
+    consentimiento: boolean;
 }
 
 const DEFAULT_DATA = {
+    evaluaciones: [] as EvaluacionToken[],
     respuestas: [] as SaludMentalRespuesta[]
 };
 
@@ -40,6 +55,42 @@ export class SaludMentalService {
         fs.writeFileSync(this.dataPath, JSON.stringify(data, null, 2));
     }
 
+    // --- Evaluaciones (Tokens) ---
+    getEvaluaciones() {
+        return this.getData().evaluaciones || [];
+    }
+
+    getEvaluacion(token: string): EvaluacionToken | undefined {
+        return this.getEvaluaciones().find((e: EvaluacionToken) => e.token === token);
+    }
+
+    crearEvaluacion(empleadoId: string, empleadoNombre: string, formulario: 'A' | 'B'): EvaluacionToken {
+        const data = this.getData();
+        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const nuevaEvaluacion: EvaluacionToken = {
+            token,
+            empleadoId,
+            empleadoNombre,
+            fechaCreacion: new Date().toISOString(),
+            formulario,
+            estado: 'PENDIENTE'
+        };
+        if (!data.evaluaciones) data.evaluaciones = [];
+        data.evaluaciones.push(nuevaEvaluacion);
+        this.saveData(data);
+        return nuevaEvaluacion;
+    }
+
+    marcarEvaluacionCompletada(token: string) {
+        const data = this.getData();
+        const ev = data.evaluaciones?.find((e: EvaluacionToken) => e.token === token);
+        if (ev) {
+            ev.estado = 'COMPLETADO';
+            this.saveData(data);
+        }
+    }
+
+    // --- Respuestas ---
     getRespuestas() {
         return this.getData().respuestas || [];
     }
@@ -50,8 +101,15 @@ export class SaludMentalService {
             ...respuesta,
             id: `SM-${Date.now()}`
         };
+        if (!data.respuestas) data.respuestas = [];
         data.respuestas.push(nuevaRespuesta);
         this.saveData(data);
+        
+        // Marcar token como completado
+        if (respuesta.token) {
+            this.marcarEvaluacionCompletada(respuesta.token);
+        }
+        
         return nuevaRespuesta;
     }
 }

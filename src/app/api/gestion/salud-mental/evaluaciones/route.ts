@@ -29,3 +29,25 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to create' }, { status: 500 });
     }
 }
+
+export async function DELETE(request: Request) {
+    try {
+        const dataDir = await getCompanyDataDir();
+        const service = getSaludMentalService(dataDir);
+        const { searchParams } = new URL(request.url);
+        const token = searchParams.get('token');
+        
+        if (!token) {
+            return NextResponse.json({ error: 'Missing token' }, { status: 400 });
+        }
+
+        const success = service.borrarEvaluacion(token);
+        if (success) {
+            return NextResponse.json({ success: true });
+        } else {
+            return NextResponse.json({ error: 'Token not found' }, { status: 404 });
+        }
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
+    }
+}

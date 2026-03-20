@@ -1,18 +1,19 @@
 import { NextResponse } from 'next/server';
 import { getSaludMentalService } from '@/services/salud-mental.service';
-import fs from 'fs';
 import path from 'path';
-
-// For the public endpoint, we need to know the dataDir. 
-// Since Lidus is multi-tenant but we are on a single public link, 
-// usually the token embeds the company or we use the default company data dir.
-// For now, let's use the default data dir since we don't have request context.
-const DEFAULT_DATA_DIR = path.join(process.cwd(), 'src/data');
 
 export async function GET(request: Request, { params }: { params: { token: string } }) {
     try {
         const { token } = await params;
-        const service = getSaludMentalService(DEFAULT_DATA_DIR);
+        const parts = token.split('___');
+        const companyId = parts.length > 1 ? parts[0] : null;
+
+        if (!companyId) {
+            return NextResponse.json({ error: 'Token inválido' }, { status: 400 });
+        }
+
+        const dataDir = path.join(process.cwd(), 'src/data/companies', companyId);
+        const service = getSaludMentalService(dataDir);
         const evaluacion = service.getEvaluacion(token);
         
         if (!evaluacion) {
@@ -32,7 +33,15 @@ export async function GET(request: Request, { params }: { params: { token: strin
 export async function POST(request: Request, { params }: { params: { token: string } }) {
     try {
         const { token } = await params;
-        const service = getSaludMentalService(DEFAULT_DATA_DIR);
+        const parts = token.split('___');
+        const companyId = parts.length > 1 ? parts[0] : null;
+
+        if (!companyId) {
+            return NextResponse.json({ error: 'Token inválido' }, { status: 400 });
+        }
+
+        const dataDir = path.join(process.cwd(), 'src/data/companies', companyId);
+        const service = getSaludMentalService(dataDir);
         const evaluacion = service.getEvaluacion(token);
         
         if (!evaluacion) {

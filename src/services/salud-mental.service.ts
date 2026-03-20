@@ -66,7 +66,10 @@ export class SaludMentalService {
 
     crearEvaluacion(empleadoId: string, empleadoNombre: string, formulario: 'A' | 'B'): EvaluacionToken {
         const data = this.getData();
-        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const companyId = path.basename(path.dirname(this.dataPath));
+        const randomStr = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const token = `${companyId}___${randomStr}`;
+        
         const nuevaEvaluacion: EvaluacionToken = {
             token,
             empleadoId,
@@ -79,6 +82,20 @@ export class SaludMentalService {
         data.evaluaciones.push(nuevaEvaluacion);
         this.saveData(data);
         return nuevaEvaluacion;
+    }
+
+    borrarEvaluacion(token: string): boolean {
+        const data = this.getData();
+        if (!data.evaluaciones) return false;
+        
+        const initialLength = data.evaluaciones.length;
+        data.evaluaciones = data.evaluaciones.filter((e: EvaluacionToken) => e.token !== token);
+        
+        if (data.evaluaciones.length < initialLength) {
+            this.saveData(data);
+            return true;
+        }
+        return false;
     }
 
     marcarEvaluacionCompletada(token: string) {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { FaSpinner, FaCopy } from 'react-icons/fa';
+import { FaSpinner, FaCopy, FaTrash } from 'react-icons/fa';
 import { BrainCircuit, Activity, Link as LinkIcon, CheckCircle, Search } from 'lucide-react';
 
 export default function SaludMentalAdminPage() {
@@ -67,6 +67,17 @@ export default function SaludMentalAdminPage() {
       toast.error('Error al generar enlace');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteLink = async (token: string) => {
+    if (!confirm('¿Estás seguro de eliminar este enlace? Esta acción no se puede deshacer.')) return;
+    try {
+      await axios.delete(`/api/gestion/salud-mental/evaluaciones?token=${token}`);
+      toast.success('Enlace eliminado correctamente');
+      fetchEvaluaciones();
+    } catch (error) {
+      toast.error('Error al eliminar enlace');
     }
   };
 
@@ -231,6 +242,15 @@ export default function SaludMentalAdminPage() {
                         >
                           <FaCopy className="w-4 h-4" />
                         </button>
+                        {ev.estado !== 'COMPLETADO' && (
+                          <button
+                            onClick={() => handleDeleteLink(ev.token)}
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                            title="Eliminar Enlace"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

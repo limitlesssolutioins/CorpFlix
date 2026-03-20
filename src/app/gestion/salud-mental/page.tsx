@@ -72,8 +72,31 @@ export default function SaludMentalAdminPage() {
 
   const copyToClipboard = (token: string) => {
     const url = `${window.location.origin}/evaluacion-psicosocial/${token}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Enlace copiado al portapapeles');
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url)
+        .then(() => toast.success('Enlace copiado al portapapeles'))
+        .catch(() => fallbackCopy(url));
+    } else {
+      fallbackCopy(url);
+    }
+  };
+
+  const fallbackCopy = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      toast.success('Enlace copiado al portapapeles');
+    } catch (err) {
+      toast.error('Error al copiar. Por favor seleccione el enlace y cópielo manualmente.');
+    }
+    textArea.remove();
   };
 
   const getRiskColor = (risk: string) => {
@@ -192,14 +215,23 @@ export default function SaludMentalAdminPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => copyToClipboard(ev.token)}
-                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Copiar Enlace"
-                      >
-                        <FaCopy className="w-4 h-4" />
-                      </button>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 max-w-xs">
+                        <input 
+                          type="text" 
+                          readOnly 
+                          value={`${window.location.origin}/evaluacion-psicosocial/${ev.token}`}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-500 font-mono focus:outline-none"
+                          onClick={(e) => (e.target as HTMLInputElement).select()}
+                        />
+                        <button
+                          onClick={() => copyToClipboard(ev.token)}
+                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shrink-0"
+                          title="Copiar Enlace"
+                        >
+                          <FaCopy className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

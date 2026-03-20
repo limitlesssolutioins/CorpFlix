@@ -478,7 +478,10 @@ class ISOAuditService {
                 variable_text TEXT NOT NULL,
                 variable_order INTEGER DEFAULT 0,
                 FOREIGN KEY (requirement_id) REFERENCES iso_requirements(id) ON DELETE CASCADE
-            );
+            )
+        `);
+        
+        this.db.exec(`
             CREATE TABLE IF NOT EXISTS finding_variable_answers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 audit_id INTEGER NOT NULL,
@@ -490,17 +493,21 @@ class ISOAuditService {
                 UNIQUE(audit_id, requirement_id, variable_id),
                 FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
                 FOREIGN KEY (variable_id) REFERENCES requirement_variables(id) ON DELETE CASCADE
-            );
+            )
         `);
 
         const varAnswerCols = this.db.prepare("PRAGMA table_info(finding_variable_answers)").all() as any[];
-        if (!varAnswerCols.some(c => c.name === 'nc_text')) {
-            this.db.exec('ALTER TABLE finding_variable_answers ADD COLUMN nc_text TEXT');
-            console.log('✅ Added nc_text column to finding_variable_answers');
-        }
-        if (!varAnswerCols.some(c => c.name === 'op_text')) {
-            this.db.exec('ALTER TABLE finding_variable_answers ADD COLUMN op_text TEXT');
-            console.log('✅ Added op_text column to finding_variable_answers');
+        if (varAnswerCols && varAnswerCols.length > 0) {
+            if (!varAnswerCols.some(c => c.name === 'nc_text')) {
+                this.db.exec('ALTER TABLE finding_variable_answers ADD COLUMN nc_text TEXT');
+                console.log('✅ Added nc_text column to finding_variable_answers');
+            }
+            if (!varAnswerCols.some(c => c.name === 'op_text')) {
+                this.db.exec('ALTER TABLE finding_variable_answers ADD COLUMN op_text TEXT');
+                console.log('✅ Added op_text column to finding_variable_answers');
+            }
+        } else {
+            console.error('❌ Failed to create finding_variable_answers table');
         }
 
         const auditCols = this.db.prepare("PRAGMA table_info(audits)").all() as any[];

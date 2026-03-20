@@ -27,7 +27,8 @@ import {
   User,
   ChevronRight,
   Sparkles,
-  BrainCircuit
+  BrainCircuit,
+  TrendingUp
   } from 'lucide-react';
 const Sidebar = () => {
   const pathname = usePathname();
@@ -187,7 +188,7 @@ const Sidebar = () => {
             <Section title="Finanzas" id="finanzas" icon={BadgeDollarSign}>
               <NavItem href="/financiero" label="Diagnóstico" icon={PieChart} />
               <NavItem href="/financiero/calculadora" label="Calculadora" icon={Calculator} />
-              <NavItem href="/financiero/configuracion" label="Configuración" icon={Wrench} />
+              <NavItem href="/financiero/proyeccion-renta" label="Proyección Renta" icon={TrendingUp} />
             </Section>
 
             <Section title="Sistema" id="admin" icon={Settings2}>

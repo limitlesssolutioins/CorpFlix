@@ -62,6 +62,37 @@ app.prepare().then(() => {
       io.to(data.companyId).emit('new-message', data);
     });
 
+    // --- NUEVO SISTEMA DE SOPORTE SAAS (LIMITLESS) ---
+    // Agente se conecta al panel de admins
+    socket.on('join-saas-admins', () => {
+      socket.join('saas-admins');
+      console.log(`Agente ${socket.id} se unió a saas-admins`);
+    });
+
+    // Cliente pide hablar con un humano
+    socket.on('request-human', (data) => {
+      // data: { companyId, userId, userName }
+      io.to('saas-admins').emit('human-requested', { ...data, socketId: socket.id });
+      // El cliente se une a su propia sala de soporte
+      socket.join(`support-${data.companyId}-${data.userId}`);
+    });
+
+    // Agente acepta el chat
+    socket.on('agent-accept', (data) => {
+      // data: { companyId, userId, agentName }
+      const room = `support-${data.companyId}-${data.userId}`;
+      socket.join(room);
+      io.to(room).emit('agent-joined', { agentName: data.agentName });
+    });
+
+    // Mensaje entre cliente y agente en modo humano
+    socket.on('saas-chat-message', (data) => {
+      // data: { companyId, userId, text, sender: 'user' | 'agent' }
+      const room = `support-${data.companyId}-${data.userId}`;
+      io.to(room).emit('new-saas-message', data);
+    });
+    // -------------------------------------------------
+
     socket.on('disconnect', () => {
       console.log('Cliente desconectado:', socket.id);
     });

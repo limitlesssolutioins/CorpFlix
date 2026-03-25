@@ -22,6 +22,21 @@ interface SeguridadSocialOption {
   format: string;
 }
 
+interface TurnoEstandar {
+  id: string;
+  nombre: string;
+  horas: number;
+  horaInicio: string;
+  horaFin: string;
+}
+
+interface Cargo {
+  id: string;
+  nombre: string;
+  salarioBase: number;
+  riesgoArl: number;
+}
+
 interface PayrollConfig {
   extras: ExtraOption[];
   domesticas: {
@@ -32,6 +47,8 @@ interface PayrollConfig {
     operadorDefault: string;
     opcionesArchivosPlanos: SeguridadSocialOption[];
   };
+  turnosEstandar?: TurnoEstandar[];
+  cargos?: Cargo[];
 }
 
 export default function ConfiguracionPage() {
@@ -52,6 +69,24 @@ export default function ConfiguracionPage() {
         throw new Error(`Error fetching config: ${response.statusText}`);
       }
       const data: PayrollConfig = await response.json();
+      
+      // Inicializar valores por defecto si no existen en la BD aún
+      if (!data.turnosEstandar) {
+        data.turnosEstandar = [
+          { id: '1', nombre: 'Turno Mañana (6h)', horas: 6, horaInicio: '06:00', horaFin: '12:00' },
+          { id: '2', nombre: 'Turno Estándar (8h)', horas: 8, horaInicio: '08:00', horaFin: '17:00' },
+          { id: '3', nombre: 'Turno Extendido (10h)', horas: 10, horaInicio: '08:00', horaFin: '18:00' },
+          { id: '4', nombre: 'Turno Operativo (12h)', horas: 12, horaInicio: '06:00', horaFin: '18:00' }
+        ];
+      }
+      if (!data.cargos) {
+        data.cargos = [
+          { id: '1', nombre: 'Operario General', salarioBase: 1300000, riesgoArl: 3 },
+          { id: '2', nombre: 'Supervisor', salarioBase: 2500000, riesgoArl: 2 },
+          { id: '3', nombre: 'Administrativo', salarioBase: 1800000, riesgoArl: 1 }
+        ];
+      }
+
       setConfig(data);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch configuration');
@@ -281,6 +316,96 @@ export default function ConfiguracionPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600 mt-8">Cargos Estándar</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {config.cargos?.map((cargo, index) => (
+            <div key={cargo.id} className="p-4 border rounded-md bg-slate-50 border-blue-100">
+              <label className="block text-slate-700 text-sm font-bold mb-2">Nombre del Cargo:</label>
+              <input
+                type="text"
+                value={cargo.nombre}
+                onChange={(e) => {
+                  const newCargos = [...(config.cargos || [])];
+                  newCargos[index].nombre = e.target.value;
+                  setConfig({ ...config, cargos: newCargos });
+                }}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
+              />
+              <label className="block text-slate-700 text-sm font-bold mb-2">Salario Base:</label>
+              <input
+                type="number"
+                value={cargo.salarioBase}
+                onChange={(e) => {
+                  const newCargos = [...(config.cargos || [])];
+                  newCargos[index].salarioBase = Number(e.target.value);
+                  setConfig({ ...config, cargos: newCargos });
+                }}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
+              />
+              <label className="block text-slate-700 text-sm font-bold mb-2">Nivel Riesgo ARL (1-5):</label>
+              <input
+                type="number"
+                min="1"
+                max="5"
+                value={cargo.riesgoArl}
+                onChange={(e) => {
+                  const newCargos = [...(config.cargos || [])];
+                  newCargos[index].riesgoArl = Number(e.target.value);
+                  setConfig({ ...config, cargos: newCargos });
+                }}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+          ))}
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Turnos Estándar</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {config.turnosEstandar?.map((turno, index) => (
+            <div key={turno.id} className="p-4 border rounded-md bg-slate-50 border-emerald-100 grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                 <label className="block text-slate-700 text-sm font-bold mb-1">Nombre del Turno:</label>
+                 <input
+                  type="text"
+                  value={turno.nombre}
+                  onChange={(e) => {
+                    const newTurnos = [...(config.turnosEstandar || [])];
+                    newTurnos[index].nombre = e.target.value;
+                    setConfig({ ...config, turnosEstandar: newTurnos });
+                  }}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-700 text-sm font-bold mb-1">Hora Inicio:</label>
+                 <input
+                  type="time"
+                  value={turno.horaInicio}
+                  onChange={(e) => {
+                    const newTurnos = [...(config.turnosEstandar || [])];
+                    newTurnos[index].horaInicio = e.target.value;
+                    setConfig({ ...config, turnosEstandar: newTurnos });
+                  }}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-700 text-sm font-bold mb-1">Hora Fin:</label>
+                 <input
+                  type="time"
+                  value={turno.horaFin}
+                  onChange={(e) => {
+                    const newTurnos = [...(config.turnosEstandar || [])];
+                    newTurnos[index].horaFin = e.target.value;
+                    setConfig({ ...config, turnosEstandar: newTurnos });
+                  }}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
+                />
+              </div>
+            </div>
+          ))}
         </div>
 
         <button

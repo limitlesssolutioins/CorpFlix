@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSocket } from '@/lib/socketContext';
-import { MessageCircle, X, Send, Bot, User, Sparkles, Minus } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Sparkles, Minus, Headset } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -19,14 +19,20 @@ export default function SupportChat() {
     { id: '1', text: '¡Hola! Soy Lidia, tu asistente de LIDUS. ¿En qué puedo ayudarte hoy?', sender: 'ia', timestamp: Date.now() }
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  const { socket, emit } = useSocket();
+  
+  // NEW STATES FOR HYBRID MODE
+  const [chatMode, setChatMode] = useState<'bot' | 'waiting' | 'human'>('bot');
+  const [agentName, setAgentName] = useState('');
+  const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { socket } = useSocket();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isTyping]);
+  }, [messages, isTyping, chatMode]);
 
   useEffect(() => {
     if (!socket) return;
@@ -40,10 +46,75 @@ export default function SupportChat() {
       }]);
     });
 
+    socket.on('agent-joined', (data: any) => {
+      if (fallbackTimeoutRef.current) clearTimeout(fallbackTimeoutRef.current);
+      setChatMode('human');
+      setAgentName(data.agentName || 'Agente de Soporte');
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        text: `¡Hola! Soy ${data.agentName || 'un agente'}, ¿en qué te puedo ayudar?`,
+        sender: 'agent',
+        timestamp: Date.now()
+      }]);
+    });
+
+    socket.on('new-saas-message', (data: any) => {
+      if (data.sender === 'agent') {
+        setMessages(prev => [...prev, {
+          id: Math.random().toString(36).substr(2, 9),
+          text: data.text,
+          sender: 'agent',
+          timestamp: Date.now()
+        }]);
+      }
+    });
+
     return () => {
       socket.off('new-message');
+      socket.off('agent-joined');
+      socket.off('new-saas-message');
     };
   }, [socket]);
+
+  const requestHuman = async () => {
+    setChatMode('waiting');
+    
+    // Simulate getting user info (in a real app, fetch from context or API)
+    const companyId = 'C-' + Math.floor(Math.random() * 1000); 
+    const userId = socket?.id || 'U-123';
+    
+    socket?.emit('request-human', { companyId, userId, userName: 'Cliente' });
+
+    // Fallback: Si en 30 segundos ningún agente responde, crea un ticket
+    fallbackTimeoutRef.current = setTimeout(async () => {
+      setChatMode('bot');
+      const transcript = messages.map(m => `${m.sender}: ${m.text}`).join('\n');
+      
+      try {
+        const res = await fetch('/api/support/saas-tickets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            subject: 'Solicitud de Soporte desde Chat',
+            transcript,
+            priority: 'HIGH'
+          })
+        });
+        
+        if (res.ok) {
+          const ticketData = await res.json();
+          setMessages(prev => [...prev, {
+            id: Date.now().toString(),
+            text: `Nuestros agentes están ocupados, pero hemos creado el ticket ${ticketData.ticket_code}. Te contactaremos pronto.`,
+            sender: 'ia',
+            timestamp: Date.now()
+          }]);
+        }
+      } catch (err) {
+        console.error('Error creating fallback ticket', err);
+      }
+    }, 30000);
+  };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,13 +130,18 @@ export default function SupportChat() {
     setMessages(prev => [...prev, userMsg]);
     const currentInput = input;
     setInput('');
+
+    if (chatMode === 'human') {
+      const companyId = 'C-' + Math.floor(Math.random() * 1000); // Should match requestHuman
+      const userId = socket?.id || 'U-123';
+      socket?.emit('saas-chat-message', { companyId, userId, text: currentInput, sender: 'user' });
+      return;
+    }
+
+    if (chatMode === 'waiting') return;
+
     setIsTyping(true);
-
     try {
-      // 1. Enviar vía WebSocket para sincronización (opcional si es multi-agente)
-      // emit('send-message', { text: currentInput, sender: 'user' });
-
-      // 2. Llamar a la API de IA
       const res = await fetch('/api/support/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,17 +183,20 @@ export default function SupportChat() {
 
   return (
     <div className={`fixed bottom-6 right-6 w-[380px] bg-slate-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden z-[100] transition-all flex flex-col ${isMinimized ? 'h-16' : 'h-[550px]'}`}>
-      {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-            <Bot size={22} className="text-white" />
+            {chatMode === 'human' ? <Headset size={22} className="text-white" /> : <Bot size={22} className="text-white" />}
           </div>
           <div>
-            <h3 className="text-white font-bold text-sm">Soporte Inteligente</h3>
+            <h3 className="text-white font-bold text-sm">
+              {chatMode === 'human' ? 'Soporte en Vivo' : 'Soporte Inteligente'}
+            </h3>
             <div className="flex items-center gap-1">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest">Lidia AI Activa</span>
+              <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest">
+                {chatMode === 'bot' ? 'Lidia AI Activa' : chatMode === 'waiting' ? 'Buscando agente...' : `${agentName} en línea`}
+              </span>
             </div>
           </div>
         </div>
@@ -133,7 +212,6 @@ export default function SupportChat() {
 
       {!isMinimized && (
         <>
-          {/* Messages Area */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -143,9 +221,9 @@ export default function SupportChat() {
                     : 'bg-white/5 text-slate-200 border border-white/5 rounded-tl-none'
                 }`}>
                   <div className="flex items-center gap-2 mb-1">
-                    {msg.sender === 'user' ? <User size={12} className="opacity-50" /> : <Bot size={12} className="text-blue-400" />}
+                    {msg.sender === 'user' ? <User size={12} className="opacity-50" /> : <Bot size={12} className={msg.sender === 'agent' ? "text-emerald-400" : "text-blue-400"} />}
                     <span className="text-[10px] font-black uppercase opacity-40">
-                      {msg.sender === 'user' ? 'Tú' : msg.sender === 'ia' ? 'Lidia AI' : 'Asesor Lidus'}
+                      {msg.sender === 'user' ? 'Tú' : msg.sender === 'ia' ? 'Lidia AI' : agentName || 'Asesor'}
                     </span>
                   </div>
                   <p className="leading-relaxed font-medium">{msg.text}</p>
@@ -161,21 +239,31 @@ export default function SupportChat() {
                 </div>
               </div>
             )}
+            {chatMode === 'bot' && (
+              <div className="flex justify-center mt-4">
+                <button 
+                  onClick={requestHuman}
+                  className="text-xs bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 py-1.5 px-4 rounded-full transition-colors flex items-center gap-2"
+                >
+                  <Headset size={14} /> Hablar con un humano
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Input Area */}
           <form onSubmit={handleSend} className="p-4 border-t border-white/5 bg-white/[0.02]">
             <div className="relative">
               <input
                 type="text"
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Escribe tu duda aquí..."
-                className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-all pr-12"
+                placeholder={chatMode === 'waiting' ? 'Esperando agente...' : "Escribe tu duda aquí..."}
+                disabled={chatMode === 'waiting'}
+                className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-all pr-12 disabled:opacity-50"
               />
               <button 
                 type="submit"
-                disabled={!input.trim() || isTyping}
+                disabled={!input.trim() || isTyping || chatMode === 'waiting'}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg transition-all active:scale-95"
               >
                 <Send size={16} />

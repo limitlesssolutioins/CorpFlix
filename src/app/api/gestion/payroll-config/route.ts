@@ -4,6 +4,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCompanyDataDir } from '@/lib/companyContext';
 
 const DEFAULT_CONFIG = {
+  company: {
+    name: 'Mi Empresa / Hogar',
+    nit: '000.000.000-0',
+    logoUrl: ''
+  },
   cargos: [
     { id: '1', nombre: 'Operario General', salarioBase: 1300000, riesgoArl: 3 },
     { id: '2', nombre: 'Supervisor', salarioBase: 2500000, riesgoArl: 2 },
@@ -23,17 +28,16 @@ export async function GET() {
     const configPath = path.join(dataDir, 'gestion-humana.json');
 
     try {
-      // Intentar leer el archivo existente
       const fileContent = await fs.readFile(configPath, 'utf8');
       const config = JSON.parse(fileContent);
       
-      // Asegurar que existan los campos nuevos, si era un JSON viejo
+      // Asegurar campos nuevos
+      if (!config.company) config.company = DEFAULT_CONFIG.company;
       if (!config.cargos) config.cargos = DEFAULT_CONFIG.cargos;
       if (!config.turnosEstandar) config.turnosEstandar = DEFAULT_CONFIG.turnosEstandar;
 
       return NextResponse.json(config);
     } catch (err: any) {
-      // Si el archivo no existe, lo creamos con el default
       if (err.code === 'ENOENT') {
         await fs.mkdir(dataDir, { recursive: true });
         await fs.writeFile(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2), 'utf8');
@@ -42,7 +46,6 @@ export async function GET() {
       throw err;
     }
   } catch (error) {
-    console.error('Error reading payroll config:', error);
     return NextResponse.json({ message: 'Error reading configuration' }, { status: 500 });
   }
 }

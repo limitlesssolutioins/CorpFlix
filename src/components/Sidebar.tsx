@@ -28,7 +28,8 @@ import {
   ChevronRight,
   Sparkles,
   BrainCircuit,
-  TrendingUp
+  TrendingUp,
+  IdCard
   } from 'lucide-react';
 const Sidebar = () => {
   const pathname = usePathname();

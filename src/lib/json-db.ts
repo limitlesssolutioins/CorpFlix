@@ -102,6 +102,8 @@ export interface ConfigData {
 
 export interface JsonDb {
   employees: JSONCollection<Employee>;
+  domesticas: JSONCollection<Employee>; // Reusing Employee interface for now
+  contractors: JSONCollection<Employee>; // Reusing Employee interface for now
   payroll: JSONCollection<PayrollRecord>;
   getConfig: () => ConfigData | null;
 }
@@ -109,6 +111,8 @@ export interface JsonDb {
 export function getJsonDb(dataDir: string): JsonDb {
   return {
     employees: new JSONCollection<Employee>(dataDir, 'employees.json'),
+    domesticas: new JSONCollection<Employee>(dataDir, 'domesticas.json'),
+    contractors: new JSONCollection<Employee>(dataDir, 'contractors.json'),
     payroll: new JSONCollection<PayrollRecord>(dataDir, 'payroll.json'),
     getConfig: () => {
       try {

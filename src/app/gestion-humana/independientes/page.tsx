@@ -20,6 +20,9 @@ export default function IndependientesProfesionalPage() {
         nit: '...',
         logo: null
     });
+    
+    const [contractors, setContractors] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetch('/api/companies/current')
@@ -36,12 +39,16 @@ export default function IndependientesProfesionalPage() {
             .catch(() => {
                 setCompany({ name: 'Mi Empresa', nit: 'Sin NIT', logo: null });
             });
-    }, []);
 
-    const contractors = [
-        { id: 1, name: 'Carlos Mendoza', cedula: '80123456', position: 'Consultor IT', contract: 'Prestación de Servicios', monthlyFee: 4500000, riskLevel: 1 },
-        { id: 2, name: 'Ana Silva', cedula: '42987654', position: 'Diseñadora', contract: 'Prestación de Servicios', monthlyFee: 2800000, riskLevel: 2 }
-    ];
+        fetch('/api/employees')
+            .then(res => res.json())
+            .then(data => {
+                const independientes = data.filter((emp: any) => emp.contractType === 'INDEPENDIENTE');
+                setContractors(independientes);
+            })
+            .catch(err => console.error('Error fetching independientes:', err))
+            .finally(() => setLoading(false));
+    }, []);
 
     // --- State para Liquidación de Honorarios ---
     const [liqData, setLiqData] = useState({
@@ -111,13 +118,13 @@ export default function IndependientesProfesionalPage() {
                                 <div key={con.id} className="group bg-white rounded-3xl border border-slate-200 p-6 hover:shadow-xl transition-all relative overflow-hidden border-t-4 border-t-indigo-500">
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors"><Briefcase size={24} /></div>
-                                        <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-black uppercase">Riesgo {con.riskLevel}</span>
+                                        <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-black uppercase">Contratista</span>
                                     </div>
-                                    <h4 className="text-lg font-bold text-slate-900">{con.name}</h4>
-                                    <p className="text-xs text-slate-500 mb-6">CC {con.cedula} • {con.position}</p>
+                                    <h4 className="text-lg font-bold text-slate-900">{con.firstName} {con.lastName}</h4>
+                                    <p className="text-xs text-slate-500 mb-6">CC {con.identification} • {con.defaultPosition || 'Independiente'}</p>
                                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                        <p className="text-lg font-black text-slate-900">${con.monthlyFee.toLocaleString('es-CO')}</p>
-                                        <button onClick={() => { setLiqData({...liqData, nombre: con.name, honorarios: con.monthlyFee}); setActiveTab('liquidacion'); }} className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center gap-2 hover:bg-indigo-600 transition-colors">Cobrar <ArrowRight size={14}/></button>
+                                        <p className="text-lg font-black text-slate-900">${(con.salaryAmount || 0).toLocaleString('es-CO')}</p>
+                                        <button onClick={() => { setLiqData({...liqData, nombre: `${con.firstName} ${con.lastName}`, honorarios: con.salaryAmount || 0}); setActiveTab('liquidacion'); }} className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center gap-2 hover:bg-indigo-600 transition-colors">Cobrar <ArrowRight size={14}/></button>
                                     </div>
                                 </div>
                             ))}

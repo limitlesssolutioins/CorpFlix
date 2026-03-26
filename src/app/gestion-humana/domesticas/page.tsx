@@ -28,18 +28,26 @@ export default function DomesticasProfesionalPage() {
     const [hrConfig, setHrConfig] = useState<any>(null);
     const [ssResult, setSsResult] = useState<any>(null);
     const [diasSS, setDiasSS] = useState<number>(30);
+    const [employees, setEmployees] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Fetch config
         fetch('/api/gestion/payroll-config')
             .then(res => res.json())
             .then(data => setHrConfig(data))
             .catch(() => setHrConfig({ company: { name: 'Mi Empresa', nit: '000.000' } }));
-    }, []);
 
-    const employees = [
-        { id: 1, name: 'Rosa Hernández', cedula: '52.123.456', position: 'Externa', address: 'Calle 45 #12-34', phone: '300-555-6666', salary: 1300000, start_date: '2025-01-15' },
-        { id: 2, name: 'Gloria Ramírez', cedula: '52.987.654', position: 'Por Días', address: 'Carrera 78 #90-12', phone: '300-777-8888', salary: 65000, start_date: '2025-03-01' }
-    ];
+        // Fetch employees and filter domesticas
+        fetch('/api/employees')
+            .then(res => res.json())
+            .then(data => {
+                const domesticas = data.filter((emp: any) => emp.contractType === 'DOMESTICA');
+                setEmployees(domesticas);
+            })
+            .catch(err => console.error('Error fetching domesticas:', err))
+            .finally(() => setLoading(false));
+    }, []);
 
     // --- State para Liquidación Profesional ---
     const [liqData, setLiqData] = useState({
@@ -140,11 +148,11 @@ export default function DomesticasProfesionalPage() {
                             {employees.map(emp => (
                                 <div key={emp.id} className="bg-white rounded-[2rem] border border-slate-200 p-6 hover:shadow-xl transition-all group relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-20 h-20 bg-rose-50 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110" />
-                                    <h4 className="text-xl font-black text-slate-900 mb-1">{emp.name}</h4>
-                                    <p className="text-xs text-slate-400 font-bold mb-6 tracking-widest uppercase">CC {emp.cedula} • {emp.position}</p>
+                                    <h4 className="text-xl font-black text-slate-900 mb-1">{emp.firstName} {emp.lastName}</h4>
+                                    <p className="text-xs text-slate-400 font-bold mb-6 tracking-widest uppercase">CC {emp.identification} • {emp.defaultPosition || 'Doméstica'}</p>
                                     <div className="grid grid-cols-2 gap-2 mt-4 relative">
-                                        <button onClick={() => { setLiqData({...liqData, nombre: emp.name, salarioBase: emp.salary, tipo: emp.position === 'Por Días' ? 'dias' : 'mes'}); setCalcMode('nomina'); setActiveTab('liquidacion'); }} className="py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-rose-600 transition-colors">PAGAR</button>
-                                        <button onClick={() => { setLiqData({...liqData, nombre: emp.name, salarioBase: emp.salary, fechaIngreso: emp.start_date}); setCalcMode('contrato'); setActiveTab('liquidacion'); }} className="py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors">LIQUIDAR</button>
+                                        <button onClick={() => { setLiqData({...liqData, nombre: `${emp.firstName} ${emp.lastName}`, salarioBase: emp.salaryAmount, tipo: (emp.defaultPosition || '').includes('Días') ? 'dias' : 'mes'}); setCalcMode('nomina'); setActiveTab('liquidacion'); }} className="py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-rose-600 transition-colors">PAGAR</button>
+                                        <button onClick={() => { setLiqData({...liqData, nombre: `${emp.firstName} ${emp.lastName}`, salarioBase: emp.salaryAmount, fechaIngreso: emp.startDate || '2025-01-01'}); setCalcMode('contrato'); setActiveTab('liquidacion'); }} className="py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors">LIQUIDAR</button>
                                     </div>
                                 </div>
                             ))}

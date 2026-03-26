@@ -70,6 +70,8 @@ const EmployeeList: React.FC = () => {
       case 'FIJO': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'OBRA_LABOR': return 'bg-amber-100 text-amber-700 border-amber-200';
       case 'APRENDIZAJE': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'DOMESTICA': return 'bg-rose-100 text-rose-700 border-rose-200';
+      case 'INDEPENDIENTE': return 'bg-indigo-100 text-indigo-700 border-indigo-200';
       default: return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
@@ -173,7 +175,7 @@ const EmployeeList: React.FC = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full ${emp.isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(225,29,72,0.5)]'}"></div>
+                      <div className={`h-2 w-2 rounded-full ${emp.isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(225,29,72,0.5)]'}`}></div>
                       <span className="text-sm font-bold text-slate-700">{emp.isActive ? 'Activo' : 'Inactivo'}</span>
                     </div>
                   </td>

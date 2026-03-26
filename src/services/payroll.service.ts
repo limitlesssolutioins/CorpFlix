@@ -1,18 +1,22 @@
 import { getJsonDb, PayrollRecord } from '@/lib/json-db';
 import { v4 as uuidv4 } from 'uuid';
+import { getEmployeesService } from './employees.service';
 
 const SMLMV = 1300000;
 const AUX_TRANSPORTE = 162000;
 
 export class PayrollService {
   private db: ReturnType<typeof getJsonDb>;
+  private dataDir: string;
 
   constructor(dataDir: string) {
+    this.dataDir = dataDir;
     this.db = getJsonDb(dataDir);
   }
 
   async calculatePayroll(employeeId: string, periodName: string): Promise<PayrollRecord | null> {
-    const employee = this.db.employees.getById(employeeId);
+    const employeesService = getEmployeesService(this.dataDir);
+    const employee = await employeesService.findOne(employeeId);
     if (!employee) {
       throw new Error(`Employee with ID ${employeeId} not found`);
     }
@@ -27,7 +31,9 @@ export class PayrollService {
     });
 
     let transportAid = 0;
-    if (salary <= (SMLMV * 2)) {
+    // Domesticas internas do not get transport aid, but we'll assume standard for now unless defined.
+    // Also Independientes are excluded beforehand.
+    if (salary <= (SMLMV * 2) && employee.contractType !== 'INDEPENDIENTE') {
       transportAid = AUX_TRANSPORTE;
       details.push({
         concept: 'Auxilio de Transporte',
@@ -38,6 +44,7 @@ export class PayrollService {
 
     const totalDevengado = salary + transportAid;
 
+    // Domésticas y otros pagan 4% (Independientes don't, but they are excluded)
     const healthDeduction = salary * 0.04;
     details.push({
       concept: 'Aporte Salud (4%)',
@@ -71,10 +78,14 @@ export class PayrollService {
   }
 
   async generateMassivePayroll(periodName: string): Promise<PayrollRecord[]> {
-    const employees = this.db.employees.getAll();
+    const employeesService = getEmployeesService(this.dataDir);
+    const employees = await employeesService.findAll();
     const results: PayrollRecord[] = [];
 
-    for (const emp of employees) {
+    // Filter out Independientes, they are not part of standard payroll
+    const eligibleEmployees = employees.filter((emp: any) => emp.contractType !== 'INDEPENDIENTE' && emp.isActive === 1);
+
+    for (const emp of eligibleEmployees) {
       try {
         const record = await this.calculatePayroll(emp.id, periodName);
         if (record) {

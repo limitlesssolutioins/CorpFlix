@@ -101,6 +101,8 @@ export default function CreateEmployeePage() {
               <option value="FIJO">Fijo</option>
               <option value="OBRA_LABOR">Obra o Labor</option>
               <option value="APRENDIZAJE">Aprendizaje</option>
+              <option value="DOMESTICA">Servicio Doméstico</option>
+              <option value="INDEPENDIENTE">Independiente / Prestación de Servicios</option>
             </select>
           </div>
           <div>

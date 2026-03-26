@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, Save, CheckCircle2, AlertTriangle, FileText } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Chapter {
     id: number;
@@ -285,13 +286,50 @@ function HallazgosContent() {
 
                                     <div>
                                         <label className="block text-sm font-bold text-slate-700 mb-2">Evidencia</label>
-                                        <textarea
-                                            value={evidence}
-                                            onChange={(e) => setEvidence(e.target.value)}
-                                            rows={2}
-                                            placeholder="Registra la evidencia que respalda el hallazgo..."
-                                            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
+                                        <div className="flex items-center gap-3">
+                                            <input 
+                                                type="file" 
+                                                id="evidence-upload"
+                                                className="hidden" 
+                                                accept="image/*,application/pdf"
+                                                onChange={async (e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (!file) return;
+                                                    
+                                                    const formData = new FormData();
+                                                    formData.append('file', file);
+                                                    
+                                                    const tId = toast.loading('Subiendo evidencia...');
+                                                    try {
+                                                        const res = await fetch('/api/admin/upload', {
+                                                            method: 'POST',
+                                                            body: formData
+                                                        });
+                                                        if (res.ok) {
+                                                            const data = await res.json();
+                                                            setEvidence(data.url);
+                                                            toast.success('Evidencia subida', { id: tId });
+                                                        } else {
+                                                            toast.error('Error al subir', { id: tId });
+                                                        }
+                                                    } catch {
+                                                        toast.error('Error al subir', { id: tId });
+                                                    }
+                                                }}
+                                            />
+                                            <button 
+                                                type="button"
+                                                onClick={() => document.getElementById('evidence-upload')?.click()}
+                                                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-colors border border-slate-200"
+                                            >
+                                                {evidence ? 'Cambiar archivo' : 'Subir foto o archivo'}
+                                            </button>
+                                            {evidence && (
+                                                <a href={evidence} target="_blank" rel="noopener noreferrer" className="text-blue-500 font-bold text-sm underline">
+                                                    Ver evidencia
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div>

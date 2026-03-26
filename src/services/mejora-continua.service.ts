@@ -1,13 +1,17 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
+import { getIsoAuditService } from './iso-audit.service';
+import { getRiskService } from './risk.service';
 
 const SCHEMA_PATH = path.join(process.cwd(), 'src', 'data', 'schema_mejora_continua.sql');
 
 class MejoraContinuaService {
     private db: Database.Database;
+    private dataDir: string;
 
     constructor(dataDir: string) {
+        this.dataDir = dataDir;
         const dbPath = path.join(dataDir, 'mejora_continua.db');
         if (!fs.existsSync(dataDir)) {
             fs.mkdirSync(dataDir, { recursive: true });
@@ -19,6 +23,49 @@ class MejoraContinuaService {
     private initializeDatabase() {
         const schema = fs.readFileSync(SCHEMA_PATH, 'utf8');
         this.db.exec(schema);
+    }
+
+    // Consolidated Actions (Bridge)
+    async getConsolidatedActions() {
+        const auditSvc = getIsoAuditService(this.dataDir);
+        const riskSvc = getRiskService(this.dataDir);
+
+        const auditActions = auditSvc.getAllCorrectiveActions();
+        const riskPlans = riskSvc.getAllActionPlans();
+
+        // Map both to a unified format
+        const unified = [
+            ...auditActions.map(a => ({
+                id: `audit-${a.id}`,
+                realId: a.id,
+                source: 'AUDITORIA',
+                code: a.action_code,
+                title: a.corrective_action,
+                description: a.finding_description,
+                origin: `${a.standard_name || 'ISO'} - ${a.audit_code}`,
+                responsible: a.responsible,
+                target_date: a.target_date,
+                status: a.status,
+                progress: a.progress,
+                type: 'CORRECTIVA'
+            })),
+            ...riskPlans.map(p => ({
+                id: `risk-${p.id}`,
+                realId: p.id,
+                source: 'RIESGOS',
+                code: `PA-R${p.id}`,
+                title: p.action_description,
+                description: p.risk_description,
+                origin: `Riesgo: ${p.category_name}`,
+                responsible: p.responsible,
+                target_date: p.target_date,
+                status: p.status === 'PENDING' ? 'OPEN' : p.status,
+                progress: p.progress,
+                type: 'PREVENTIVA'
+            }))
+        ];
+
+        return unified.sort((a, b) => new Date(a.target_date || '').getTime() - new Date(b.target_date || '').getTime());
     }
 
     // SUGGESTIONS

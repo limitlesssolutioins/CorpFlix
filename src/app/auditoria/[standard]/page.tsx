@@ -18,6 +18,7 @@ interface Audit {
     id: number; audit_code: string; audit_date: string;
     auditor_name: string; status: string; scope: string;
 }
+interface TeamMember { auditor_id: number; name: string; role: string; role_in_audit: string; }
 interface KPIs {
     totalAudits: number; auditsThisYear: number; totalFindings: number;
     nonConformities: number; openActions: number; overdueActions: number;
@@ -31,9 +32,23 @@ export default function StandardDashboardPage() {
     const [standard, setStandard] = useState<AuditStandard | null>(null);
     const [audits, setAudits] = useState<Audit[]>([]);
     const [kpis, setKPIs] = useState<KPIs | null>(null);
+    const [auditTeam, setAuditTeam] = useState<TeamMember[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => { loadData(); }, [code]);
+
+    const activeAudit = audits.find(a => a.status === 'IN_PROGRESS');
+
+    useEffect(() => {
+        if (activeAudit) {
+            fetch(`/api/auditoria/audit-team?audit_id=${activeAudit.id}`)
+                .then(r => r.json())
+                .then(data => setAuditTeam(Array.isArray(data) ? data : []))
+                .catch(() => setAuditTeam([]));
+        } else {
+            setAuditTeam([]);
+        }
+    }, [activeAudit?.id]);
 
     const loadData = async () => {
         setLoading(true);
@@ -120,6 +135,32 @@ export default function StandardDashboardPage() {
                 </div>
             </div>
 
+            {/* ─── EQUIPO AUDITOR (Active Audit) ─── */}
+            {activeAudit && auditTeam.length > 0 && (
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <Users size={18} className="text-slate-400" />
+                            <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide">Equipo Auditor Asignado</h2>
+                        </div>
+                        <Link href={`${standardPath}/plan?audit_id=${activeAudit.id}`} className="text-xs font-bold text-blue-600 hover:underline">Gestionar Plan</Link>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                        {auditTeam.map(m => (
+                            <div key={m.auditor_id} className="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl">
+                                <div className="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-black shrink-0">
+                                    {m.name?.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div className="text-xs font-bold text-slate-900 leading-tight">{m.name}</div>
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{m.role_in_audit || m.role}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* ─── AUDITORÍA EN CURSO ─── */}
             {activeAudit && (
                 <div className="rounded-2xl border-2 overflow-hidden" style={{ borderColor: color }}>
@@ -174,7 +215,7 @@ export default function StandardDashboardPage() {
                             { num: '1', label: 'Planificar', sub: 'Datos, equipo, alcance', icon: Calendar, href: `${standardPath}/auditorias/nueva` },
                             { num: '2', label: 'Ejecutar Checklist', sub: 'Evaluar requisito a requisito', icon: ClipboardList, href: `${standardPath}/auditorias` },
                             { num: '3', label: 'Generar Informe', sub: 'Documento de hallazgos', icon: FileText, href: `${standardPath}/auditorias` },
-                            { num: '4', label: 'Seguimiento NC', sub: 'Acciones correctivas', icon: AlertTriangle, href: '/auditoria/acciones-correctivas' },
+                            { num: '4', label: 'Seguimiento NC', sub: 'Acciones correctivas', icon: AlertTriangle, href: '/mejora-continua/acciones' },
                         ].map((step, i) => {
                             const Icon = step.icon;
                             return (
@@ -315,7 +356,7 @@ export default function StandardDashboardPage() {
                     <div className="space-y-1.5">
                         {[
                             { href: `${standardPath}/programa`, icon: LayoutList, label: 'Programa anual' },
-                            { href: '/auditoria/acciones-correctivas', icon: AlertTriangle, label: 'Acciones correctivas', badge: kpis?.openActions },
+                            { href: '/mejora-continua/acciones', icon: AlertTriangle, label: 'Acciones correctivas', badge: kpis?.openActions },
                             { href: '/auditoria/equipo', icon: Users, label: 'Equipo auditor' },
                         ].map(link => {
                             const Icon = link.icon;

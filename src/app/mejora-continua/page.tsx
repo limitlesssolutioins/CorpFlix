@@ -1,10 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { TrendingUp, Lightbulb, FolderKanban, BookOpen, ArrowRight, Users, DollarSign, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, Lightbulb, FolderKanban, BookOpen, ArrowRight, Users, DollarSign, CheckCircle2, ClipboardList } from 'lucide-react';
 
 export default function MejoraContinuaPage() {
     const modules = [
+        {
+            title: 'Planes de Acción',
+            description: 'Gestión de acciones correctivas y preventivas derivadas de hallazgos y riesgos',
+            href: '/mejora-continua/acciones',
+            icon: ClipboardList,
+            iconBg: 'from-orange-50 to-orange-100',
+            iconColor: 'text-orange-600',
+            borderColor: 'border-orange-100',
+            hoverBorder: 'group-hover:border-orange-200',
+            accentGradient: 'from-orange-400 to-orange-600',
+            linkColor: 'text-orange-600'
+        },
         {
             title: 'Sugerencias de Mejora',
             description: 'Sistema Kaizen para propuestas de mejora de toda la organización',

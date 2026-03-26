@@ -51,7 +51,7 @@ export default function AuditoriaPage() {
 
             {/* Alert vencidas */}
             {kpis && kpis.overdueActions > 0 && (
-                <Link href="/auditoria/acciones-correctivas"
+                <Link href="/mejora-continua/acciones"
                     className="flex items-center gap-3 p-3.5 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-colors">
                     <AlertTriangle size={18} className="text-red-600 shrink-0" />
                     <span className="text-sm font-semibold text-red-700 flex-1">
@@ -125,7 +125,7 @@ export default function AuditoriaPage() {
 
             {/* Accesos globales */}
             <div className="pt-2 flex gap-3 flex-wrap border-t border-slate-100">
-                <Link href="/auditoria/acciones-correctivas"
+                <Link href="/mejora-continua/acciones"
                     className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 text-sm font-semibold hover:border-slate-300 hover:shadow-sm transition-all">
                     <AlertTriangle size={15} className="text-orange-500" /> Acciones Correctivas
                     {kpis && kpis.openActions > 0 && (

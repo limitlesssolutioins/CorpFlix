@@ -599,20 +599,64 @@ export default function ChecklistPage() {
                                                             </div>
 
                                                             {/* Status badges */}
-                                                            {(isCumple || isNC) && (
-                                                                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                                    {isCumple && (
-                                                                        <>
-                                                                            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1"><CheckCircle2 size={10} /> Cumple</span>
-                                                                            <button onClick={() => toggleOp(item.id)}
-                                                                                className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border transition-all ${f?.is_op ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-400 hover:border-amber-300'}`}>
-                                                                                <Lightbulb size={10} /> {f?.is_op ? 'Oportunidad de Mejora' : '+ Oportunidad'}
-                                                                            </button>
-                                                                        </>
+                                                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                                {isCumple && (
+                                                                    <>
+                                                                        <span className="text-xs font-bold text-emerald-600 flex items-center gap-1"><CheckCircle2 size={10} /> Cumple</span>
+                                                                        <button onClick={() => toggleOp(item.id)}
+                                                                            className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border transition-all ${f?.is_op ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-400 hover:border-amber-300'}`}>
+                                                                            <Lightbulb size={10} /> {f?.is_op ? 'Oportunidad de Mejora' : '+ Oportunidad'}
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                                {isNC && <span className="flex items-center gap-1 text-xs font-bold text-red-600"><AlertTriangle size={10} /> NC — acción correctiva</span>}
+                                                                
+                                                                {/* Evidence Badge/Button */}
+                                                                <div className="flex items-center gap-2">
+                                                                    <input 
+                                                                        type="file" 
+                                                                        id={`evidence-${item.id}`}
+                                                                        className="hidden" 
+                                                                        accept="image/*,application/pdf"
+                                                                        onChange={async (e) => {
+                                                                            const file = e.target.files?.[0];
+                                                                            if (!file) return;
+                                                                            
+                                                                            const formData = new FormData();
+                                                                            formData.append('file', file);
+                                                                            
+                                                                            const tId = toast.loading('Subiendo evidencia...');
+                                                                            try {
+                                                                                const res = await fetch('/api/admin/upload', {
+                                                                                    method: 'POST',
+                                                                                    body: formData
+                                                                                });
+                                                                                if (res.ok) {
+                                                                                    const data = await res.json();
+                                                                                    setFindingDetail(item.id, 'evidence', data.url);
+                                                                                    toast.success('Evidencia subida', { id: tId });
+                                                                                } else {
+                                                                                    toast.error('Error al subir', { id: tId });
+                                                                                }
+                                                                            } catch {
+                                                                                toast.error('Error al subir', { id: tId });
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <button 
+                                                                        onClick={() => document.getElementById(`evidence-${item.id}`)?.click()}
+                                                                        className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border transition-all ${f?.evidence ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-slate-200 text-slate-400 hover:border-blue-300'}`}
+                                                                    >
+                                                                        <Plus size={10} /> {f?.evidence ? 'Cambiar Evidencia' : 'Subir Evidencia'}
+                                                                    </button>
+                                                                    {f?.evidence && (
+                                                                        <a href={f.evidence} target="_blank" rel="noopener noreferrer" 
+                                                                           className="text-[10px] font-bold text-blue-500 hover:underline">
+                                                                            Ver archivo
+                                                                        </a>
                                                                     )}
-                                                                    {isNC && <span className="flex items-center gap-1 text-xs font-bold text-red-600"><AlertTriangle size={10} /> NC — acción correctiva</span>}
                                                                 </div>
-                                                            )}
+                                                            </div>
 
                                                             {/* Expanded panel */}
                                                             {isExpanded && (

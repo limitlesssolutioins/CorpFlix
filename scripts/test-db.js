@@ -1,4 +1,4 @@
-const db = require('../src/lib/db');
+const db = require('../src/lib/db-legacy');
 
 async function testConnection() {
     console.log('🔄 Testing database connection...\n');

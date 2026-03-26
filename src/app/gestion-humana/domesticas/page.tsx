@@ -42,8 +42,13 @@ export default function DomesticasProfesionalPage() {
         fetch('/api/employees')
             .then(res => res.json())
             .then(data => {
-                const domesticas = data.filter((emp: any) => emp.contractType === 'DOMESTICA');
-                setEmployees(domesticas);
+                if (Array.isArray(data)) {
+                    const domesticas = data.filter((emp: any) => emp.contractType === 'DOMESTICA');
+                    setEmployees(domesticas);
+                } else {
+                    console.error('Expected an array of employees, got:', data);
+                    setEmployees([]);
+                }
             })
             .catch(err => console.error('Error fetching domesticas:', err))
             .finally(() => setLoading(false));

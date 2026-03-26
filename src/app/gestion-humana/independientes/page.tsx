@@ -43,8 +43,13 @@ export default function IndependientesProfesionalPage() {
         fetch('/api/employees')
             .then(res => res.json())
             .then(data => {
-                const independientes = data.filter((emp: any) => emp.contractType === 'INDEPENDIENTE');
-                setContractors(independientes);
+                if (Array.isArray(data)) {
+                    const independientes = data.filter((emp: any) => emp.contractType === 'INDEPENDIENTE');
+                    setContractors(independientes);
+                } else {
+                    console.error('Expected an array of contractors, got:', data);
+                    setContractors([]);
+                }
             })
             .catch(err => console.error('Error fetching independientes:', err))
             .finally(() => setLoading(false));

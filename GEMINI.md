@@ -30,3 +30,6 @@
 - Projects target the Colombian market. 
 - Always consider local specifics such as currency formatting (COP), tax logic (IVA), and local business regulations when relevant.
 - We are using godaddy rented vps server and use ssh to connect and github to upload changes and download changes on the server.
+
+## 6. Learn from your mistakes
+- If you make a mistake document it in a learning.md file so you don't make the same mistakes over and over again

@@ -65,4 +65,4 @@ function getDb(dbPath: string): Database {
     return instances.get(dbPath)!;
 }
 
-module.exports = { getDb, Database };
+export { getDb, Database };

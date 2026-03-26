@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-
-const { getDb } = require('@/lib/db');
+import { getDb } from '@/lib/db';
 
 export class EmployeesService {
     private db: any;

@@ -170,7 +170,6 @@ const Sidebar = () => {
           <div className="pt-6 space-y-4">
             <Section title="Estrategia" id="gestión" icon={Target}>
               <NavItem href="/gestion/planeacion-estrategica" label="Planeación" icon={Sparkles} />
-              <NavItem href="/gestion/salud-mental" label="Salud Mental" icon={BrainCircuit} />
               <NavItem href="/gestion/procesos" label="Procesos" icon={Network} />
               <NavItem href="/gestion/indicadores" label="Indicadores" icon={BarChart3} />
               <NavItem href="/riesgos" label="Riesgos" icon={AlertTriangle} />
@@ -180,6 +179,7 @@ const Sidebar = () => {
             </Section>
 
             <Section title="Gestión Humana" id="humana" icon={Users2}>
+              <NavItem href="/gestion-humana/salud-mental" label="Salud Mental" icon={BrainCircuit} />
               <NavItem href="/gestion-humana/domesticas" label="Domésticas" icon={Home} />
               <NavItem href="/gestion-humana/independientes" label="Independientes" icon={User} />
               <NavItem href="/gestion-humana/configuracion" label="Configuración" icon={Settings2} />

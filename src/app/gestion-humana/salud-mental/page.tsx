@@ -25,7 +25,7 @@ export default function SaludMentalAdminPage() {
   const fetchEvaluaciones = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/gestion/salud-mental/evaluaciones');
+      const res = await axios.get('/api/gestion-humana/salud-mental/evaluaciones');
       setEvaluaciones(res.data || []);
     } catch (error) {
       toast.error('Error al cargar evaluaciones');
@@ -37,7 +37,7 @@ export default function SaludMentalAdminPage() {
   const fetchRespuestas = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/gestion/salud-mental');
+      const res = await axios.get('/api/gestion-humana/salud-mental');
       setRespuestas(res.data || []);
     } catch (error) {
       toast.error('Error al cargar resultados');
@@ -54,7 +54,7 @@ export default function SaludMentalAdminPage() {
 
     setLoading(true);
     try {
-      await axios.post('/api/gestion/salud-mental/evaluaciones', {
+      await axios.post('/api/gestion-humana/salud-mental/evaluaciones', {
         empleadoId: employeeId,
         empleadoNombre: employeeName,
         formulario
@@ -73,7 +73,7 @@ export default function SaludMentalAdminPage() {
   const handleDeleteLink = async (token: string) => {
     if (!confirm('¿Estás seguro de eliminar este enlace? Esta acción no se puede deshacer.')) return;
     try {
-      await axios.delete(`/api/gestion/salud-mental/evaluaciones?token=${token}`);
+      await axios.delete(`/api/gestion-humana/salud-mental/evaluaciones?token=${token}`);
       toast.success('Enlace eliminado correctamente');
       fetchEvaluaciones();
     } catch (error) {

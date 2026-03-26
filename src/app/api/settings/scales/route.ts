@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import path from 'path';
 import { getCompanyDataDir } from '@/lib/companyContext';
 
-const { getDb } = require('@/lib/db');
+import { getDb } from '@/lib/db';
 
 export async function GET() {
     const dataDir = await getCompanyDataDir();

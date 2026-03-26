@@ -1,6 +1,6 @@
 import path from 'path';
 
-const { getDb } = require('@/lib/db');
+import { getDb } from '@/lib/db';
 
 export class DashboardService {
     private db: any;

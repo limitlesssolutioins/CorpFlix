@@ -179,6 +179,7 @@ const Sidebar = () => {
             </Section>
 
             <Section title="Gestión Humana" id="humana" icon={Users2}>
+              <NavItem href="/gestion-humana/employees" label="Directorio" icon={IdCard} />
               <NavItem href="/gestion-humana/salud-mental" label="Salud Mental" icon={BrainCircuit} />
               <NavItem href="/gestion-humana/domesticas" label="Domésticas" icon={Home} />
               <NavItem href="/gestion-humana/independientes" label="Independientes" icon={User} />

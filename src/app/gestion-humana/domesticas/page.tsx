@@ -150,7 +150,7 @@ export default function DomesticasProfesionalPage() {
             <main className="min-h-[60vh]">
                 {activeTab === 'directorio' && (
                     <div className="space-y-6 animate-in fade-in duration-500">
-                        <div className="flex justify-between items-center"><h3 className="text-lg font-bold text-slate-800">Directorio de Empleadas</h3><button onClick={() => router.push('/gestion-humana/employees/create')} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors">+ Nuevo Registro</button></div>
+                        <div className="flex justify-between items-center"><h3 className="text-lg font-bold text-slate-800">Directorio de Empleadas</h3><button onClick={() => router.push('/gestion-humana/employees/create?type=DOMESTICA')} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors">+ Nuevo Registro</button></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {employees.map(emp => (
                                 <div key={emp.id} className="bg-white rounded-[2rem] border border-slate-200 p-6 hover:shadow-xl transition-all group relative overflow-hidden">

@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     }
 
     const dataDir = await getCompanyDataDir();
-    const { context } = await request.json();
+    const { context, existingIndicators } = await request.json();
     const plan = getManagementService(dataDir).getStrategicPlan();
     const objectives = plan.objetivos || [];
 
@@ -22,20 +22,25 @@ export async function POST(request: Request) {
       ? `Objetivos Estratégicos actuales:\n${objectives.map((obj: any) => `- ${obj.texto}`).join('\n')}`
       : 'No hay objetivos estratégicos definidos aún. Genera indicadores generales apropiados para el contexto de la empresa.';
 
+    const existingSection = existingIndicators && existingIndicators.length > 0
+      ? `\nIMPORTANTE: La empresa YA TIENE los siguientes indicadores creados. NO los repitas ni crees variaciones idénticas a estos:\n${existingIndicators.map((i: string) => `- ${i}`).join('\n')}\n`
+      : '';
+
     const prompt = `
       Actúa como un experto consultor en Sistemas de Gestión de Calidad ISO 9001:2015.
-      Tu tarea es generar Indicadores de Gestión (KPIs) para la empresa.
+      Tu tarea es generar Indicadores de Gestión (KPIs) NUEVOS para la empresa.
 
       Contexto de la empresa: "${context}"
 
       ${objectivesSection}
+      ${existingSection}
 
       INSTRUCCIONES:
-      1. Genera al menos un indicador clave por cada objetivo estratégico.
+      1. Genera al menos un indicador clave por cada objetivo estratégico (que no exista previamente).
       2. CADA indicador DEBE incluir:
          - Una FÓRMULA MATEMÁTICA clara con la operación exacta (ej: (Numerador / Denominador) × 100).
-         - La descripción del NUMERADOR: qué representa y cómo se obtiene (ej: "Número de clientes que respondieron 'Satisfecho' o 'Muy Satisfecho' en la encuesta mensual").
-         - La descripción del DENOMINADOR: qué representa y cómo se obtiene (ej: "Total de clientes encuestados en el período").
+         - La descripción del NUMERADOR: qué representa y cómo se obtiene.
+         - La descripción del DENOMINADOR: qué representa y cómo se obtiene.
          - Las VARIABLES involucradas: definición de cada variable usada en la fórmula.
       3. La META debe ser un número puntual basado en estándares de la industria.
       4. El lenguaje debe ser 100% profesional, corporativo y técnico.

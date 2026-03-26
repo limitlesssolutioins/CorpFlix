@@ -7,6 +7,7 @@ import {
   FaMagic,
   FaPlus,
   FaTrash,
+  FaEdit,
   FaSearch,
   FaSmile,
   FaMeh,
@@ -37,6 +38,7 @@ export default function IndicadoresPage() {
   const [loading, setLoading] = useState(true);
   const [generatingIA, setGeneratingIA] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingIndicator, setEditingIndicator] = useState<Indicator | null>(null);
   const [showMeasureForm, setShowMeasureForm] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedKpiId, setSelectedKpiId] = useState('');
@@ -69,7 +71,13 @@ export default function IndicadoresPage() {
         const parts = [s.nombreEmpresa, s.sectorActividad, s.resumenEjecutivo].filter(Boolean);
         if (parts.length > 0) context = parts.join('. ');
       } catch { /* use default */ }
-      const res = await axios.post('/api/generate-indicators', { context });
+
+      const existingNames = indicators.map(i => i.nombre);
+
+      const res = await axios.post('/api/generate-indicators', { 
+        context,
+        existingIndicators: existingNames
+      });
       if (res.data && Array.isArray(res.data)) {
         await axios.post('/api/gestion/indicadores', res.data);
         toast.success('¡Indicadores generados!', { id: toastId });
@@ -123,23 +131,48 @@ export default function IndicadoresPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
-    const newIndicator: Indicator = {
-      id: Date.now().toString(),
-      nombre: formData.get('nombre') as string,
-      descripcion: formData.get('descripcion') as string,
-      unidad: formData.get('unidad') as string,
-      meta: parseFloat(formData.get('meta') as string),
-      frecuencia: 'Mensual',
-      datos: [],
-    };
-    const toastId = toast.loading('Creando indicador...');
-    try {
-      await axios.post('/api/gestion/indicadores', [newIndicator]);
-      toast.success('¡KPI creado!', { id: toastId });
-      setShowCreateForm(false);
-      fetchIndicators();
-    } catch {
-      toast.error('Error al crear', { id: toastId });
+    
+    if (editingIndicator) {
+      const updatedIndicator: Indicator = {
+        ...editingIndicator,
+        nombre: formData.get('nombre') as string,
+        descripcion: formData.get('descripcion') as string,
+        unidad: formData.get('unidad') as string,
+        meta: parseFloat(formData.get('meta') as string),
+        formula: formData.get('formula') as string,
+        fuente: formData.get('fuente') as string,
+      };
+      const toastId = toast.loading('Actualizando indicador...');
+      try {
+        await axios.put('/api/gestion/indicadores', updatedIndicator);
+        toast.success('¡KPI actualizado!', { id: toastId });
+        setShowCreateForm(false);
+        setEditingIndicator(null);
+        fetchIndicators();
+      } catch {
+        toast.error('Error al actualizar', { id: toastId });
+      }
+    } else {
+      const newIndicator: Indicator = {
+        id: Date.now().toString(),
+        nombre: formData.get('nombre') as string,
+        descripcion: formData.get('descripcion') as string,
+        unidad: formData.get('unidad') as string,
+        meta: parseFloat(formData.get('meta') as string),
+        frecuencia: 'Mensual',
+        formula: formData.get('formula') as string,
+        fuente: formData.get('fuente') as string,
+        datos: [],
+      };
+      const toastId = toast.loading('Creando indicador...');
+      try {
+        await axios.post('/api/gestion/indicadores', [newIndicator]);
+        toast.success('¡KPI creado!', { id: toastId });
+        setShowCreateForm(false);
+        fetchIndicators();
+      } catch {
+        toast.error('Error al crear', { id: toastId });
+      }
     }
   };
 
@@ -258,6 +291,17 @@ export default function IndicadoresPage() {
                       <FaPlus size={10} />
                     </button>
                     <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingIndicator(ind);
+                        setShowCreateForm(true);
+                      }}
+                      className="p-2 text-slate-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                      title="Editar"
+                    >
+                      <FaEdit size={10} />
+                    </button>
+                    <button
                       onClick={(e) => handleDelete(ind.id, e)}
                       className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                       title="Eliminar"
@@ -321,12 +365,25 @@ export default function IndicadoresPage() {
                   <p className="text-xs text-slate-400 mt-2">Fuente: <span className="font-bold text-slate-600">{selectedIndicator.fuente}</span></p>
                 )}
               </div>
-              <button
-                onClick={() => setShowDetailModal(false)}
-                className="text-slate-300 hover:text-slate-500 font-black text-lg transition-colors ml-4 shrink-0"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-2 ml-4 shrink-0">
+                <button
+                  onClick={() => {
+                    setEditingIndicator(selectedIndicator);
+                    setShowCreateForm(true);
+                    setShowDetailModal(false);
+                  }}
+                  className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Editar"
+                >
+                  <FaEdit size={16} />
+                </button>
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="text-slate-300 hover:text-slate-500 font-black text-lg transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             <IndicatorChart indicators={[{
@@ -453,23 +510,38 @@ export default function IndicadoresPage() {
         </div>
       )}
 
-      {/* CREATE MODAL */}
+      {/* CREATE / EDIT MODAL */}
       {showCreateForm && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-          <form onSubmit={handleCreate} className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl space-y-4 border-2 border-slate-100">
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">Nuevo KPI</h2>
+          <form onSubmit={handleCreate} className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl space-y-4 border-2 border-slate-100 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight">{editingIndicator ? 'Editar KPI' : 'Nuevo KPI'}</h2>
             <input
               name="nombre"
               required
+              defaultValue={editingIndicator?.nombre || ''}
               placeholder="Nombre del indicador"
               className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-indigo-400 transition-all"
             />
             <textarea
               name="descripcion"
               required
+              defaultValue={editingIndicator?.descripcion || ''}
               placeholder="¿Qué mide?"
               className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-indigo-400 transition-all resize-none"
               rows={2}
+            />
+            <textarea
+              name="formula"
+              defaultValue={editingIndicator?.formula || ''}
+              placeholder="Fórmula de cálculo (ej: (Num/Den)*100)"
+              className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-indigo-400 transition-all resize-none"
+              rows={2}
+            />
+            <input
+              name="fuente"
+              defaultValue={editingIndicator?.fuente || ''}
+              placeholder="Fuente de datos (ej: ERP, Encuestas...)"
+              className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-indigo-400 transition-all"
             />
             <div className="grid grid-cols-2 gap-3">
               <input
@@ -477,12 +549,14 @@ export default function IndicadoresPage() {
                 type="number"
                 step="0.01"
                 required
+                defaultValue={editingIndicator?.meta || ''}
                 placeholder="Meta"
                 className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-indigo-400 transition-all"
               />
               <input
                 name="unidad"
                 required
+                defaultValue={editingIndicator?.unidad || ''}
                 placeholder="Unidad (%, $…)"
                 className="w-full p-4 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold outline-none focus:border-indigo-400 transition-all"
               />
@@ -490,7 +564,7 @@ export default function IndicadoresPage() {
             <div className="flex gap-3 pt-1">
               <button
                 type="button"
-                onClick={() => setShowCreateForm(false)}
+                onClick={() => { setShowCreateForm(false); setEditingIndicator(null); }}
                 className="flex-1 py-4 text-slate-400 hover:text-slate-600 font-black text-xs uppercase tracking-widest transition-colors"
               >
                 Cancelar
@@ -499,7 +573,7 @@ export default function IndicadoresPage() {
                 type="submit"
                 className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 shadow-xl transition-all"
               >
-                Crear KPI
+                {editingIndicator ? 'Guardar Cambios' : 'Crear KPI'}
               </button>
             </div>
           </form>

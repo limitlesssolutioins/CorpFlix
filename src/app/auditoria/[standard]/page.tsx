@@ -95,7 +95,6 @@ export default function StandardDashboardPage() {
     const color = standard.color || '#3b82f6';
     const standardPath = `/auditoria/${code.toLowerCase()}`;
 
-    const activeAudit = audits.find(a => a.status === 'IN_PROGRESS');
     const plannedAudits = audits.filter(a => a.status === 'PLANNED');
     const completedAudits = audits.filter(a => a.status === 'COMPLETED');
 

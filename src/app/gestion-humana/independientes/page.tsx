@@ -145,7 +145,31 @@ export default function IndependientesProfesionalPage() {
                         <div className="xl:col-span-4 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden h-fit">
                             <div className="p-6 bg-slate-900 text-white"><h3 className="text-xl font-black flex items-center gap-2"><Sparkles className="text-indigo-400" /> Liquidar Honorarios</h3></div>
                             <form onSubmit={handleLiquidar} className="p-6 space-y-6">
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Nombre Contratista</label><input type="text" required value={liqData.nombre} onChange={(e) => setLiqData({...liqData, nombre: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold" /></div>
+                                <div>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Seleccionar Contratista</label>
+                                    <select 
+                                        required 
+                                        value={contractors.find(c => `${c.firstName} ${c.lastName}` === liqData.nombre)?.id || ''} 
+                                        onChange={(e) => {
+                                            const con = contractors.find(x => x.id === e.target.value);
+                                            if (con) {
+                                                setLiqData({
+                                                    ...liqData, 
+                                                    nombre: `${con.firstName} ${con.lastName}`, 
+                                                    honorarios: con.salaryAmount || 0
+                                                });
+                                            } else {
+                                                setLiqData({...liqData, nombre: '', honorarios: 0});
+                                            }
+                                        }} 
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold"
+                                    >
+                                        <option value="">Seleccione un contratista del directorio...</option>
+                                        {contractors.map(con => (
+                                            <option key={con.id} value={con.id}>{con.firstName} {con.lastName} - CC {con.identification}</option>
+                                        ))}
+                                    </select>
+                                </div>
                                 <div><label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Valor a Cobrar ($)</label><input type="number" required value={liqData.honorarios} onChange={(e) => setLiqData({...liqData, honorarios: Number(e.target.value)})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold" /></div>
                                 <label className="flex items-center justify-between p-4 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors"><span className="text-xs font-bold text-slate-700">Aplicar Retención (10%)</span><input type="checkbox" checked={liqData.retencion} onChange={(e) => setLiqData({...liqData, retencion: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" /></label>
                                 <button type="submit" className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg active:scale-[0.98]">GENERAR</button>

@@ -176,7 +176,33 @@ export default function DomesticasProfesionalPage() {
                             <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                                 <div className="p-6 bg-slate-900 text-white flex items-center justify-between"><h3 className="text-xl font-black flex items-center gap-2"><Sparkles className="text-rose-400" /> {calcMode.toUpperCase()}</h3></div>
                                 <form onSubmit={handleLiquidar} className="p-8 space-y-6">
-                                    <div><label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Nombre Completo</label><input type="text" required value={liqData.nombre} onChange={(e) => setLiqData({...liqData, nombre: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold" /></div>
+                                    <div>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Seleccionar Empleada</label>
+                                        <select 
+                                            required 
+                                            value={employees.find(e => `${e.firstName} ${e.lastName}` === liqData.nombre)?.id || ''} 
+                                            onChange={(e) => {
+                                                const emp = employees.find(x => x.id === e.target.value);
+                                                if (emp) {
+                                                    setLiqData({
+                                                        ...liqData, 
+                                                        nombre: `${emp.firstName} ${emp.lastName}`, 
+                                                        salarioBase: emp.salaryAmount || 1300000,
+                                                        fechaIngreso: emp.startDate || '2025-01-01',
+                                                        tipo: (emp.defaultPosition || '').toLowerCase().includes('días') || (emp.defaultPosition || '').toLowerCase().includes('dias') ? 'dias' : 'mes'
+                                                    });
+                                                } else {
+                                                    setLiqData({...liqData, nombre: '', salarioBase: 1300000});
+                                                }
+                                            }} 
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold"
+                                        >
+                                            <option value="">Seleccione una empleada del directorio...</option>
+                                            {employees.map(emp => (
+                                                <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName} - CC {emp.identification}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                     <div><label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Salario Base ($)</label><input type="number" required value={liqData.salarioBase} onChange={(e) => setLiqData({...liqData, salarioBase: Number(e.target.value)})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold" /></div>
                                     {calcMode === 'nomina' && (
                                         <div className="space-y-4">

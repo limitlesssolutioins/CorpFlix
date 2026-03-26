@@ -12,6 +12,7 @@ class Database {
 
     connect() {
         if (!this.db) {
+            console.log(`💽 Conectando a SQLite en: ${this.dbPath}`);
             this.db = new sqlite3.Database(this.dbPath, (err: any) => {
                 if (err) {
                     console.error('Error connecting to database:', err);

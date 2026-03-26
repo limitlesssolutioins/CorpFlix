@@ -6,11 +6,14 @@ import {
     ShieldCheck, DollarSign, ArrowRight, Smartphone, Mail, Briefcase, Sparkles, Building2
 } from 'lucide-react';
 
+import { useRouter } from 'next/navigation';
+
 const SMLMV_2026 = 1300000;
 
 type Tab = 'directorio' | 'liquidacion' | 'seguridad-social';
 
 export default function IndependientesProfesionalPage() {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<Tab>('directorio');
     const [searchQuery, setSearchQuery] = useState('');
     
@@ -116,7 +119,7 @@ export default function IndependientesProfesionalPage() {
                     <div className="space-y-6 animate-in fade-in duration-500">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><Briefcase className="text-indigo-500" size={20} /> Contratistas Activos</h3>
-                            <button className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-indigo-600 transition-colors"><Plus size={16}/> Nuevo Contratista</button>
+                            <button onClick={() => router.push('/gestion-humana/employees/create')} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-indigo-600 transition-colors"><Plus size={16}/> Nuevo Contratista</button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {contractors.map(con => (

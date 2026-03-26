@@ -6,8 +6,9 @@ import {
     ShieldCheck, DollarSign, ArrowRight, Smartphone, Mail, AlertCircle, Info, Sparkles,
     FileMinus, Calendar, Building2, Download
 } from 'lucide-react';
-import { 
-    calculateShiftColombian, 
+import { useRouter } from 'next/navigation';
+import {
+    calculateShiftColombian,
     calculateDecreto2616, 
     calculateDescansoDominical, 
     calculatePrestaciones,
@@ -20,6 +21,7 @@ type Tab = 'directorio' | 'liquidacion' | 'seguridad-social';
 type Mode = 'nomina' | 'contrato' | 'vacaciones';
 
 export default function DomesticasProfesionalPage() {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<Tab>('directorio');
     const [calcMode, setCalcMode] = useState<Mode>('nomina');
     const [searchQuery, setSearchQuery] = useState('');
@@ -148,7 +150,7 @@ export default function DomesticasProfesionalPage() {
             <main className="min-h-[60vh]">
                 {activeTab === 'directorio' && (
                     <div className="space-y-6 animate-in fade-in duration-500">
-                        <div className="flex justify-between items-center"><h3 className="text-lg font-bold text-slate-800">Directorio de Empleadas</h3><button className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors">+ Nueva Registro</button></div>
+                        <div className="flex justify-between items-center"><h3 className="text-lg font-bold text-slate-800">Directorio de Empleadas</h3><button onClick={() => router.push('/gestion-humana/employees/create')} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors">+ Nuevo Registro</button></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {employees.map(emp => (
                                 <div key={emp.id} className="bg-white rounded-[2rem] border border-slate-200 p-6 hover:shadow-xl transition-all group relative overflow-hidden">

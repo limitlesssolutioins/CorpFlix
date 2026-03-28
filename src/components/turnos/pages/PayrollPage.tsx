@@ -17,38 +17,76 @@ import {
   Printer,
   Info,
   CheckCircle2,
-  ShieldCheck
+  ShieldCheck,
+  Plus,
+  X,
+  PlusCircle
 } from 'lucide-react';
-import { generatePayrollReportAction } from '@/actions/payroll';
+import { generatePayrollReportAction, addPayrollNoveltyAction } from '@/actions/payroll';
 
 interface PayrollPageProps {
   title?: string;
 }
 
-const PayrollPage: React.FC<PayrollPageProps> = ({ title = "Nómina y Liquidación" }) => {
+const PayrollPage: React.FC<PayrollPageProps> = ({ title = "Gestión de Nómina" }) => {
   const router = useRouter();
   const [report, setReport] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [period, setPeriod] = useState<'1' | '2' | 'full'>('full');
+  const [period, setPeriod] = useState<'1' | '2' | 'full'>('1'); // Default to 1st quincena as requested
+  const [excludeSS, setExcludeSS] = useState(false);
 
   const [showHelper, setShowHelper] = useState<string | null>(null);
+  const [selectedPayroll, setSelectedPayroll] = useState<any | null>(null);
+  const [isNoveltyModalOpen, setIsNoveltyModalOpen] = useState(false);
+  
+  // Novelty form state
+  const [noveltyConcept, setNoveltyConcept] = useState('');
+  const [noveltyAmount, setNoveltyAmount] = useState(0);
+  const [noveltyType, setNoveltyType] = useState<'EARNING' | 'DEDUCTION'>('EARNING');
+  const [isWageForming, setIsWageForming] = useState(true);
 
   useEffect(() => {
     fetchPayroll();
   }, [month, year, period]);
 
-  const fetchPayroll = async () => {
+  const fetchPayroll = async (force: boolean = false) => {
     setLoading(true);
     try {
-        const data = await generatePayrollReportAction(month, year, period);
+        const data = await generatePayrollReportAction(month, year, period, excludeSS, force);
         setReport(data);
     } catch (err) {
         console.error(err);
         toast.error("Error al calcular nómina");
     } finally {
         setLoading(false);
+    }
+  };
+
+  const handleExcludeSSToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setExcludeSS(checked);
+    // Auto-recalculate immediately
+    generatePayrollReportAction(month, year, period, checked, true).then(data => setReport(data));
+  };
+
+  const handleAddNovelty = async () => {
+    if (!selectedPayroll || !noveltyConcept || noveltyAmount <= 0) {
+      toast.error("Por favor complete todos los campos");
+      return;
+    }
+
+    try {
+      await addPayrollNoveltyAction(selectedPayroll.id, noveltyConcept, noveltyAmount, noveltyType, isWageForming);
+      toast.success("Novedad agregada exitosamente");
+      setIsNoveltyModalOpen(false);
+      setNoveltyConcept('');
+      setNoveltyAmount(0);
+      setIsWageForming(true);
+      fetchPayroll();
+    } catch (error) {
+      toast.error("Error al agregar novedad");
     }
   };
 
@@ -62,8 +100,8 @@ const PayrollPage: React.FC<PayrollPageProps> = ({ title = "Nómina y Liquidaci�
       'Periodo': row.periodLabel,
       'Días': row.daysWorked,
       'Sueldo Base': Math.round(row.basePay),
-      'Recargos': Math.round(row.surchargeTotal),
-      'Transporte': Math.round(row.transportAid),
+      'Aux Transporte': Math.round(row.transportAid),
+      'Otros Devengos': Math.round(row.otherEarnings),
       'Deducciones': Math.round(row.socialSecurity?.total || 0),
       'Neto': Math.round(row.totalPay)
     }));
@@ -82,7 +120,7 @@ const PayrollPage: React.FC<PayrollPageProps> = ({ title = "Nómina y Liquidaci�
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">{title}</h1>
-          <p className="text-slate-500 mt-1 font-medium">Gestión de pagos mensuales y quincenales según ley.</p>
+          <p className="text-slate-500 mt-1 font-medium italic">Liquida la nómina de tus colaboradores de forma profesional.</p>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors">
@@ -95,121 +133,224 @@ const PayrollPage: React.FC<PayrollPageProps> = ({ title = "Nómina y Liquidaci�
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Selector de Periodo */}
-        <div className="bg-primary-600 p-6 rounded-[2rem] text-white shadow-xl shadow-primary-500/20">
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-4">Control de Tiempo</p>
-          <div className="space-y-3">
-            <select value={period} onChange={e => setPeriod(e.target.value as any)} className="w-full bg-primary-700 text-white border-none rounded-xl p-3 text-xs font-black outline-none appearance-none">
-                <option value="full">MES COMPLETO (30 DÍAS)</option>
-                <option value="1">1RA QUINCENA (DÍA 1-15)</option>
-                <option value="2">2DA QUINCENA (DÍA 16-30)</option>
-            </select>
+        {/* Selector de Periodo - Rediseñado según requerimiento */}
+        <div className="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl shadow-slate-200">
+          <p className="text-[10px] font-black uppercase tracking-widest text-primary-400 mb-4">Parámetros de Liquidación</p>
+          <div className="space-y-4">
+            <div className="flex bg-slate-800 p-1 rounded-xl">
+                <button 
+                    onClick={() => setPeriod('1')} 
+                    className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${period !== 'full' ? 'bg-primary-500 text-white' : 'text-slate-400'}`}
+                >
+                    QUINCENAL
+                </button>
+                <button 
+                    onClick={() => setPeriod('full')} 
+                    className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${period === 'full' ? 'bg-primary-500 text-white' : 'text-slate-400'}`}
+                >
+                    MENSUAL
+                </button>
+            </div>
+
+            {period !== 'full' && (
+                <select value={period} onChange={e => setPeriod(e.target.value as any)} className="w-full bg-slate-800 text-white border-none rounded-xl p-3 text-xs font-black outline-none appearance-none cursor-pointer">
+                    <option value="1">1RA QUINCENA (DÍAS 1-15)</option>
+                    <option value="2">2DA QUINCENA (DÍAS 16-30)</option>
+                </select>
+            )}
+
             <div className="flex gap-2">
-                <select value={month} onChange={e => setMonth(Number(e.target.value))} className="bg-primary-700 text-white border-none rounded-xl p-3 text-xs font-black outline-none flex-1">
+                <select value={month} onChange={e => setMonth(Number(e.target.value))} className="bg-slate-800 text-white border-none rounded-xl p-3 text-xs font-black outline-none flex-1 appearance-none uppercase">
                     {Array.from({length: 12}, (_, i) => i + 1).map(m => <option key={m} value={m}>{moment().month(m-1).format('MMMM')}</option>)}
                 </select>
-                <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="bg-primary-700 text-white border-none rounded-xl p-3 text-xs font-black outline-none w-20" />
+                <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="bg-slate-800 text-white border-none rounded-xl p-3 text-xs font-black outline-none w-20" />
             </div>
+
+            <label className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl cursor-pointer border border-slate-700/50 hover:bg-slate-800 transition-colors">
+                <input 
+                    type="checkbox" 
+                    checked={excludeSS} 
+                    onChange={handleExcludeSSToggle} 
+                    className="w-4 h-4 text-primary-500 rounded bg-slate-900 border-slate-700 focus:ring-primary-500 focus:ring-offset-slate-900" 
+                />
+                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-tight">Excluir Salud y Pensión <br/><span className="text-[8px] text-slate-500 font-bold">(No aplicar deducciones de ley)</span></span>
+            </label>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm relative">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Neto a Pagar</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Neto a Dispersar</p>
           <p className="text-2xl font-black text-slate-900">{formatCurrency(totalPayroll)}</p>
           <div className="mt-4 flex items-center gap-2 text-emerald-600 text-[10px] font-black uppercase">
-            <CheckCircle2 size={14} /> Listo para Dispersión
+            <CheckCircle2 size={14} /> Cálculo Legal Validado
           </div>
         </div>
 
-        {/* Info de Provisiones */}
         <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm group">
           <div className="flex justify-between items-start mb-1">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Provisiones Sociales</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Provisiones (Ahorro)</p>
             <button onMouseEnter={() => setShowHelper('prov')} onMouseLeave={() => setShowHelper(null)} className="text-slate-300 hover:text-primary-500"><Info size={16}/></button>
           </div>
           <p className="text-2xl font-black text-indigo-600">{formatCurrency(totalProvisions)}</p>
-          {showHelper === 'prov' && (
-            <div className="absolute top-full left-0 right-0 mt-2 z-20 p-4 bg-slate-900 text-white text-[10px] rounded-2xl shadow-2xl animate-in fade-in slide-in-from-top-2">
-                <strong>¿Qué es esto?</strong> Son ahorros obligatorios (Prima, Cesantías, Vacaciones) que la empresa debe guardar para pagarte después. No es dinero que recibes hoy, sino un "colchón" legal.
-            </div>
-          )}
-          <p className="mt-4 text-[9px] text-slate-400 font-bold leading-tight uppercase tracking-tighter">Ahorro proyectado para pagos de Junio/Diciembre y retiro.</p>
+          <p className="mt-4 text-[9px] text-slate-400 font-bold leading-tight uppercase tracking-tighter">Reserva para Prima, Cesantías e Intereses.</p>
         </div>
 
         <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Seguridad Social aportada</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Seguridad Social (Aportes)</p>
           <p className="text-2xl font-black text-rose-600">{formatCurrency(totalDeductions)}</p>
-          <p className="mt-4 text-[9px] text-slate-400 font-bold leading-tight uppercase tracking-tighter">Aportes a Salud y Pensión realizados por los colaboradores.</p>
+          <p className="mt-4 text-[9px] text-slate-400 font-bold leading-tight uppercase tracking-tighter">Retenciones de Salud y Pensión de los colaboradores.</p>
         </div>
-      </div>
-
-      {/* COSTO TOTAL CON EXPLICACIÓN */}
-      <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-slate-900/40 relative group">
-        <div className="flex items-center gap-6">
-            <div className="h-16 w-16 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 text-white">
-                <DollarSign size={32} />
-            </div>
-            <div>
-                <div className="flex items-center gap-2">
-                    <p className="text-xs font-black text-primary-400 uppercase tracking-[0.2em]">Pasivo Laboral Total (Costo Empresa)</p>
-                    <button onMouseEnter={() => setShowHelper('pasivo')} onMouseLeave={() => setShowHelper(null)} className="text-white/20 hover:text-white transition-colors"><Info size={14}/></button>
-                </div>
-                <p className="text-4xl font-black">{formatCurrency(totalPayroll + totalDeductions + totalProvisions)}</p>
-            </div>
-        </div>
-        <div className="text-right">
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Estado de Liquidez</p>
-            <div className="px-4 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-xl text-[10px] font-black border border-emerald-500/30">OPERACIÓN CUBIERTA</div>
-        </div>
-        
-        {showHelper === 'pasivo' && (
-            <div className="absolute bottom-full left-10 mb-4 z-20 p-6 bg-white text-slate-900 text-xs rounded-[2rem] shadow-2xl border border-slate-100 max-w-sm animate-in zoom-in-95 duration-200">
-                <div className="h-8 w-8 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center mb-3"><ShieldCheck size={20}/></div>
-                <strong>El Pasivo Laboral</strong> es la suma total de lo que la empresa "debe" por tener empleados. Incluye el sueldo de hoy, los impuestos de salud/pensión y el ahorro de las prestaciones (Prima/Cesantías). Es el costo real de tu equipo.
-            </div>
-        )}
       </div>
 
       <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <h2 className="text-lg font-black text-slate-900 flex items-center gap-2"><DollarSign className="text-primary-500" size={20} /> Detalle de Liquidación {period === 'full' ? 'Mensual' : `Quincenal (${period})`}</h2>
+            <div className="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">
+                {moment().month(month-1).format('MMMM')} {year}
+            </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-200">
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Modo</th>
+              <tr className="bg-white border-b border-slate-200">
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Colaborador</th>
                 <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Días</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Sueldo Base</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-amber-600">Recargos</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-indigo-600">Provisiones</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-rose-600">Deducciones</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Neto {period === 'full' ? 'Mes' : 'Quincena'}</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Salario Base</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-indigo-600">Aux. Transporte</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-amber-600">Novedades (+)</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-rose-600">Deducciones (-)</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest font-black">Neto a Pagar</th>
                 <th className="px-8 py-5"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={9} className="px-8 py-16 text-center text-slate-400 italic font-medium">Recalculando valores legales para el periodo...</td></tr>
+                <tr><td colSpan={8} className="px-8 py-16 text-center text-slate-400 italic font-medium">Recalculando valores legales para el periodo...</td></tr>
               ) : report.map((row, idx) => (
                 <tr key={idx} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-8 py-5 text-center">
-                    <span className="px-2 py-1 bg-slate-100 rounded text-[9px] font-black text-slate-500 uppercase">{row.periodLabel}</span>
-                  </td>
                   <td className="px-8 py-5">
                     <div><p className="font-black text-slate-900 text-sm">{row.employeeName}</p><p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">{row.contractType}</p></div>
                   </td>
-                  <td className="px-8 py-5 text-center font-black text-slate-700">{row.daysWorked.toFixed(1)}</td>
+                  <td className="px-8 py-5 text-center font-black text-slate-700">{row.daysWorked}</td>
                   <td className="px-8 py-5 font-bold text-slate-600 text-sm">{formatCurrency(row.basePay)}</td>
-                  <td className="px-8 py-5 font-black text-amber-600">+{formatCurrency(row.surchargeTotal)}</td>
-                  <td className="px-8 py-5 font-bold text-indigo-600">{formatCurrency(row.provisions?.total || 0)}</td>
+                  <td className="px-8 py-5 font-black text-indigo-500">{formatCurrency(row.transportAid)}</td>
+                  <td className="px-8 py-5 font-black text-amber-600">
+                    <div className="flex items-center gap-2">
+                        +{formatCurrency(row.otherEarnings)}
+                        <button 
+                            onClick={() => { setSelectedPayroll(row); setIsNoveltyModalOpen(true); }}
+                            className="p-1 text-slate-300 hover:text-amber-500 transition-colors"
+                            title="Añadir Novedad"
+                        >
+                            <PlusCircle size={16} />
+                        </button>
+                    </div>
+                  </td>
                   <td className="px-8 py-5 font-black text-rose-500">-{formatCurrency(row.socialSecurity?.total || 0)}</td>
-                  <td className="px-8 py-5"><div className="flex items-center gap-2"><span className="text-lg font-black text-slate-900">{formatCurrency(row.totalPay)}</span><ArrowUpRight size={14} className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-all" /></div></td>
-                  <td className="px-8 py-5 text-right"><button onClick={() => router.push(`/gestion-humana/nomina/detalle/${row.employeeId}?period=${period}`)} className="p-2 text-slate-300 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Ver Detalle Quincenal"><Eye size={20} /></button></td>
+                  <td className="px-8 py-5">
+                    <div className="flex items-center gap-2">
+                        <span className="text-lg font-black text-slate-900">{formatCurrency(row.totalPay)}</span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5 text-right flex items-center gap-2">
+                    <button 
+                        onClick={() => { setSelectedPayroll(row); setIsNoveltyModalOpen(true); }}
+                        className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase hover:bg-primary-500 hover:text-white transition-all shadow-sm"
+                    >
+                        Añadir Novedad
+                    </button>
+                    <button onClick={() => router.push(`/gestion-humana/nomina/detalle/${row.employeeId}?period=${period}`)} className="p-2 text-slate-300 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Ver Detalle"><Eye size={20} /></button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* MODAL DE NOVEDADES */}
+      {isNoveltyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8 bg-slate-900 text-white flex justify-between items-center">
+                <div>
+                    <h3 className="text-xl font-black">Añadir Novedad</h3>
+                    <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-widest">{selectedPayroll?.employeeName}</p>
+                </div>
+                <button onClick={() => setIsNoveltyModalOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={20}/></button>
+            </div>
+            
+            <div className="p-8 space-y-6">
+                <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Tipo de Novedad</label>
+                    <div className="flex bg-slate-100 p-1 rounded-xl">
+                        <button 
+                            onClick={() => setNoveltyType('EARNING')} 
+                            className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${noveltyType === 'EARNING' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400'}`}
+                        >
+                            DEVENGADO (+)
+                        </button>
+                        <button 
+                            onClick={() => setNoveltyType('DEDUCTION')} 
+                            className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all ${noveltyType === 'DEDUCTION' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-400'}`}
+                        >
+                            DEDUCCIÓN (-)
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Concepto / Descripción</label>
+                    <input 
+                        type="text" 
+                        placeholder="Ej: Bonificación, Comisión, Préstamo..."
+                        value={noveltyConcept}
+                        onChange={e => setNoveltyConcept(e.target.value)}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold focus:ring-2 focus:ring-primary-500 transition-all"
+                    />
+                </div>
+
+                <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Monto ($)</label>
+                    <input 
+                        type="number" 
+                        value={noveltyAmount}
+                        onChange={e => setNoveltyAmount(Number(e.target.value))}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-black text-xl focus:ring-2 focus:ring-primary-500 transition-all"
+                    />
+                </div>
+
+                <label className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl cursor-pointer border border-slate-100 hover:bg-slate-100 transition-colors">
+                    <input 
+                        type="checkbox" 
+                        checked={isWageForming} 
+                        onChange={e => setIsWageForming(e.target.checked)} 
+                        className="w-5 h-5 text-primary-600 rounded bg-white border-slate-300 focus:ring-primary-500" 
+                    />
+                    <div>
+                        <span className="text-xs font-black text-slate-700 uppercase tracking-widest block">Constituye Salario</span>
+                        <span className="text-[9px] font-bold text-slate-400 leading-tight block mt-0.5">Activa esta opción si el valor debe sumarse para el cálculo de Primas, Cesantías y Vacaciones.</span>
+                    </div>
+                </label>
+
+                <div className="pt-4 flex gap-3">
+                    <button 
+                        onClick={() => setIsNoveltyModalOpen(false)}
+                        className="flex-1 py-4 bg-slate-100 text-slate-500 font-black rounded-2xl hover:bg-slate-200 transition-all"
+                    >
+                        CANCELAR
+                    </button>
+                    <button 
+                        onClick={handleAddNovelty}
+                        className="flex-[2] py-4 bg-primary-600 text-white font-black rounded-2xl shadow-lg shadow-primary-500/30 hover:bg-primary-700 active:scale-95 transition-all"
+                    >
+                        GUARDAR NOVEDAD
+                    </button>
+                </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

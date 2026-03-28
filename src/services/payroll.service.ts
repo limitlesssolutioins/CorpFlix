@@ -14,52 +14,62 @@ export class PayrollService {
     this.db = getJsonDb(dataDir);
   }
 
-  async calculatePayroll(employeeId: string, periodName: string): Promise<PayrollRecord | null> {
+  async calculatePayroll(employeeId: string, periodName: string, excludeSS: boolean = false): Promise<PayrollRecord | null> {
     const employeesService = getEmployeesService(this.dataDir);
     const employee = await employeesService.findOne(employeeId);
     if (!employee) {
       throw new Error(`Employee with ID ${employeeId} not found`);
     }
 
-    const salary = Number(employee.salaryAmount);
+    const isQuincena = periodName.endsWith('-1') || periodName.endsWith('-2');
+    const days = isQuincena ? 15 : 30;
+
+    const fullSalary = Number(employee.salaryAmount);
+    const baseSalary = isQuincena ? fullSalary / 2 : fullSalary;
+    
     const details: any[] = [];
 
     details.push({
       concept: 'Salario Básico',
       type: 'EARNING',
-      amount: salary
+      amount: baseSalary,
+      days: days,
+      isWageForming: true
     });
 
     let transportAid = 0;
-    // Domesticas internas do not get transport aid, but we'll assume standard for now unless defined.
-    // Also Independientes are excluded beforehand.
-    if (salary <= (SMLMV * 2) && employee.contractType !== 'INDEPENDIENTE') {
-      transportAid = AUX_TRANSPORTE;
+    if (fullSalary <= (SMLMV * 2) && employee.contractType !== 'INDEPENDIENTE') {
+      transportAid = isQuincena ? AUX_TRANSPORTE / 2 : AUX_TRANSPORTE;
       details.push({
         concept: 'Auxilio de Transporte',
         type: 'EARNING',
-        amount: transportAid
+        amount: transportAid,
+        isWageForming: false
       });
     }
 
-    const totalDevengado = salary + transportAid;
+    const totalDevengado = baseSalary + transportAid;
 
-    // Domésticas y otros pagan 4% (Independientes don't, but they are excluded)
-    const healthDeduction = salary * 0.04;
-    details.push({
-      concept: 'Aporte Salud (4%)',
-      type: 'DEDUCTION',
-      amount: healthDeduction
-    });
+    let totalDeducciones = 0;
 
-    const pensionDeduction = salary * 0.04;
-    details.push({
-      concept: 'Aporte Pensión (4%)',
-      type: 'DEDUCTION',
-      amount: pensionDeduction
-    });
+    if (!excludeSS) {
+      // Deducciones base
+      const healthDeduction = baseSalary * 0.04;
+      details.push({
+        concept: 'Aporte Salud (4%)',
+        type: 'DEDUCTION',
+        amount: healthDeduction
+      });
 
-    const totalDeducciones = healthDeduction + pensionDeduction;
+      const pensionDeduction = baseSalary * 0.04;
+      details.push({
+        concept: 'Aporte Pensión (4%)',
+        type: 'DEDUCTION',
+        amount: pensionDeduction
+      });
+      totalDeducciones = healthDeduction + pensionDeduction;
+    }
+
     const netSalary = totalDevengado - totalDeducciones;
 
     const payrollRecord: PayrollRecord = {
@@ -77,7 +87,38 @@ export class PayrollService {
     return payrollRecord;
   }
 
-  async generateMassivePayroll(periodName: string): Promise<PayrollRecord[]> {
+  async addNovelty(payrollId: string, concept: string, amount: number, type: 'EARNING' | 'DEDUCTION', isWageForming: boolean = false) {
+    const payroll = this.db.payroll.getById(payrollId);
+    if (!payroll) throw new Error("Payroll record not found");
+
+    const newDetail = {
+      concept,
+      amount,
+      type,
+      isNovelty: true,
+      isWageForming
+    };
+
+    const updatedDetails = [...payroll.details, newDetail];
+    
+    // Recalcular totales
+    const totalEarnings = updatedDetails
+      .filter(d => d.type === 'EARNING')
+      .reduce((sum, d) => sum + d.amount, 0);
+    
+    const totalDeductions = updatedDetails
+      .filter(d => d.type === 'DEDUCTION')
+      .reduce((sum, d) => sum + d.amount, 0);
+
+    return this.db.payroll.update(payrollId, {
+      details: updatedDetails,
+      grossSalary: totalEarnings,
+      deductions: totalDeductions,
+      netSalary: totalEarnings - totalDeductions
+    });
+  }
+
+  async generateMassivePayroll(periodName: string, excludeSS: boolean = false): Promise<PayrollRecord[]> {
     const employeesService = getEmployeesService(this.dataDir);
     const employees = await employeesService.findAll();
     const results: PayrollRecord[] = [];
@@ -87,7 +128,7 @@ export class PayrollService {
 
     for (const emp of eligibleEmployees) {
       try {
-        const record = await this.calculatePayroll(emp.id, periodName);
+        const record = await this.calculatePayroll(emp.id, periodName, excludeSS);
         if (record) {
           this.db.payroll.create(record);
           results.push(record);

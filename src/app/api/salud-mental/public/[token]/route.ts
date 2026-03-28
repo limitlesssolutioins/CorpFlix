@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSaludMentalService } from '@/services/salud-mental.service';
 import path from 'path';
 
-export async function GET(request: Request, { params }: { params: { token: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ token: string }> }) {
     try {
         const { token } = await params;
         const parts = token.split('___');
@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: { params: { token: strin
     }
 }
 
-export async function POST(request: Request, { params }: { params: { token: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ token: string }> }) {
     try {
         const { token } = await params;
         const parts = token.split('___');

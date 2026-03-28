@@ -8,6 +8,7 @@ import {
     Lightbulb, AlertTriangle, User, Plus, Minus, Sparkles, Loader2,
     X, TrendingUp, Pencil, Trash2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AuditInfo {
     id: number; audit_code: string; auditor_name: string; audit_date: string;

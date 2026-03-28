@@ -29,7 +29,10 @@ import {
   Sparkles,
   BrainCircuit,
   TrendingUp,
-  IdCard
+  IdCard,
+  HeartHandshake,
+  Activity,
+  Users
   } from 'lucide-react';
 const Sidebar = () => {
   const pathname = usePathname();
@@ -181,10 +184,16 @@ const Sidebar = () => {
 
             <Section title="Gestión Humana" id="humana" icon={Users2}>
               <NavItem href="/gestion-humana/employees" label="Directorio" icon={IdCard} />
-              <NavItem href="/gestion-humana/salud-mental" label="Salud Mental" icon={BrainCircuit} />
               <NavItem href="/gestion-humana/domesticas" label="Domésticas" icon={Home} />
               <NavItem href="/gestion-humana/independientes" label="Independientes" icon={User} />
               <NavItem href="/gestion-humana/configuracion" label="Configuración" icon={Settings2} />
+            </Section>
+
+            <Section title="Salud Mental" id="salud-mental" icon={BrainCircuit}>
+              <NavItem href="/salud-mental" label="Dashboard" icon={PieChart} />
+              <NavItem href="/salud-mental/laboral" label="S.M. Laboral" icon={Activity} />
+              <NavItem href="/salud-mental/personal" label="S.M. Personal" icon={Users} />
+              <NavItem href="/salud-mental/bienestar" label="Bienestar & Acción" icon={HeartHandshake} />
             </Section>
 
             <Section title="Finanzas" id="finanzas" icon={BadgeDollarSign}>

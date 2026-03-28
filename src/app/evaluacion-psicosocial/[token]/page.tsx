@@ -18,7 +18,7 @@ const OPTIONS = [
   { value: 0, label: 'Nunca', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' }
 ];
 
-export default function PublicEvaluationPage({ params }: { params: { token: string } }) {
+export default function PublicEvaluationPage({ params }: { params: Promise<{ token: string }> }) {
   const [token, setToken] = useState<string>('');
   const [evaluacion, setEvaluacion] = useState<any>(null);
   const [loading, setLoading] = useState(true);

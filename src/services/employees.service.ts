@@ -4,13 +4,15 @@ import { getDb } from '@/lib/db';
 
 export class EmployeesService {
     private db: any;
+    private schemaEnsured = false;
 
     constructor(dataDir: string) {
         this.db = getDb(path.join(dataDir, 'hr.db'));
-        this.ensureSchema();
     }
 
-    private ensureSchema() {
+    private async ensureSchema() {
+        if (this.schemaEnsured) return;
+        
         const columnsToAdd = [
             'address TEXT',
             'contractEndDate DATE',
@@ -29,14 +31,12 @@ export class EmployeesService {
         ];
 
         try {
-            // First check if the table exists to avoid errors on completely fresh installs
-            const tableExists = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='Employee'").get();
+            const tableExists = await this.db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='Employee'");
             if (!tableExists) return; // Let init-hr-db.js handle full creation if it's completely missing
 
-            // Try to add each column. We catch and ignore errors because SQLite will throw an error if the column already exists.
             for (const col of columnsToAdd) {
                 try {
-                    this.db.exec(`ALTER TABLE Employee ADD COLUMN ${col}`);
+                    await this.db.run(`ALTER TABLE Employee ADD COLUMN ${col}`);
                 } catch (e: any) {
                     // Ignore "duplicate column name" errors
                     if (!e.message.includes('duplicate column name')) {
@@ -44,12 +44,14 @@ export class EmployeesService {
                     }
                 }
             }
+            this.schemaEnsured = true;
         } catch (error) {
             console.error('Error ensuring Employee schema:', error);
         }
     }
 
     async findAll() {
+        await this.ensureSchema();
         const employees = await this.db.all(`
       SELECT e.*,
              s.name as siteName,
@@ -66,6 +68,7 @@ export class EmployeesService {
     }
 
     async findOne(id: string) {
+        await this.ensureSchema();
         const employee = await this.db.get(`
       SELECT e.*,
              s.name as siteName,
@@ -81,6 +84,7 @@ export class EmployeesService {
     }
 
     async create(data: any) {
+        await this.ensureSchema();
         const id = uuidv4();
         await this.db.run(`
       INSERT INTO Employee (
@@ -111,6 +115,7 @@ export class EmployeesService {
     }
 
     async update(id: string, data: any) {
+        await this.ensureSchema();
         const fields: string[] = [];
         const values: any[] = [];
 
@@ -134,6 +139,7 @@ export class EmployeesService {
     }
 
     async remove(id: string) {
+        await this.ensureSchema();
         await this.db.run('UPDATE Employee SET isActive = 0 WHERE id = ?', [id]);
         return { deleted: true };
     }

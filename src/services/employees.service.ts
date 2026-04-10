@@ -44,20 +44,27 @@ export class EmployeesService {
         const id = uuidv4();
         await this.db.run(`
       INSERT INTO Employee (
-        id, firstName, lastName, identification, email, phone,
-        contractType, salaryAmount, salaryScheme, startDate,
-        epsEntity, arlEntity, pensionEntity,
-        defaultSiteId, defaultPositionId, teamId,
-        standardStartTime, standardEndTime, standardStartTime2, standardEndTime2,
-        workDays, isActive, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+        id, firstName, lastName, identification, email, phone, address,
+        contractType, contractNumber, startDate, contractEndDate,
+        isIntegralSalary, salaryAmount, payrollGroup, costCenter,
+        defaultSiteId, defaultPositionId,
+        contributorType, contributorSubtype, 
+        healthFund, healthFundPercentage,
+        pensionFund, pensionFundPercentage,
+        severanceFund, compensationFund,
+        arl, riskClass, ciiuCode,
+        isActive, createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
     `, [
-            id, data.firstName, data.lastName, data.identification, data.email, data.phone,
-            data.contractType, data.salaryAmount, data.salaryScheme, data.startDate,
-            data.epsEntity, data.arlEntity, data.pensionEntity,
-            data.defaultSiteId, data.defaultPositionId, data.teamId,
-            data.standardStartTime, data.standardEndTime, data.standardStartTime2, data.standardEndTime2,
-            data.workDays
+            id, data.firstName, data.lastName, data.identification, data.email, data.phone, data.address,
+            data.contractType, data.contractNumber, data.startDate, data.contractEndDate,
+            data.isIntegralSalary, data.salaryAmount, data.payrollGroup, data.costCenter,
+            data.defaultSiteId, data.defaultPositionId,
+            data.contributorType, data.contributorSubtype,
+            data.healthFund, data.healthFundPercentage,
+            data.pensionFund, data.pensionFundPercentage,
+            data.severanceFund, data.compensationFund,
+            data.arl, data.riskClass, data.ciiuCode
         ]);
 
         return this.findOne(id);

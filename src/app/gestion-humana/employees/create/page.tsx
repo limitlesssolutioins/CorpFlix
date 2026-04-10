@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Plus, ArrowLeft } from 'lucide-react';
+import { Plus, ArrowLeft, User, Briefcase, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { createEmployeeAction } from '@/actions/employee';
 
@@ -17,19 +17,19 @@ function CreateEmployeeForm() {
   }, [searchParams]);
 
   const handleSubmit = async (formData: FormData) => {
-    const toastId = toast.loading('Guardando...');
+    const toastId = toast.loading('Guardando colaborador...');
     try {
       await createEmployeeAction(formData);
-      toast.success('Empleado vinculado exitosamente!', { id: toastId });
-      
+      toast.success('¡Colaborador vinculado exitosamente!', { id: toastId });
+
       const cType = formData.get('contractType') as string;
       if (cType === 'DOMESTICA') router.push('/gestion-humana/domesticas');
       else if (cType === 'INDEPENDIENTE') router.push('/gestion-humana/independientes');
       else router.push('/gestion-humana/employees');
-      
+
     } catch (error) {
       console.error('Error al crear empleado:', error);
-      toast.error('Error al vincular empleado. Es posible que la cédula ya exista.', { id: toastId });
+      toast.error('Error al vincular. Verifique los datos o si la identificación ya existe.', { id: toastId });
     }
   };
 
@@ -40,7 +40,7 @@ function CreateEmployeeForm() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
       <div className="flex items-center gap-4">
         <button
           type="button"
@@ -53,113 +53,184 @@ function CreateEmployeeForm() {
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Vincular Nuevo Colaborador</h1>
       </div>
 
-      <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-lg">
-        <form action={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="col-span-full pb-4 mb-6 border-b border-slate-200">
-            <h2 className="text-xl font-bold text-slate-800">Información Personal</h2>
-            <p className="text-sm text-slate-500">Detalles básicos del nuevo colaborador.</p>
-          </div>
+      <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-slate-200 shadow-xl">
+        <form action={handleSubmit} className="space-y-12">
+          
+          {/* SECCIÓN 1: INFORMACIÓN PERSONAL */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><User size={20} /></div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">Información Personal</h2>
+                <p className="text-sm text-slate-500">Datos de contacto e identificación.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="md:col-span-1">
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Nombres</label>
+                <input type="text" name="firstName" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Apellidos</label>
+                <input type="text" name="lastName" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Identificación</label>
+                <input type="text" name="identification" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Teléfono</label>
+                <input type="text" name="phone" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Correo Electrónico</label>
+                <input type="email" name="email" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Dirección</label>
+                <input type="text" name="address" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+            </div>
+          </section>
 
-          <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-1">Nombres</label>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              required
-              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 transition-all"
-            />
-          </div>
-          <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-1">Apellidos</label>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              required
-              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 transition-all"
-            />
-          </div>
-          <div>
-            <label htmlFor="identification" className="block text-sm font-medium text-slate-700 mb-1">Identificación</label>
-            <input
-              type="text"
-              id="identification"
-              name="identification"
-              required
-              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 transition-all"
-            />
-          </div>
-          <div>
-            <label htmlFor="salaryAmount" className="block text-sm font-medium text-slate-700 mb-1">Salario Base u Honorarios</label>
-            <input
-              type="number"
-              id="salaryAmount"
-              name="salaryAmount"
-              required
-              min="0"
-              step="any"
-              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 transition-all"
-            />
-          </div>
+          {/* SECCIÓN 2: INFORMACIÓN LABORAL */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><Briefcase size={20} /></div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">Detalles Laborales</h2>
+                <p className="text-sm text-slate-500">Configuración del contrato y remuneración.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Tipo de Contrato</label>
+                <select name="contractType" required defaultValue={defaultContract} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold">
+                  <option value="">Seleccione...</option>
+                  <option value="INDEFINIDO">Término Indefinido</option>
+                  <option value="FIJO">Término Fijo</option>
+                  <option value="OBRA_LABOR">Obra o Labor</option>
+                  <option value="APRENDIZAJE">Aprendizaje</option>
+                  <option value="DOMESTICA">Servicio Doméstico</option>
+                  <option value="INDEPENDIENTE">Prestación de Servicios</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Número de Contrato</label>
+                <input type="text" name="contractNumber" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Cargo</label>
+                <input type="text" name="defaultPosition" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Inicio</label>
+                <input type="date" name="startDate" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Fin</label>
+                <input type="date" name="contractEndDate" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div className="flex items-center gap-2 pt-6">
+                <input type="checkbox" name="isIntegralSalary" id="isIntegralSalary" value="true" className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
+                <label htmlFor="isIntegralSalary" className="text-sm font-bold text-slate-700">¿Sueldo Integral?</label>
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Sueldo Base ($)</label>
+                <input type="number" name="salaryAmount" required step="any" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-black text-primary-600" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Grupo de Nómina</label>
+                <input type="text" name="payrollGroup" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Centro de Costos</label>
+                <input type="text" name="costCenter" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div className="md:col-span-2">
+                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Sede Principal</label>
+                 <input type="text" name="defaultSite" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+            </div>
+          </section>
 
-          <div className="col-span-full pb-4 mb-6 mt-6 border-b border-slate-200">
-            <h2 className="text-xl font-bold text-slate-800">Detalles Contractuales</h2>
-            <p className="text-sm text-slate-500">Información sobre el vínculo laboral.</p>
-          </div>
+          {/* SECCIÓN 3: SEGURIDAD SOCIAL */}
+          <section className="space-y-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><ShieldCheck size={20} /></div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">Seguridad Social y Parafiscales</h2>
+                <p className="text-sm text-slate-500">Afiliaciones y tipos de cotizante.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Tipo de Cotizante</label>
+                <input type="text" name="contributorType" placeholder="Ej: 01" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Subtipo Cotizante</label>
+                <input type="text" name="contributorSubtype" placeholder="Ej: 00" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">EPS (Fondo Salud)</label>
+                <input type="text" name="healthFund" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">% Salud (Empleado)</label>
+                <input type="number" name="healthFundPercentage" defaultValue="4" step="0.01" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">AFP (Fondo Pensión)</label>
+                <input type="text" name="pensionFund" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">% Pensión (Empleado)</label>
+                <input type="number" name="pensionFundPercentage" defaultValue="4" step="0.01" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fondo de Cesantías</label>
+                <input type="text" name="severanceFund" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Caja Compensación</label>
+                <input type="text" name="compensationFund" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">ARL</label>
+                <input type="text" name="arl" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Clase Riesgo</label>
+                <select name="riskClass" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold">
+                  <option value="I">Clase I (0.522%)</option>
+                  <option value="II">Clase II (1.044%)</option>
+                  <option value="III">Clase III (2.436%)</option>
+                  <option value="IV">Clase IV (4.350%)</option>
+                  <option value="V">Clase V (6.960%)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Código CIIU</label>
+                <input type="text" name="ciiuCode" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+            </div>
+          </section>
 
-          <div>
-            <label htmlFor="contractType" className="block text-sm font-medium text-slate-700 mb-1">Tipo de Contrato</label>
-            <select
-              id="contractType"
-              name="contractType"
-              required
-              value={defaultContract}
-              onChange={(e) => setDefaultContract(e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 transition-all"
-            >
-              <option value="">Seleccione...</option>
-              <option value="INDEFINIDO">Indefinido</option>
-              <option value="FIJO">Fijo</option>
-              <option value="OBRA_LABOR">Obra o Labor</option>
-              <option value="APRENDIZAJE">Aprendizaje</option>
-              <option value="DOMESTICA">Servicio Doméstico</option>
-              <option value="INDEPENDIENTE">Independiente / Prestación de Servicios</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="defaultPosition" className="block text-sm font-medium text-slate-700 mb-1">Cargo Principal</label>
-            <input
-              type="text"
-              id="defaultPosition"
-              name="defaultPosition"
-              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 transition-all"
-            />
-          </div>
-          <div>
-            <label htmlFor="defaultSite" className="block text-sm font-medium text-slate-700 mb-1">Sede Principal</label>
-            <input
-              type="text"
-              id="defaultSite"
-              name="defaultSite"
-              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 transition-all"
-            />
-          </div>
-
-          <div className="col-span-full flex justify-end gap-4 mt-8">
+          <div className="col-span-full flex justify-end gap-4 pt-8 border-t border-slate-100">
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors"
+              className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-bold transition-all uppercase text-xs tracking-widest"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/20 transition-all"
+              className="flex items-center gap-2 px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-black shadow-lg shadow-primary-500/25 transition-all uppercase text-xs tracking-widest"
             >
-              <Plus size={20} />
-              Guardar
+              <Plus size={18} />
+              Guardar Colaborador
             </button>
           </div>
         </form>

@@ -59,7 +59,11 @@ export default function DomesticasProfesionalPage() {
     // --- State para Liquidación Profesional ---
     const [liqData, setLiqData] = useState({
         nombre: '', tipo: 'mes' as 'mes' | 'dias', salarioBase: 1300000, diasTrabajados: 30, esInterna: false,
-        hasExtras: false, startTime: '08:00', endTime: '19:00', breakMinutes: 60, isSundayOrHoliday: false, weeklyHours: 44,
+        fechaDesde: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
+        fechaHasta: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
+        hasExtras: false, manualExtras: true, 
+        extraDiurna: 0, extraNocturna: 0, recargoNocturno: 0, extraFestivaDiurna: 0, extraFestivaNocturna: 0, recargoFestivo: 0,
+        startTime: '08:00', endTime: '19:00', breakMinutes: 60, isSundayOrHoliday: false, weeklyHours: 44,
         liquidarPrima: false, liquidarCesantias: false, diasPrestaciones: 180, diasDisfrutados: 15,
         fechaIngreso: '2025-01-01', fechaRetiro: new Date().toISOString().split('T')[0], causaIndemnizacion: false, diasPendientesVacaciones: 0
     });
@@ -75,6 +79,9 @@ export default function DomesticasProfesionalPage() {
 
     const liquidarNomina = () => {
         let subtotalSalario = 0, extrasAmount = 0, auxTrans = 0, descansoDominical = 0;
+        const baseCalculo = liqData.tipo === 'dias' ? (liqData.salarioBase * 30) : liqData.salarioBase;
+        const valorHora = baseCalculo / 240;
+
         if (liqData.tipo === 'dias') {
             subtotalSalario = liqData.salarioBase * liqData.diasTrabajados;
             descansoDominical = calculateDescansoDominical(liqData.salarioBase, liqData.diasTrabajados);
@@ -83,14 +90,26 @@ export default function DomesticasProfesionalPage() {
             subtotalSalario = liqData.salarioBase;
             if (liqData.salarioBase <= (SMLMV_2026 * 2) && !liqData.esInterna) auxTrans = AUX_TRANSPORTE_2026;
         }
+
         if (liqData.hasExtras) {
-            const calc = calculateShiftColombian({
-                salary: liqData.tipo === 'dias' ? (liqData.salarioBase * 30) : liqData.salarioBase,
-                weeklyHours: liqData.weeklyHours, startTime: liqData.startTime, endTime: liqData.endTime,
-                breakMinutes: liqData.breakMinutes, isSundayOrHoliday: liqData.isSundayOrHoliday
-            });
-            extrasAmount = calc.totalAmount - (calc.hourlyRate * calc.totalHours);
+            if (liqData.manualExtras) {
+                // Cálculo manual basado en porcentajes legales colombianos
+                extrasAmount += liqData.extraDiurna * valorHora * 1.25;
+                extrasAmount += liqData.extraNocturna * valorHora * 1.75;
+                extrasAmount += liqData.recargoNocturno * valorHora * 0.35;
+                extrasAmount += liqData.extraFestivaDiurna * valorHora * 2.0;
+                extrasAmount += liqData.extraFestivaNocturna * valorHora * 2.5;
+                extrasAmount += liqData.recargoFestivo * valorHora * 0.75;
+            } else {
+                const calc = calculateShiftColombian({
+                    salary: baseCalculo,
+                    weeklyHours: liqData.weeklyHours, startTime: liqData.startTime, endTime: liqData.endTime,
+                    breakMinutes: liqData.breakMinutes, isSundayOrHoliday: liqData.isSundayOrHoliday
+                });
+                extrasAmount = calc.totalAmount - (calc.hourlyRate * calc.totalHours);
+            }
         }
+        
         let salud = 0, pension = 0;
         if (liqData.tipo === 'dias') {
             const ss = calculateDecreto2616(liqData.diasTrabajados, SMLMV_2026);
@@ -102,7 +121,7 @@ export default function DomesticasProfesionalPage() {
         }
         let prima = 0, cesantias = 0, intereses = 0;
         if (liqData.liquidarPrima || liqData.liquidarCesantias) {
-            const pres = calculatePrestaciones(liqData.tipo === 'dias' ? (liqData.salarioBase * 30) : liqData.salarioBase, auxTrans, liqData.diasPrestaciones);
+            const pres = calculatePrestaciones(baseCalculo, auxTrans, liqData.diasPrestaciones);
             if (liqData.liquidarPrima) prima = pres.prima;
             if (liqData.liquidarCesantias) { cesantias = pres.cesantias; intereses = pres.interesesCesantias; }
         }
@@ -158,8 +177,8 @@ export default function DomesticasProfesionalPage() {
                                     <h4 className="text-xl font-black text-slate-900 mb-1">{emp.firstName} {emp.lastName}</h4>
                                     <p className="text-xs text-slate-400 font-bold mb-6 tracking-widest uppercase">CC {emp.identification} • {emp.defaultPosition || 'Doméstica'}</p>
                                     <div className="grid grid-cols-2 gap-2 mt-4 relative">
-                                        <button onClick={() => { setLiqData({...liqData, nombre: `${emp.firstName} ${emp.lastName}`, salarioBase: emp.salaryAmount, tipo: (emp.defaultPosition || '').includes('Días') ? 'dias' : 'mes'}); setCalcMode('nomina'); setActiveTab('liquidacion'); }} className="py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-rose-600 transition-colors">PAGAR</button>
-                                        <button onClick={() => { setLiqData({...liqData, nombre: `${emp.firstName} ${emp.lastName}`, salarioBase: emp.salaryAmount, fechaIngreso: emp.startDate || '2025-01-01'}); setCalcMode('contrato'); setActiveTab('liquidacion'); }} className="py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors">LIQUIDAR</button>
+                                        <button onClick={() => { setLiqData({...liqData, nombre: `${emp.firstName} ${emp.lastName}`, salarioBase: emp.salaryAmount, tipo: (emp.defaultPosition || '').includes('Días') ? 'dias' : 'mes'}); setCalcMode('nomina'); setActiveTab('liquidacion'); }} className="py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black hover:bg-rose-600 transition-colors uppercase">REPORTAR NOVEDADES</button>
+                                        <button onClick={() => { setLiqData({...liqData, nombre: `${emp.firstName} ${emp.lastName}`, salarioBase: emp.salaryAmount, fechaIngreso: emp.startDate || '2025-01-01'}); setCalcMode('contrato'); setActiveTab('liquidacion'); }} className="py-2.5 border border-slate-200 text-slate-600 rounded-xl text-[10px] font-bold hover:bg-slate-50 transition-colors uppercase">LIQUIDAR CONTRATO</button>
                                     </div>
                                 </div>
                             ))}
@@ -170,12 +189,28 @@ export default function DomesticasProfesionalPage() {
                 {activeTab === 'liquidacion' && (
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 animate-in fade-in duration-500">
                         <div className="xl:col-span-5 space-y-4 print:hidden">
-                            <div className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl">
-                                {(['nomina', 'vacaciones', 'contrato'] as Mode[]).map(m => <button key={m} onClick={() => setCalcMode(m)} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black tracking-widest transition-all ${calcMode === m ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}>{m.toUpperCase()}</button>)}
+                            <div className="flex items-center justify-between mb-2">
+                                <button 
+                                    onClick={() => setActiveTab('directorio')}
+                                    className="flex items-center gap-2 px-4 py-2 text-slate-500 hover:text-slate-900 font-bold text-sm transition-colors"
+                                >
+                                    ← Volver al Directorio
+                                </button>
+                                <div className="flex gap-2 p-1 bg-slate-100 rounded-xl">
+                                    {(['nomina', 'vacaciones', 'contrato'] as Mode[]).map(m => (
+                                        <button 
+                                            key={m} 
+                                            onClick={() => setCalcMode(m)} 
+                                            className={`px-3 py-1.5 rounded-lg text-[9px] font-black tracking-widest transition-all ${calcMode === m ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
+                                        >
+                                            {m.toUpperCase()}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                             <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
                                 <div className="p-6 bg-slate-900 text-white flex items-center justify-between"><h3 className="text-xl font-black flex items-center gap-2"><Sparkles className="text-rose-400" /> {calcMode.toUpperCase()}</h3></div>
-                                <form onSubmit={handleLiquidar} className="p-8 space-y-6">
+                                <form onSubmit={handleLiquidar} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
                                     <div>
                                         <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Seleccionar Empleada</label>
                                         <select 
@@ -203,6 +238,47 @@ export default function DomesticasProfesionalPage() {
                                             ))}
                                         </select>
                                     </div>
+                                    <div>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Periodo de Pago</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <input 
+                                                type="date" 
+                                                value={liqData.fechaDesde} 
+                                                onChange={(e) => {
+                                                    const newDesde = e.target.value;
+                                                    setLiqData(prev => {
+                                                        const newState = { ...prev, fechaDesde: newDesde };
+                                                        if (newState.tipo === 'dias') {
+                                                            const d1 = new Date(newDesde);
+                                                            const d2 = new Date(newState.fechaHasta);
+                                                            const diff = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                                                            if (diff > 0) newState.diasTrabajados = diff;
+                                                        }
+                                                        return newState;
+                                                    });
+                                                }}
+                                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
+                                            />
+                                            <input 
+                                                type="date" 
+                                                value={liqData.fechaHasta} 
+                                                onChange={(e) => {
+                                                    const newHasta = e.target.value;
+                                                    setLiqData(prev => {
+                                                        const newState = { ...prev, fechaHasta: newHasta };
+                                                        if (newState.tipo === 'dias') {
+                                                            const d1 = new Date(newState.fechaDesde);
+                                                            const d2 = new Date(newHasta);
+                                                            const diff = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                                                            if (diff > 0) newState.diasTrabajados = diff;
+                                                        }
+                                                        return newState;
+                                                    });
+                                                }}
+                                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold"
+                                            />
+                                        </div>
+                                    </div>
                                     <div><label className="text-[10px] font-black text-slate-400 uppercase block mb-1">Salario Base ($)</label><input type="number" required value={liqData.salarioBase} onChange={(e) => setLiqData({...liqData, salarioBase: Number(e.target.value)})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold" /></div>
                                     {calcMode === 'nomina' && (
                                         <div className="space-y-4">
@@ -210,7 +286,41 @@ export default function DomesticasProfesionalPage() {
                                                 {(['mes', 'dias'] as const).map(t => <div key={t} onClick={() => setLiqData({...liqData, tipo: t})} className={`cursor-pointer p-4 rounded-xl border-2 text-center transition-all ${liqData.tipo === t ? 'border-rose-500 bg-rose-50' : 'border-slate-50'}`}><span className="text-xs font-black uppercase tracking-widest">{t === 'mes' ? 'Mensual' : 'Por Días'}</span></div>)}
                                             </div>
                                             {liqData.tipo === 'dias' && <input type="number" placeholder="Días laborados" required value={liqData.diasTrabajados} onChange={(e) => setLiqData({...liqData, diasTrabajados: Number(e.target.value)})} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl font-bold" />}
-                                            <label className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl cursor-pointer"><input type="checkbox" checked={liqData.hasExtras} onChange={(e) => setLiqData({...liqData, hasExtras: e.target.checked})} className="w-5 h-5 text-rose-600 rounded" /><span className="text-xs font-bold text-slate-700 uppercase tracking-tight">Incluir Horas Extras / Recargos</span></label>
+                                            <div className="p-6 bg-slate-50 rounded-3xl space-y-4">
+                                                <label className="flex items-center gap-3 cursor-pointer">
+                                                    <input type="checkbox" checked={liqData.hasExtras} onChange={(e) => setLiqData({...liqData, hasExtras: e.target.checked})} className="w-5 h-5 text-rose-600 rounded" />
+                                                    <span className="text-xs font-bold text-slate-700 uppercase tracking-tight">Reportar Horas Extras y Recargos</span>
+                                                </label>
+                                                
+                                                {liqData.hasExtras && (
+                                                    <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2 duration-300">
+                                                        <div>
+                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H. Extra Diurna (1.25)</label>
+                                                            <input type="number" value={liqData.extraDiurna} onChange={(e) => setLiqData({...liqData, extraDiurna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H. Extra Noct. (1.75)</label>
+                                                            <input type="number" value={liqData.extraNocturna} onChange={(e) => setLiqData({...liqData, extraNocturna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">Recargo Noct. (0.35)</label>
+                                                            <input type="number" value={liqData.recargoNocturno} onChange={(e) => setLiqData({...liqData, recargoNocturno: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">Recargo Festivo (0.75)</label>
+                                                            <input type="number" value={liqData.recargoFestivo} onChange={(e) => setLiqData({...liqData, recargoFestivo: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H.E. Festiva Diu (2.0)</label>
+                                                            <input type="number" value={liqData.extraFestivaDiurna} onChange={(e) => setLiqData({...liqData, extraFestivaDiurna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H.E. Festiva Noc (2.5)</label>
+                                                            <input type="number" value={liqData.extraFestivaNocturna} onChange={(e) => setLiqData({...liqData, extraFestivaNocturna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                     {calcMode === 'contrato' && <div className="grid grid-cols-2 gap-4"><div><label className="text-[10px] font-black text-slate-400 uppercase">Ingreso</label><input type="date" value={liqData.fechaIngreso} onChange={(e) => setLiqData({...liqData, fechaIngreso: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" /></div><div><label className="text-[10px] font-black text-slate-400 uppercase">Retiro</label><input type="date" value={liqData.fechaRetiro} onChange={(e) => setLiqData({...liqData, fechaRetiro: e.target.value})} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold" /></div></div>}
@@ -234,8 +344,9 @@ export default function DomesticasProfesionalPage() {
                                             </div>
                                             <div className="text-right"><p className="text-[10px] font-black text-slate-400 uppercase mb-1">Fecha Emisión</p><p className="font-bold text-slate-900">{new Date().toLocaleDateString('es-CO')}</p></div>
                                         </div>
-                                        <div className="bg-slate-50 p-6 rounded-3xl grid grid-cols-2 gap-4 mb-10 border border-slate-100">
+                                        <div className="bg-slate-50 p-6 rounded-3xl grid grid-cols-2 md:grid-cols-3 gap-4 mb-10 border border-slate-100">
                                             <div><p className="text-[10px] font-black text-slate-400 uppercase mb-1">Nombre Empleada</p><p className="font-bold text-slate-900">{liqData.nombre}</p></div>
+                                            <div><p className="text-[10px] font-black text-slate-400 uppercase mb-1">Periodo Liquidado</p><p className="font-bold text-slate-900 text-xs">{calcMode === 'contrato' ? `${liqData.fechaIngreso} al ${liqData.fechaRetiro}` : `${liqData.fechaDesde} al ${liqData.fechaHasta}`}</p></div>
                                             <div className="text-right"><p className="text-[10px] font-black text-slate-400 uppercase mb-1">Modo Liquidación</p><p className="font-bold text-rose-600 uppercase text-xs tracking-widest">{calcMode}</p></div>
                                         </div>
                                         <table className="w-full text-left mb-12 text-sm md:text-base">

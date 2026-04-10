@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --surface-color: #ffffff;
+  --border-color: #e2e8f0;
+  --text-color: #0f172a;
+  --secondary-color: #64748b;
+}
+
 /* globals.css */
 
 body {

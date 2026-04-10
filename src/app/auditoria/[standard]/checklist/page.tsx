@@ -28,7 +28,7 @@ interface ChecklistItem {
 interface Variable { id: number; requirement_id: number; variable_text: string; variable_order: number; }
 type FindingState = { type_id: number | null; description: string; evidence: string; observations: string; is_op: number; nc_text: string; op_text: string; };
 type VarAnswer = 'si' | 'no' | 'na';
-interface VarAnswerData { answer: VarAnswer; nc_text: string; op_text: string; }
+interface VarAnswerData { answer: VarAnswer; nc_text: string; op_text: string; evidence: string; }
 interface Opportunity { area: string; oportunidad: string; beneficio: string; }
 
 const CUMPLE_ID = 1;
@@ -128,6 +128,7 @@ export default function ChecklistPage() {
                         answer: a.answer as VarAnswer,
                         nc_text: a.nc_text || '',
                         op_text: a.op_text || '',
+                        evidence: a.evidence || '',
                     });
                 }
             }
@@ -149,7 +150,11 @@ export default function ChecklistPage() {
 
     const setVarAnswer = async (reqId: number, varId: number, answer: VarAnswer) => {
         const key = `${reqId}-${varId}`;
-        const existing = varAnswers.get(key) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '' };
+        const existing = varAnswers.get(key) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '', evidence: '' };
+        
+        // If answer is 'si' or 'na', we usually don't want NC text, but user might want to keep it.
+        // However, the prompt specifically says "si seleccionas nc no puedes seleccionar op y viceversa"
+        // which applies to the NC/OP toggle buttons.
         const newData = { ...existing, answer };
 
         const newAnswers = new Map(varAnswers);
@@ -171,16 +176,22 @@ export default function ChecklistPage() {
         saveVarToDb(reqId, varId, newData);
     };
 
-    const setVarDetail = (reqId: number, varId: number, field: 'nc_text' | 'op_text', value: string) => {
+    const setVarDetail = (reqId: number, varId: number, field: 'nc_text' | 'op_text' | 'evidence', value: string) => {
         const key = `${reqId}-${varId}`;
-        const existing = varAnswers.get(key) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '' };
-        const newData = { ...existing, [field]: value };
+        const existing = varAnswers.get(key) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '', evidence: '' };
+        
+        // Mutual exclusivity logic for text
+        let newData = { ...existing, [field]: value };
+        if (field === 'nc_text' && value.trim() !== '') {
+            newData.op_text = '';
+        } else if (field === 'op_text' && value.trim() !== '') {
+            newData.nc_text = '';
+        }
 
         const newAnswers = new Map(varAnswers);
         newAnswers.set(key, newData);
         setVarAnswers(newAnswers);
         
-        // Debounced or direct save? Direct for now as per other fields
         saveVarToDb(reqId, varId, newData);
     };
 
@@ -194,7 +205,8 @@ export default function ChecklistPage() {
                 variable_id: varId, 
                 answer: data.answer,
                 nc_text: data.nc_text,
-                op_text: data.op_text
+                op_text: data.op_text,
+                evidence: data.evidence
             }),
         }).catch(console.error);
     };
@@ -724,7 +736,7 @@ export default function ChecklistPage() {
                                                                         ) : hasVars ? (
                                                                             <div className="space-y-2">
                                                                                 {vars.map(v => {
-                                                                                    const data = varAnswers.get(`${item.id}-${v.id}`) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '' };
+                                                                                    const data = varAnswers.get(`${item.id}-${v.id}`) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '', evidence: '' };
                                                                                     const ans = data.answer;
                                                                                     return (
                                                                                         <div key={v.id} className={`p-3 rounded-xl border transition-all ${ans === 'si' ? 'bg-emerald-50/50 border-emerald-200' : ans === 'no' ? 'bg-red-50/50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
@@ -752,8 +764,20 @@ export default function ChecklistPage() {
                                                                                                         <div className="flex flex-wrap items-center gap-2 flex-1">
                                                                                                             <button onClick={() => {
                                                                                                                 const isActive = activeVarInputs[`${item.id}-${v.id}`]?.nc;
-                                                                                                                if (isActive && !data.nc_text) setVarDetail(item.id, v.id, 'nc_text', '');
-                                                                                                                setActiveVarInputs(prev => ({ ...prev, [`${item.id}-${v.id}`]: { ...prev[`${item.id}-${v.id}`], nc: !isActive } }));
+                                                                                                                // Mutual exclusivity: if opening NC, close OP
+                                                                                                                setActiveVarInputs(prev => ({ 
+                                                                                                                    ...prev, 
+                                                                                                                    [`${item.id}-${v.id}`]: { 
+                                                                                                                        nc: !isActive, 
+                                                                                                                        op: false 
+                                                                                                                    } 
+                                                                                                                }));
+                                                                                                                if (!isActive) {
+                                                                                                                    // If opening NC, clear OP text
+                                                                                                                    setVarDetail(item.id, v.id, 'nc_text', data.nc_text);
+                                                                                                                } else {
+                                                                                                                    setVarDetail(item.id, v.id, 'nc_text', '');
+                                                                                                                }
                                                                                                             }}
                                                                                                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
                                                                                                                 NC
@@ -761,12 +785,56 @@ export default function ChecklistPage() {
                                                                                                             
                                                                                                             <button onClick={() => {
                                                                                                                 const isActive = activeVarInputs[`${item.id}-${v.id}`]?.op;
-                                                                                                                if (isActive && !data.op_text) setVarDetail(item.id, v.id, 'op_text', '');
-                                                                                                                setActiveVarInputs(prev => ({ ...prev, [`${item.id}-${v.id}`]: { ...prev[`${item.id}-${v.id}`], op: !isActive } }));
+                                                                                                                // Mutual exclusivity: if opening OP, close NC
+                                                                                                                setActiveVarInputs(prev => ({ 
+                                                                                                                    ...prev, 
+                                                                                                                    [`${item.id}-${v.id}`]: { 
+                                                                                                                        nc: false, 
+                                                                                                                        op: !isActive 
+                                                                                                                    } 
+                                                                                                                }));
+                                                                                                                if (!isActive) {
+                                                                                                                    // If opening OP, clear NC text
+                                                                                                                    setVarDetail(item.id, v.id, 'op_text', data.op_text);
+                                                                                                                } else {
+                                                                                                                    setVarDetail(item.id, v.id, 'op_text', '');
+                                                                                                                }
                                                                                                             }}
                                                                                                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
                                                                                                                 OP
                                                                                                             </button>
+
+                                                                                                            {/* Evidence for Criteria */}
+                                                                                                            <div className="flex items-center gap-1.5">
+                                                                                                                <input 
+                                                                                                                    type="file" 
+                                                                                                                    id={`evidence-var-${v.id}`}
+                                                                                                                    className="hidden" 
+                                                                                                                    accept="image/*,application/pdf"
+                                                                                                                    onChange={async (e) => {
+                                                                                                                        const file = e.target.files?.[0];
+                                                                                                                        if (!file) return;
+                                                                                                                        const formData = new FormData();
+                                                                                                                        formData.append('file', file);
+                                                                                                                        const tId = toast.loading('Subiendo evidencia...');
+                                                                                                                        try {
+                                                                                                                            const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+                                                                                                                            if (res.ok) {
+                                                                                                                                const up = await res.json();
+                                                                                                                                setVarDetail(item.id, v.id, 'evidence', up.url);
+                                                                                                                                toast.success('Evidencia subida', { id: tId });
+                                                                                                                            } else toast.error('Error al subir', { id: tId });
+                                                                                                                        } catch { toast.error('Error al subir', { id: tId }); }
+                                                                                                                    }}
+                                                                                                                />
+                                                                                                                <button onClick={() => document.getElementById(`evidence-var-${v.id}`)?.click()}
+                                                                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition-all ${data.evidence ? 'bg-blue-100 border-blue-300 text-blue-700' : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100'}`}>
+                                                                                                                    <Plus size={10} className="inline mr-1" /> Evidencia
+                                                                                                                </button>
+                                                                                                                {data.evidence && (
+                                                                                                                    <a href={data.evidence} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-blue-500 hover:underline">Ver</a>
+                                                                                                                )}
+                                                                                                            </div>
 
                                                                                                             {(activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text) && (
                                                                                                                 <div className="flex-1 min-w-[120px]">

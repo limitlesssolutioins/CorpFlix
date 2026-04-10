@@ -517,6 +517,9 @@ class ISOAuditService {
         }
         // Ensure ISO 9001 sub-requirements exist (3-level hierarchy from Excel)
         this.ensureISO9001SubRequirements();
+        
+        // Ensure predefined audit criteria (variables) are seeded
+        this.ensureAuditCriteria();
 
         // Ensure new tables exist (additive, safe to run on existing DBs)
         this.db.exec(`
@@ -612,6 +615,38 @@ class ISOAuditService {
         } catch (error) {
             this.db.exec('ROLLBACK');
             console.error('❌ Failed to add MINTRABAJO standard:', error);
+        }
+    }
+
+    private ensureAuditCriteria() {
+        const hasCriteria = this.db.prepare("SELECT id FROM requirement_variables LIMIT 1").get();
+        if (hasCriteria) return;
+
+        console.log('🔄 Seeding predefined audit criteria (variables)...');
+        try {
+            this.db.exec('BEGIN TRANSACTION');
+            const schema = fs.readFileSync(SCHEMA_PATH, 'utf-8');
+            const startMarker = '-- VARIABLES DE REQUISITOS (CRITERIOS DE EVALUACIÓN)';
+            const startIndex = schema.indexOf(startMarker);
+            
+            if (startIndex !== -1) {
+                const insertSection = schema.substring(startIndex);
+                const insertStatements = insertSection.match(/INSERT OR IGNORE INTO[\s\S]+?;/g);
+                if (insertStatements) {
+                    for (const stmt of insertStatements) {
+                        try {
+                            this.db.exec(stmt);
+                        } catch (e) {
+                            // Ignore individual insert errors
+                        }
+                    }
+                }
+            }
+            this.db.exec('COMMIT');
+            console.log('✅ Audit criteria seeded successfully');
+        } catch (error) {
+            this.db.exec('ROLLBACK');
+            console.error('❌ Failed to seed audit criteria:', error);
         }
     }
 
@@ -1176,15 +1211,16 @@ class ISOAuditService {
         ).all(auditId);
     }
 
-    saveVariableAnswer(auditId: number, requirementId: number, variableId: number, answer: string, nc_text?: string, op_text?: string): void {
+    saveVariableAnswer(auditId: number, requirementId: number, variableId: number, answer: string, nc_text?: string, op_text?: string, evidence?: string): void {
         this.db.prepare(`
-            INSERT INTO finding_variable_answers (audit_id, requirement_id, variable_id, answer, nc_text, op_text)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO finding_variable_answers (audit_id, requirement_id, variable_id, answer, nc_text, op_text, evidence)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(audit_id, requirement_id, variable_id) DO UPDATE SET 
                 answer = excluded.answer,
                 nc_text = excluded.nc_text,
-                op_text = excluded.op_text
-        `).run(auditId, requirementId, variableId, answer, nc_text || null, op_text || null);
+                op_text = excluded.op_text,
+                evidence = excluded.evidence
+        `).run(auditId, requirementId, variableId, answer, nc_text || null, op_text || null, evidence || null);
     }
 
     // ===================================================

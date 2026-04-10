@@ -7,6 +7,46 @@ export class EmployeesService {
 
     constructor(dataDir: string) {
         this.db = getDb(path.join(dataDir, 'hr.db'));
+        this.ensureSchema();
+    }
+
+    private ensureSchema() {
+        const columnsToAdd = [
+            'address TEXT',
+            'contractEndDate DATE',
+            'isIntegralSalary INTEGER DEFAULT 0',
+            'contractNumber TEXT',
+            'payrollGroup TEXT',
+            'costCenter TEXT',
+            'contributorType TEXT',
+            'contributorSubtype TEXT',
+            'healthFundPercentage REAL DEFAULT 4',
+            'pensionFundPercentage REAL DEFAULT 4',
+            'severanceFund TEXT',
+            'compensationFund TEXT',
+            'riskClass TEXT',
+            'ciiuCode TEXT'
+        ];
+
+        try {
+            // First check if the table exists to avoid errors on completely fresh installs
+            const tableExists = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='Employee'").get();
+            if (!tableExists) return; // Let init-hr-db.js handle full creation if it's completely missing
+
+            // Try to add each column. We catch and ignore errors because SQLite will throw an error if the column already exists.
+            for (const col of columnsToAdd) {
+                try {
+                    this.db.exec(`ALTER TABLE Employee ADD COLUMN ${col}`);
+                } catch (e: any) {
+                    // Ignore "duplicate column name" errors
+                    if (!e.message.includes('duplicate column name')) {
+                        console.error(`Error adding column ${col}:`, e.message);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error ensuring Employee schema:', error);
+        }
     }
 
     async findAll() {

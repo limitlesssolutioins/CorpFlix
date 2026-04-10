@@ -62,7 +62,9 @@ export default function DomesticasProfesionalPage() {
         fechaDesde: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
         fechaHasta: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0],
         hasExtras: false, manualExtras: true, 
-        extraDiurna: 0, extraNocturna: 0, recargoNocturno: 0, extraFestivaDiurna: 0, extraFestivaNocturna: 0, recargoFestivo: 0,
+        recargoDominicalFestivo: 0, recargoDominicalFestivoNocturno: 0, recargoNocturno: 0, horaExtraRecargoNocturno: 0,
+        horaDominicalFestivaNocturna: 0, horaExtraDiurnaDominicalFestiva: 0, horaExtraDiurna: 0, horaExtraNocturna: 0,
+        horaExtraNocturnaDominicalFestiva: 0, horaExtraRecargoDominicalFestiva: 0,
         startTime: '08:00', endTime: '19:00', breakMinutes: 60, isSundayOrHoliday: false, weeklyHours: 44,
         liquidarPrima: false, liquidarCesantias: false, diasPrestaciones: 180, diasDisfrutados: 15,
         fechaIngreso: '2025-01-01', fechaRetiro: new Date().toISOString().split('T')[0], causaIndemnizacion: false, diasPendientesVacaciones: 0
@@ -80,7 +82,7 @@ export default function DomesticasProfesionalPage() {
     const liquidarNomina = () => {
         let subtotalSalario = 0, extrasAmount = 0, auxTrans = 0, descansoDominical = 0;
         const baseCalculo = liqData.tipo === 'dias' ? (liqData.salarioBase * 30) : liqData.salarioBase;
-        const valorHora = baseCalculo / 240;
+        const valorHora = baseCalculo / 220; // Actualizado a 220 horas mensuales según reducción de jornada laboral
 
         if (liqData.tipo === 'dias') {
             subtotalSalario = liqData.salarioBase * liqData.diasTrabajados;
@@ -93,13 +95,17 @@ export default function DomesticasProfesionalPage() {
 
         if (liqData.hasExtras) {
             if (liqData.manualExtras) {
-                // Cálculo manual basado en porcentajes legales colombianos
-                extrasAmount += liqData.extraDiurna * valorHora * 1.25;
-                extrasAmount += liqData.extraNocturna * valorHora * 1.75;
+                // Cálculo manual basado en factores exactos
+                extrasAmount += liqData.recargoDominicalFestivo * valorHora * 0.8;
+                extrasAmount += liqData.recargoDominicalFestivoNocturno * valorHora * 1.15;
                 extrasAmount += liqData.recargoNocturno * valorHora * 0.35;
-                extrasAmount += liqData.extraFestivaDiurna * valorHora * 2.0;
-                extrasAmount += liqData.extraFestivaNocturna * valorHora * 2.5;
-                extrasAmount += liqData.recargoFestivo * valorHora * 0.75;
+                extrasAmount += liqData.horaExtraRecargoNocturno * valorHora * 1.35;
+                extrasAmount += liqData.horaDominicalFestivaNocturna * valorHora * 2.15;
+                extrasAmount += liqData.horaExtraDiurnaDominicalFestiva * valorHora * 2.05;
+                extrasAmount += liqData.horaExtraDiurna * valorHora * 1.25;
+                extrasAmount += liqData.horaExtraNocturna * valorHora * 1.75;
+                extrasAmount += liqData.horaExtraNocturnaDominicalFestiva * valorHora * 2.55;
+                extrasAmount += liqData.horaExtraRecargoDominicalFestiva * valorHora * 1.8;
             } else {
                 const calc = calculateShiftColombian({
                     salary: baseCalculo,
@@ -294,29 +300,48 @@ export default function DomesticasProfesionalPage() {
                                                 
                                                 {liqData.hasExtras && (
                                                     <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-top-2 duration-300">
+                                                        <div className="col-span-2 border-b border-slate-200 pb-2 mb-2"><span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Recargos</span></div>
                                                         <div>
-                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H. Extra Diurna (1.25)</label>
-                                                            <input type="number" value={liqData.extraDiurna} onChange={(e) => setLiqData({...liqData, extraDiurna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">Recargo Dominical/Festivo (0.8)</label>
+                                                            <input type="number" value={liqData.recargoDominicalFestivo || ''} onChange={(e) => setLiqData({...liqData, recargoDominicalFestivo: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
                                                         </div>
                                                         <div>
-                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H. Extra Noct. (1.75)</label>
-                                                            <input type="number" value={liqData.extraNocturna} onChange={(e) => setLiqData({...liqData, extraNocturna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">Rec. Dom/Festivo Nocturno (1.15)</label>
+                                                            <input type="number" value={liqData.recargoDominicalFestivoNocturno || ''} onChange={(e) => setLiqData({...liqData, recargoDominicalFestivoNocturno: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
                                                         </div>
                                                         <div>
-                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">Recargo Noct. (0.35)</label>
-                                                            <input type="number" value={liqData.recargoNocturno} onChange={(e) => setLiqData({...liqData, recargoNocturno: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">Recargo Nocturno (0.35)</label>
+                                                            <input type="number" value={liqData.recargoNocturno || ''} onChange={(e) => setLiqData({...liqData, recargoNocturno: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
+                                                        </div>
+                                                        
+                                                        <div className="col-span-2 border-b border-slate-200 pb-2 mb-2 mt-2"><span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Horas Extras y Especiales</span></div>
+                                                        <div>
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">H.E Recargo Nocturno (1.35)</label>
+                                                            <input type="number" value={liqData.horaExtraRecargoNocturno || ''} onChange={(e) => setLiqData({...liqData, horaExtraRecargoNocturno: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
                                                         </div>
                                                         <div>
-                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">Recargo Festivo (0.75)</label>
-                                                            <input type="number" value={liqData.recargoFestivo} onChange={(e) => setLiqData({...liqData, recargoFestivo: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">H. Dom/Festiva Nocturna (2.15)</label>
+                                                            <input type="number" value={liqData.horaDominicalFestivaNocturna || ''} onChange={(e) => setLiqData({...liqData, horaDominicalFestivaNocturna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
                                                         </div>
                                                         <div>
-                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H.E. Festiva Diu (2.0)</label>
-                                                            <input type="number" value={liqData.extraFestivaDiurna} onChange={(e) => setLiqData({...liqData, extraFestivaDiurna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">H.E Diurna Dom/Festiva (2.05)</label>
+                                                            <input type="number" value={liqData.horaExtraDiurnaDominicalFestiva || ''} onChange={(e) => setLiqData({...liqData, horaExtraDiurnaDominicalFestiva: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
                                                         </div>
                                                         <div>
-                                                            <label className="text-[9px] font-black text-slate-400 uppercase block mb-1">H.E. Festiva Noc (2.5)</label>
-                                                            <input type="number" value={liqData.extraFestivaNocturna} onChange={(e) => setLiqData({...liqData, extraFestivaNocturna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Cant. Horas" />
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">H.E Diurna (1.25)</label>
+                                                            <input type="number" value={liqData.horaExtraDiurna || ''} onChange={(e) => setLiqData({...liqData, horaExtraDiurna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">H.E Nocturna (1.75)</label>
+                                                            <input type="number" value={liqData.horaExtraNocturna || ''} onChange={(e) => setLiqData({...liqData, horaExtraNocturna: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">H.E Nocturna Dom/Festiva (2.55)</label>
+                                                            <input type="number" value={liqData.horaExtraNocturnaDominicalFestiva || ''} onChange={(e) => setLiqData({...liqData, horaExtraNocturnaDominicalFestiva: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[8px] font-black text-slate-400 uppercase block mb-1">H.E Recargo Dom/Festiva (1.8)</label>
+                                                            <input type="number" value={liqData.horaExtraRecargoDominicalFestiva || ''} onChange={(e) => setLiqData({...liqData, horaExtraRecargoDominicalFestiva: Number(e.target.value)})} className="w-full p-2 bg-white border border-slate-200 rounded-lg text-xs font-bold" placeholder="Horas" />
                                                         </div>
                                                     </div>
                                                 )}
@@ -357,7 +382,28 @@ export default function DomesticasProfesionalPage() {
                                                         <tr><td className="py-4 font-medium text-slate-700">Sueldo Base {liqData.tipo === 'dias' ? `(${liqData.diasTrabajados} días)` : ''}</td><td className="text-right font-bold text-slate-900">${liqResult.subtotalSalario.toLocaleString('es-CO')}</td><td></td></tr>
                                                         {liqResult.descansoDominical > 0 && <tr><td className="py-4 text-slate-600">Descanso Proporcional</td><td className="text-right font-bold">${liqResult.descansoDominical.toLocaleString('es-CO')}</td><td></td></tr>}
                                                         {liqResult.auxTrans > 0 && <tr><td className="py-4 italic">Auxilio de Transporte</td><td className="text-right font-bold">${liqResult.auxTrans.toLocaleString('es-CO')}</td><td></td></tr>}
-                                                        {liqResult.extrasAmount > 0 && <tr><td className="py-4">Recargos y Horas Extras</td><td className="text-right font-bold text-emerald-600">+${liqResult.extrasAmount.toLocaleString('es-CO')}</td><td></td></tr>}
+                                                        {liqResult.extrasAmount > 0 && (
+                                                            <>
+                                                                <tr><td className="py-4">Recargos y Horas Extras</td><td className="text-right font-bold text-emerald-600">+${liqResult.extrasAmount.toLocaleString('es-CO')}</td><td></td></tr>
+                                                                {liqData.manualExtras && (
+                                                                    <tr>
+                                                                        <td colSpan={3} className="pb-4 pt-1 text-[9px] text-slate-500 font-bold tracking-wide uppercase leading-relaxed">
+                                                                            Detalle Recargos/Extras: <br/>
+                                                                            {liqData.recargoDominicalFestivo > 0 ? ` Rec.Dom/Fest (0.8): ${liqData.recargoDominicalFestivo}h |` : ''}
+                                                                            {liqData.recargoDominicalFestivoNocturno > 0 ? ` Rec.Dom/Fest.Noc (1.15): ${liqData.recargoDominicalFestivoNocturno}h |` : ''}
+                                                                            {liqData.recargoNocturno > 0 ? ` Rec.Noc (0.35): ${liqData.recargoNocturno}h |` : ''}
+                                                                            {liqData.horaExtraRecargoNocturno > 0 ? ` HE.Rec.Noc (1.35): ${liqData.horaExtraRecargoNocturno}h |` : ''}
+                                                                            {liqData.horaDominicalFestivaNocturna > 0 ? ` H.Dom/Fest.Noc (2.15): ${liqData.horaDominicalFestivaNocturna}h |` : ''}
+                                                                            {liqData.horaExtraDiurnaDominicalFestiva > 0 ? ` HE.Diu.Dom/Fest (2.05): ${liqData.horaExtraDiurnaDominicalFestiva}h |` : ''}
+                                                                            {liqData.horaExtraDiurna > 0 ? ` HE.Diurna (1.25): ${liqData.horaExtraDiurna}h |` : ''}
+                                                                            {liqData.horaExtraNocturna > 0 ? ` HE.Noc (1.75): ${liqData.horaExtraNocturna}h |` : ''}
+                                                                            {liqData.horaExtraNocturnaDominicalFestiva > 0 ? ` HE.Noc.Dom/Fest (2.55): ${liqData.horaExtraNocturnaDominicalFestiva}h |` : ''}
+                                                                            {liqData.horaExtraRecargoDominicalFestiva > 0 ? ` HE.Rec.Dom/Fest (1.8): ${liqData.horaExtraRecargoDominicalFestiva}h |` : ''}
+                                                                        </td>
+                                                                    </tr>
+                                                                )}
+                                                            </>
+                                                        )}
                                                         <tr><td className="py-4 text-slate-400">Seguridad Social (Aportes)</td><td></td><td className="text-right font-bold text-rose-600">-${(liqResult.salud + liqResult.pension).toLocaleString('es-CO')}</td></tr>
                                                     </>
                                                 )}

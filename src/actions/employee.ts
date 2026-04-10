@@ -32,8 +32,6 @@ export async function createEmployeeAction(formData: FormData) {
     contractEndDate: formData.get('contractEndDate') as string || null,
     isIntegralSalary: formData.get('isIntegralSalary') === 'true' ? 1 : 0,
     salaryAmount: parseFloat(formData.get('salaryAmount') as string) || 0,
-    payrollGroup: formData.get('payrollGroup') as string,
-    costCenter: formData.get('costCenter') as string,
     defaultSiteId: formData.get('defaultSite') as string, // Note: This might need ID lookup if it's text
     
     contributorType: formData.get('contributorType') as string,
@@ -74,8 +72,6 @@ export async function updateEmployeeAction(id: string, formData: FormData) {
     contractEndDate: formData.get('contractEndDate') as string || null,
     isIntegralSalary: formData.get('isIntegralSalary') === 'true' ? 1 : 0,
     salaryAmount: parseFloat(formData.get('salaryAmount') as string) || 0,
-    payrollGroup: formData.get('payrollGroup') as string,
-    costCenter: formData.get('costCenter') as string,
     defaultSiteId: formData.get('defaultSite') as string,
     
     contributorType: formData.get('contributorType') as string,

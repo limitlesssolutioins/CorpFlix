@@ -182,7 +182,7 @@ const EmployeeList: React.FC = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
-                        onClick={() => router.push(`/gestion-humana/employees/profile/${emp.id}`)}
+                        onClick={() => router.push(`/gestion-humana/employees/${emp.id}`)}
                         className="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
                         title="Ver Perfil 360"
                       >

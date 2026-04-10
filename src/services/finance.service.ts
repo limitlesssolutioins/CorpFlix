@@ -90,7 +90,7 @@ export class FinanceService {
     const totalPrestaciones = cesantias + intCesantias + prima + vacaciones;
 
     const totalCost = baseSalary + totalSeguridadSocial + totalPrestaciones;
-    const hourlyCost = totalCost / 240;
+    const hourlyCost = totalCost / 220; // Actualizado a 220 horas mensuales
 
     return {
       baseSalary,

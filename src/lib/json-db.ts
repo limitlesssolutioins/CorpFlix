@@ -79,6 +79,33 @@ export interface Employee {
   defaultPosition?: string;
   defaultSite?: string;
   isActive: boolean;
+  
+  // Personal Info
+  phone?: string;
+  email?: string;
+  address?: string;
+
+  // Labor Info
+  contractDate?: string; // Fecha de inicio
+  contractEndDate?: string; // Fecha de finalización
+  isIntegralSalary?: boolean;
+  contractNumber?: string;
+  payrollGroup?: string;
+  costCenter?: string;
+
+  // Social Security
+  contributorType?: string;
+  contributorSubtype?: string;
+  healthFund?: string;
+  healthFundPercentage?: number;
+  pensionFund?: string;
+  pensionFundPercentage?: number;
+  severanceFund?: string;
+  compensationFund?: string;
+  arl?: string;
+  riskClass?: string;
+  ciiuCode?: string;
+
   [key: string]: any;
 }
 

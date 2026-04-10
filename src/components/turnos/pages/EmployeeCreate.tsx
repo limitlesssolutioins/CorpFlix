@@ -8,16 +8,9 @@ import {
     CalendarClock,
     User,
     Briefcase,
-    DollarSign,
     ShieldCheck,
-    CheckCircle2,
-    Info,
     ChevronRight,
     ChevronLeft,
-    Users,
-    Wallet,
-    MapPin,
-    Stethoscope
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -27,13 +20,30 @@ interface FormData {
     identification: string;
     email: string;
     phone: string;
+    address: string;
+    
     contractType: string;
     salaryAmount: number;
+    isIntegralSalary: boolean;
+    contractNumber: string;
+    payrollGroup: string;
+    costCenter: string;
     salaryScheme: string;
     startDate: string;
+    contractEndDate: string;
+    
     epsEntity: string;
-    arlEntity: string;
+    healthFundPercentage: number;
     pensionEntity: string;
+    pensionFundPercentage: number;
+    severanceFund: string;
+    compensationFund: string;
+    arlEntity: string;
+    riskClass: string;
+    ciiuCode: string;
+    contributorType: string;
+    contributorSubtype: string;
+
     defaultSiteId: string;
     defaultPositionId: string;
     standardStartTime: string;
@@ -46,31 +56,33 @@ const EmployeeCreate: React.FC = () => {
     const { register, handleSubmit, setValue, trigger, formState: { errors } } = useForm<FormData>({
         defaultValues: {
             salaryScheme: 'ORDINARIO',
-            workDays: ['1', '2', '3', '4', '5']
+            workDays: ['1', '2', '3', '4', '5'],
+            isIntegralSalary: false,
+            healthFundPercentage: 4,
+            pensionFundPercentage: 4,
+            contributorType: '01',
+            contributorSubtype: '00'
         }
     });
     const router = useRouter();
 
     const [sites, setSites] = useState<any[]>([]);
     const [positions, setPositions] = useState<any[]>([]);
-    const [scales, setScales] = useState<any[]>([]);
     const [ssData, setSsData] = useState<any>({ eps: [], arl: [], pension: [], contracts: [] });
     const [smlmv, setSmlmv] = useState<number>(0);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [resSites, resPos, resSettings, resScales, resSS] = await Promise.all([
+                const [resSites, resPos, resSettings, resSS] = await Promise.all([
                     axios.get('/api/catalog/sites'),
                     axios.get('/api/catalog/positions'),
                     axios.get('/api/settings'),
-                    axios.get('/api/settings/scales'),
                     axios.get('/api/catalog/constants')
                 ]);
                 setSites(resSites.data);
                 setPositions(resPos.data);
                 setSmlmv(Number(resSettings.data.smlmv));
-                setScales(resScales.data);
                 setSsData(resSS.data);
             } catch (e) { toast.error("Error al cargar catálogos base"); }
         };
@@ -83,7 +95,10 @@ const EmployeeCreate: React.FC = () => {
             const payload = {
                 ...data,
                 salaryAmount: parseFloat(data.salaryAmount),
+                healthFundPercentage: parseFloat(data.healthFundPercentage),
+                pensionFundPercentage: parseFloat(data.pensionFundPercentage),
                 startDate: new Date(data.startDate).toISOString(),
+                contractEndDate: data.contractEndDate ? new Date(data.contractEndDate).toISOString() : null,
                 workDays: data.workDays ? data.workDays.join(',') : null,
             };
             await axios.post('/api/employees', payload);
@@ -96,8 +111,9 @@ const EmployeeCreate: React.FC = () => {
 
     const handleNextStep = async () => {
         let fieldsToValidate: any[] = [];
-        if (step === 1) fieldsToValidate = ['firstName', 'lastName', 'identification'];
-        if (step === 2) fieldsToValidate = ['defaultSiteId', 'defaultPositionId', 'contractType', 'startDate', 'epsEntity', 'arlEntity', 'pensionEntity', 'salaryAmount'];
+        if (step === 1) fieldsToValidate = ['firstName', 'lastName', 'identification', 'email', 'phone', 'address'];
+        if (step === 2) fieldsToValidate = ['defaultSiteId', 'defaultPositionId', 'contractType', 'startDate', 'salaryAmount', 'contractNumber', 'payrollGroup', 'costCenter'];
+        if (step === 3) fieldsToValidate = ['epsEntity', 'arlEntity', 'pensionEntity', 'severanceFund', 'compensationFund', 'contributorType', 'riskClass'];
 
         const isStepValid = await trigger(fieldsToValidate as any);
         if (isStepValid) {
@@ -117,25 +133,25 @@ const EmployeeCreate: React.FC = () => {
                 </button>
                 <div className="text-right">
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight">Vinculación de Talento</h1>
-                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mt-1">Paso {step} de 3</p>
+                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mt-1">Paso {step} de 4</p>
                 </div>
             </div>
 
             {/* Step Indicator */}
             <div className="flex items-center justify-center gap-4 mb-12">
-                {[1, 2, 3].map(i => (
+                {[1, 2, 3, 4].map(i => (
                     <React.Fragment key={i}>
                         <div className={`h-10 w-10 rounded-2xl flex items-center justify-center font-black transition-all ${step >= i ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' : 'bg-slate-100 text-slate-400'}`}>
                             {i}
                         </div>
-                        {i < 3 && <div className={`h-1 w-8 rounded-full ${step > i ? 'bg-primary-600' : 'bg-slate-100'}`}></div>}
+                        {i < 4 && <div className={`h-1 w-8 rounded-full ${step > i ? 'bg-primary-600' : 'bg-slate-100'}`}></div>}
                     </React.Fragment>
                 ))}
             </div>
 
             <form
                 onSubmit={(e) => {
-                    if (step < 3) { e.preventDefault(); handleNextStep(); }
+                    if (step < 4) { e.preventDefault(); handleNextStep(); }
                     else handleSubmit(onSubmit)(e);
                 }}
                 className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden"
@@ -149,20 +165,21 @@ const EmployeeCreate: React.FC = () => {
                             </div>
                             <div>
                                 <h3 className="text-xl font-black text-slate-900">Información Personal</h3>
-                                <p className="text-sm text-slate-500 font-medium">Datos básicos de identidad.</p>
+                                <p className="text-sm text-slate-500 font-medium">Datos básicos de identidad y contacto.</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nombres</label><input {...register('firstName', { required: true })} placeholder="Ej: Juan" className={`w-full p-4 bg-slate-50 border ${errors.firstName ? 'border-rose-500' : 'border-slate-200'} rounded-2xl font-bold outline-none`} /></div>
                             <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Apellidos</label><input {...register('lastName', { required: true })} placeholder="Ej: Pérez" className={`w-full p-4 bg-slate-50 border ${errors.lastName ? 'border-rose-500' : 'border-slate-200'} rounded-2xl font-bold outline-none`} /></div>
                             <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identificación</label><input {...register('identification', { required: true })} className={`w-full p-4 bg-slate-50 border ${errors.identification ? 'border-rose-500' : 'border-slate-200'} rounded-2xl font-black outline-none`} /></div>
-                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Teléfono</label><input {...register('phone')} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
-                            <div className="space-y-2 md:col-span-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label><input {...register('email')} type="email" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Teléfono</label><input {...register('phone', { required: true })} className={`w-full p-4 bg-slate-50 border ${errors.phone ? 'border-rose-500' : 'border-slate-200'} rounded-2xl font-bold outline-none`} /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label><input {...register('email', { required: true })} type="email" className={`w-full p-4 bg-slate-50 border ${errors.email ? 'border-rose-500' : 'border-slate-200'} rounded-2xl font-bold outline-none`} /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Dirección</label><input {...register('address', { required: true })} className={`w-full p-4 bg-slate-50 border ${errors.address ? 'border-rose-500' : 'border-slate-200'} rounded-2xl font-bold outline-none`} /></div>
                         </div>
                     </div>
                 )}
 
-                {/* PASO 2: CONTRATO */}
+                {/* PASO 2: LABORAL */}
                 {step === 2 && (
                     <div className="p-10 space-y-8 animate-in slide-in-from-right-4 duration-300">
                         <div className="flex items-center gap-4">
@@ -170,30 +187,68 @@ const EmployeeCreate: React.FC = () => {
                                 <Briefcase size={28} />
                             </div>
                             <div>
-                                <h3 className="text-xl font-black text-slate-900">Contratación y Salario</h3>
-                                <p className="text-sm text-slate-500 font-medium">Configure los términos legales del vínculo.</p>
+                                <h3 className="text-xl font-black text-slate-900">Información Laboral</h3>
+                                <p className="text-sm text-slate-500 font-medium">Configure los términos legales del contrato.</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sede</label><select {...register('defaultSiteId', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
-                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cargo</label><select {...register('defaultPositionId', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{positions.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Salario Mensual</label>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Contrato</label><select {...register('contractType', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{ssData.contracts.map((c: any) => <option key={c} value={c}>{c}</option>)}</select></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Número de Contrato</label><input {...register('contractNumber', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fecha Inicio</label><input type="date" {...register('startDate', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fecha Fin (Opcional)</label><input type="date" {...register('contractEndDate')} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sueldo Base</label>
                                 <div className="flex gap-2">
                                     <input type="number" {...register('salaryAmount', { required: true })} className="flex-1 p-4 bg-slate-50 border border-slate-200 rounded-2xl font-black text-primary-600 outline-none" />
                                     <button type="button" onClick={() => setValue('salaryAmount', smlmv)} className="px-4 bg-emerald-50 text-emerald-700 rounded-xl text-[10px] font-black uppercase">SMLMV</button>
                                 </div>
                             </div>
-                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">EPS</label><select {...register('epsEntity', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{ssData.eps.map((e: any) => <option key={e} value={e}>{e}</option>)}</select></div>
-                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">ARL</label><select {...register('arlEntity', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{ssData.arl.map((a: any) => <option key={a} value={a}>{a}</option>)}</select></div>
-                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Pensión</label><select {...register('pensionEntity', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{ssData.pension.map((p: any) => <option key={p} value={p}>{p}</option>)}</select></div>
-                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fecha Ingreso</label><input type="date" {...register('startDate', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="flex items-center gap-3 pt-6">
+                                <input type="checkbox" {...register('isIntegralSalary')} className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
+                                <label className="text-sm font-bold text-slate-700">¿Es Sueldo Integral?</label>
+                            </div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sede</label><select {...register('defaultSiteId', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cargo</label><select {...register('defaultPositionId', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{positions.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Grupo de Nómina</label><input {...register('payrollGroup', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Centro de Costos</label><input {...register('costCenter', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
                         </div>
                     </div>
                 )}
 
-                {/* PASO 3: TURNOS */}
+                {/* PASO 3: SEGURIDAD SOCIAL */}
                 {step === 3 && (
+                    <div className="p-10 space-y-8 animate-in slide-in-from-right-4 duration-300">
+                        <div className="flex items-center gap-4">
+                            <div className="h-14 w-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 shadow-inner">
+                                <ShieldCheck size={28} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-slate-900">Seguridad Social y Parafiscales</h3>
+                                <p className="text-sm text-slate-500 font-medium">Entidades y aportes obligatorios.</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Cotizante</label><input {...register('contributorType', { required: true })} placeholder="Ej: 01" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subtipo de Cotizante</label><input {...register('contributorSubtype')} placeholder="Ej: 00" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fondo de Salud (EPS)</label><select {...register('epsEntity', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{ssData.eps.map((e: any) => <option key={e} value={e}>{e}</option>)}</select></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">% Aporte Salud (Empleado)</label><input type="number" step="0.01" {...register('healthFundPercentage', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fondo de Pensiones (AFP)</label><select {...register('pensionEntity', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{ssData.pension.map((p: any) => <option key={p} value={p}>{p}</option>)}</select></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">% Aporte Pensión (Empleado)</label><input type="number" step="0.01" {...register('pensionFundPercentage', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fondo de Cesantías</label><input {...register('severanceFund', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Caja de Compensación</label><input {...register('compensationFund', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                            
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">ARL</label><select {...register('arlEntity', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none">{ssData.arl.map((a: any) => <option key={a} value={a}>{a}</option>)}</select></div>
+                            <div className="space-y-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Clase de Riesgo</label><select {...register('riskClass', { required: true })} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none"><option value="I">I (0.522%)</option><option value="II">II (1.044%)</option><option value="III">III (2.436%)</option><option value="IV">IV (4.350%)</option><option value="V">V (6.960%)</option></select></div>
+                            <div className="space-y-2 md:col-span-2"><label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Código CIIU</label><input {...register('ciiuCode')} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none" /></div>
+                        </div>
+                    </div>
+                )}
+
+                {/* PASO 4: JORNADA */}
+                {step === 4 && (
                     <div className="p-10 space-y-8 animate-in slide-in-from-right-4 duration-300">
                         <div className="flex items-center gap-4">
                             <div className="h-14 w-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 shadow-inner">
@@ -233,7 +288,7 @@ const EmployeeCreate: React.FC = () => {
 
                     <div className="flex gap-4">
                         <button type="button" onClick={() => router.push('/turnos/employees')} className="px-8 py-4 text-slate-400 font-bold uppercase text-xs tracking-widest">Cancelar</button>
-                        {step < 3 ? (
+                        {step < 4 ? (
                             <button type="submit" className="px-10 py-4 bg-primary-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl flex items-center gap-2 hover:bg-primary-700 transition-all">
                                 Siguiente <ChevronRight size={18} />
                             </button>

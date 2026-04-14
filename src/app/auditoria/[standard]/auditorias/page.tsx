@@ -8,7 +8,7 @@ import {
     FileText, ShieldCheck, FileCheck, Activity, ChevronDown, Users, Loader2,
     Trash2
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface AuditStandard { id: number; code: string; name: string; color: string; }
 interface TeamMember { auditor_id: number; name: string; role_in_audit: string; }

@@ -810,6 +810,11 @@ class ISOAuditService {
         return this.getAuditById(id);
     }
 
+    deleteAudit(id: number): boolean {
+        const result = this.db.prepare('DELETE FROM audits WHERE id = ?').run(id);
+        return result.changes > 0;
+    }
+
     // ===================================================
     // FINDINGS
     // ===================================================

@@ -60,3 +60,26 @@ export async function PUT(request: Request) {
         return NextResponse.json({ error: 'Failed to update audit' }, { status: 500 });
     }
 }
+
+export async function DELETE(request: Request) {
+    try {
+        const dataDir = await getCompanyDataDir();
+        const isoAuditService = getIsoAuditService(dataDir);
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ error: 'Audit ID is required' }, { status: 400 });
+        }
+
+        const success = isoAuditService.deleteAudit(parseInt(id));
+        if (!success) {
+            return NextResponse.json({ error: 'Audit not found or could not be deleted' }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting audit:', error);
+        return NextResponse.json({ error: 'Failed to delete audit' }, { status: 500 });
+    }
+}

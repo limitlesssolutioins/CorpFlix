@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     ArrowLeft, Plus, Calendar, Search, Clock, CheckCircle2, ClipboardList,
     FileText, ShieldCheck, FileCheck, Activity, ChevronDown, Users, Loader2,
+    Trash2
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 interface AuditStandard { id: number; code: string; name: string; color: string; }
 interface TeamMember { auditor_id: number; name: string; role_in_audit: string; }
@@ -24,6 +26,7 @@ const STATUS_FLOW: Record<string, { next: string; label: string; nextLabel: stri
 
 export default function StandardAuditoriasPage() {
     const params = useParams();
+    const router = useRouter();
     const code = (params.standard as string).toUpperCase();
 
     const [standard, setStandard] = useState<AuditStandard | null>(null);
@@ -84,8 +87,32 @@ export default function StandardAuditoriasPage() {
                 body: JSON.stringify({ id: audit.id, status: conf.next }),
             });
             setAudits(prev => prev.map(a => a.id === audit.id ? { ...a, status: conf.next } : a));
-        } catch (e) { console.error(e); }
+            toast.success(`Auditoría movida a ${STATUS_FLOW[conf.next].label}`);
+        } catch (e) { 
+            console.error(e); 
+            toast.error('Error al actualizar el estado');
+        }
         finally { setUpdatingId(null); }
+    };
+
+    const deleteAudit = async (id: number, code: string) => {
+        if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente la auditoría ${code}? Esta acción no se puede deshacer.`)) return;
+        setUpdatingId(id);
+        const tid = toast.loading('Eliminando auditoría...');
+        try {
+            const res = await fetch(`/api/auditoria/audits?id=${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                setAudits(prev => prev.filter(a => a.id !== id));
+                toast.success('Auditoría eliminada', { id: tid });
+            } else {
+                toast.error('Error al eliminar', { id: tid });
+            }
+        } catch (e) {
+            console.error(e);
+            toast.error('Error al eliminar', { id: tid });
+        } finally {
+            setUpdatingId(null);
+        }
     };
 
     const formatDate = (d: string) => new Date(d).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -103,8 +130,8 @@ export default function StandardAuditoriasPage() {
         <div className="max-w-7xl mx-auto space-y-5">
             {/* Back + header */}
             <div>
-                <Link href={standardPath} className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-semibold transition-colors text-sm mb-4">
-                    <ArrowLeft size={16} /> Volver a {standard?.name || code}
+                <Link href="/auditoria" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 font-semibold transition-colors text-sm mb-4">
+                    <ArrowLeft size={16} /> Volver a todas las normas
                 </Link>
                 <div className="flex items-center justify-between">
                     <div>
@@ -183,14 +210,14 @@ export default function StandardAuditoriasPage() {
                         const isUpdating = updatingId === audit.id;
 
                         return (
-                            <div key={audit.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                            <div key={audit.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow relative">
                                 {/* Top accent line per status */}
                                 <div className="h-0.5" style={{
                                     backgroundColor: audit.status === 'PLANNED' ? '#3b82f6' : audit.status === 'IN_PROGRESS' ? '#f59e0b' : '#22c55e'
                                 }} />
 
                                 <div className="p-5">
-                                    {/* Row 1: Status + code + advance button */}
+                                    {/* Row 1: Status + code + advance button + delete */}
                                     <div className="flex items-start justify-between gap-3 mb-4">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>
@@ -199,18 +226,29 @@ export default function StandardAuditoriasPage() {
                                             <span className="text-xs font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">{audit.audit_code}</span>
                                             <span className="text-xs text-slate-500">{audit.audit_type_name || 'Auditoría Interna'}</span>
                                         </div>
-                                        {/* Advance status button */}
-                                        {st.next && (
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            {/* Advance status button */}
+                                            {st.next && (
+                                                <button
+                                                    onClick={() => advanceStatus(audit)}
+                                                    disabled={isUpdating}
+                                                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 border-dashed text-xs font-bold transition-all hover:bg-slate-50 disabled:opacity-50"
+                                                    style={{ borderColor: accentColor, color: accentColor }}
+                                                >
+                                                    {isUpdating ? <Loader2 size={12} className="animate-spin" /> : <ChevronDown size={12} />}
+                                                    {st.nextLabel}
+                                                </button>
+                                            )}
+                                            {/* Delete audit button */}
                                             <button
-                                                onClick={() => advanceStatus(audit)}
+                                                onClick={() => deleteAudit(audit.id, audit.audit_code)}
                                                 disabled={isUpdating}
-                                                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 border-dashed text-xs font-bold transition-all hover:bg-slate-50 disabled:opacity-50"
-                                                style={{ borderColor: accentColor, color: accentColor }}
+                                                title="Eliminar auditoría"
+                                                className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                                             >
-                                                {isUpdating ? <Loader2 size={12} className="animate-spin" /> : <ChevronDown size={12} />}
-                                                {st.nextLabel}
+                                                {isUpdating ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={16} />}
                                             </button>
-                                        )}
+                                        </div>
                                     </div>
 
                                     {/* Row 2: Details */}
@@ -259,7 +297,7 @@ export default function StandardAuditoriasPage() {
                                         </Link>
                                         <Link
                                             href={`${standardPath}/certificado?audit_id=${audit.id}`}
-                                            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors"
+                                            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition-colors"        
                                         >
                                             <ShieldCheck size={13} /> Certificado
                                         </Link>

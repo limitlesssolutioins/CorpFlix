@@ -619,18 +619,35 @@ class ISOAuditService {
     }
 
     private ensureAuditCriteria() {
-        const hasCriteria = this.db.prepare("SELECT id FROM requirement_variables LIMIT 1").get();
-        if (hasCriteria) return;
+        // Check if ISO 14001 criteria are already seeded (using 4.1 as sentinel)
+        const hasISO14001Criteria = this.db.prepare(`
+            SELECT rv.id FROM requirement_variables rv
+            INNER JOIN iso_requirements ir ON rv.requirement_id = ir.id
+            INNER JOIN iso_chapters ic ON ir.chapter_id = ic.id
+            INNER JOIN audit_standards as_ ON ic.standard_id = as_.id
+            WHERE as_.code = 'ISO14001' AND ir.requirement_code = '4.1'
+            LIMIT 1
+        `).get();
+
+        if (hasISO14001Criteria) return;
 
         console.log('🔄 Seeding predefined audit criteria (variables)...');
         try {
             this.db.exec('BEGIN TRANSACTION');
-            const schema = fs.readFileSync(SCHEMA_PATH, 'utf-8');
+            // Use criteria_seed.sql which contains all criteria (ISO 9001 and now 14001)
+            const criteriaSeedPath = path.join(process.cwd(), 'src/data/criteria_seed.sql');
+            let content = '';
+            if (fs.existsSync(criteriaSeedPath)) {
+                content = fs.readFileSync(criteriaSeedPath, 'utf-8');
+            } else {
+                content = fs.readFileSync(SCHEMA_PATH, 'utf-8');
+            }
+
             const startMarker = '-- VARIABLES DE REQUISITOS (CRITERIOS DE EVALUACIÓN)';
-            const startIndex = schema.indexOf(startMarker);
+            const startIndex = content.indexOf(startMarker);
             
             if (startIndex !== -1) {
-                const insertSection = schema.substring(startIndex);
+                const insertSection = content.substring(startIndex);
                 const insertStatements = insertSection.match(/INSERT OR IGNORE INTO[\s\S]+?;/g);
                 if (insertStatements) {
                     for (const stmt of insertStatements) {

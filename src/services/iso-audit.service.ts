@@ -645,22 +645,21 @@ class ISOAuditService {
 
             const startMarker = '-- VARIABLES DE REQUISITOS (CRITERIOS DE EVALUACIÓN)';
             const startIndex = content.indexOf(startMarker);
-            
+
             if (startIndex !== -1) {
                 const insertSection = content.substring(startIndex);
-                const insertStatements = insertSection.match(/INSERT OR IGNORE INTO[\s\S]+?;/g);
+                const insertStatements = insertSection.match(/INSERT OR IGNORE INTO[\s\S]*?\)\);/g);
                 if (insertStatements) {
                     for (const stmt of insertStatements) {
                         try {
-                            this.db.exec(stmt);
+                            this.db.prepare(stmt).run();
                         } catch (e) {
                             // Ignore individual insert errors
                         }
                     }
                 }
             }
-            this.db.exec('COMMIT');
-            console.log('✅ Audit criteria seeded successfully');
+            this.db.exec('COMMIT');            console.log('✅ Audit criteria seeded successfully');
         } catch (error) {
             this.db.exec('ROLLBACK');
             console.error('❌ Failed to seed audit criteria:', error);

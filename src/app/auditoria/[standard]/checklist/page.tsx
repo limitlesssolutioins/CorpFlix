@@ -868,21 +868,9 @@ export default function ChecklistPage() {
                                                                                 })}
                                                                             </div>
                                                                         ) : (
-                                                                            <div className="flex items-center gap-3 p-3 bg-violet-50 border border-violet-200 rounded-xl">
-                                                                                <p className="text-xs text-violet-700 flex-1">Sin criterios definidos. Genera preguntas de auditoría con IA para este requisito.</p>
-                                                                                <button onClick={() => generateVariables(item)}
-                                                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white rounded-lg text-xs font-bold hover:bg-violet-700 transition-colors shrink-0">
-                                                                                    <Sparkles size={12} /> Generar
-                                                                                </button>
+                                                                            <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                                                                                <p className="text-xs text-slate-500 flex-1">No hay criterios de evaluación definidos para este requisito.</p>
                                                                             </div>
-                                                                        )}
-
-                                                                        {/* Regenerate button */}
-                                                                        {hasVars && !isLoadingV && !isGeneratingV && !isEditingV && (
-                                                                            <button onClick={() => generateVariables(item)}
-                                                                                className="mt-2 flex items-center gap-1 text-xs text-violet-500 hover:text-violet-700 transition-colors">
-                                                                                <Sparkles size={11} /> Regenerar criterios
-                                                                            </button>
                                                                         )}
                                                                     </div>
 

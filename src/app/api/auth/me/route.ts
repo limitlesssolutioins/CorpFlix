@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const user: any = db.prepare('SELECT id, email, company_id, plan_id, status FROM users WHERE id = ?').get(session.userId);
+    const user: any = await db.prepare('SELECT id, email, company_id, plan_id, status FROM users WHERE id = ?').get(session.userId);
 
     if (!user) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });

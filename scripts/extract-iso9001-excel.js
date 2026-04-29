@@ -2,11 +2,9 @@ const xlsx = require('xlsx');
 const fs = require('fs');
 
 const wb = xlsx.readFile('temp/Diagnostico y auditoria Calidad.xlsx');
-// Relevant sheets
 const sheets = ['4 CONTEXTO', '5 LIDERAZGO', '6 PLANIFICACIÓN', '7 SOPORTE', '8 OPERACIÓN', '9 EVALUACIÓN DESEMPEÑO', '10 MEJORA'];
 
 const results = {};
-const log = [];
 
 sheets.forEach(sheetName => {
     const sheet = wb.Sheets[sheetName];
@@ -14,6 +12,7 @@ sheets.forEach(sheetName => {
     const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
 
     let currentReq = null;
+    let pendingPrefix = '';
 
     for (let i = 0; i < data.length; i++) {
         const row = data[i];
@@ -21,47 +20,79 @@ sheets.forEach(sheetName => {
         const val = String(row[0] || '').trim();
         if (!val) continue;
 
-        // Skip standard headers
-        if (val.match(/^\d+\s*[A-ZÁÉÍÓÚÑ\s]{10,}$/)) continue; // e.g. "4.CONTEXTO DE LA ORGANIZACIÓN"
-        
-        // Match requirement headers: "4.1 COMPRENSIÓN..." or "4.4.1 La organización..."
-        const reqMatch = val.match(/^(\d+\.\d+(?:\.\d+)?)\s+(.+)$/);
-        
-        if (reqMatch) {
-            currentReq = reqMatch[1];
-            if (!results[currentReq]) results[currentReq] = [];
+        // Filter empty or explicitly ignorable cells before splitting
+        if (['NUMERAL', 'CUMPLIMIENTO', 'QUÉ TIENE?', 'QUE NOS FALTA', 'NO APLICA', 'ACCIONES', 'OBSERVACIONES'].includes(val)) continue;
+
+        // Split cell by newlines because sometimes multiple requirements or a requirement + criteria are in the same cell
+        const lines = val.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+
+        for (let j = 0; j < lines.length; j++) {
+            const line = lines[j];
+
+            // --- FILTER NOISE ---
+            if (line.match(/^\d+\.\s*[A-ZÁÉÍÓÚÑ\s]{10,}$/)) continue; // e.g. "4.CONTEXTO DE LA ORGANIZACIÓN"
+            if (line.match(/^\d+\s+[A-ZÁÉÍÓÚÑ\s]+$/)) continue; // e.g. "5 LIDERAZGO"
+            if (line.length < 10 && !line.match(/^\d+\.\d+/)) continue;
+
+            // --- DETECT REQUIREMENTS ---
+            const reqMatch = line.match(/^(\d+\.\d+(?:\.\d+)?(?:\.\d+)?)\s*\.?\s*(.+)$/);
+            const numOnlyMatch = line.match(/^(\d+\.\d+(?:\.\d+)?(?:\.\d+)?)\.?$/);
             
-            // If the title contains significant text (more than just a title), it might be a criterion itself
-            const title = reqMatch[2];
-            if (title.length > 50 && !title.includes('COMPRENSIÓN') && !title.includes('DETERMINACIÓN')) {
-                 results[currentReq].push(title);
+            let code = null;
+            let title = null;
+
+            if (reqMatch) {
+                code = reqMatch[1];
+                title = reqMatch[2];
+            } else if (numOnlyMatch) {
+                code = numOnlyMatch[1];
             }
-            continue;
-        }
 
-        // Sometimes the requirement is just the number
-        const reqMatch2 = val.match(/^(\d+\.\d+(?:\.\d+)?)$/);
-        if (reqMatch2) {
-            currentReq = reqMatch2[1];
-            if (!results[currentReq]) results[currentReq] = [];
-            continue;
-        }
+            if (code) {
+                currentReq = code;
+                if (!results[currentReq]) results[currentReq] = [];
+                pendingPrefix = ''; // reset pending prefix on new requirement
+                
+                if (title) {
+                    if (title.match(/debe\s*(\w+)?\s*:?$/i) || title.endsWith(':')) {
+                        pendingPrefix = title.trim() + ' ';
+                    } else if (title.length > 80 && !title.match(/^[A-ZÁÉÍÓÚÑ\s]+$/)) {
+                        results[currentReq].push(title.trim());
+                    }
+                }
+                continue;
+            }
 
-        if (currentReq) {
-            // It's a criterion
-            // Filter out noise
-            if (val.length < 5) continue;
-            if (val === 'NUMERAL' || val === 'CUMPLIMIENTO' || val.includes('NO APLICA') || val === 'QUÉ TIENE?' || val === 'QUE NOS FALTA') continue;
-            if (val === 'La organización debe determinar:' || val.includes('debe considerar:')) continue;
-            
-            // Clean up bullets and sub-numbering
-            const cleanVal = val.replace(/^[\-Ø•\*]\s*/, '')
-                                .replace(/^[a-z]\)\s*/, '')
-                                .replace(/^\d+\)\s*/, '')
-                                .trim();
+            // --- DETECT CRITERIA ---
+            if (currentReq) {
+                let text = line;
+                
+                if (text.match(/debe\s*(\w+)?\s*:?$/i) || text.match(/:\s*$/)) {
+                    pendingPrefix = text.trim() + ' ';
+                    continue;
+                }
 
-            if (cleanVal && !results[currentReq].includes(cleanVal)) {
-                results[currentReq].push(cleanVal);
+                let isBullet = text.match(/^\s*[\-Ø•\*»a-z]\s*[\)\.]/i) || text.match(/^\s*[\-Ø•\*»]/);
+                
+                text = text.replace(/^\s*[\-Ø•\*»]\s*/, '')
+                           .replace(/^\s*[a-z]\)\s*/, '')
+                           .replace(/^\s*[a-z]\.\s*/, '')
+                           .replace(/^\s*\d+\)\s*/, '')
+                           .trim();
+
+                if (text.length > 5) {
+                    if (pendingPrefix && (isBullet || text.charAt(0) === text.charAt(0).toLowerCase())) {
+                        text = pendingPrefix + text.charAt(0).toLowerCase() + text.slice(1);
+                    } else if (text.charAt(0) === text.charAt(0).toUpperCase() && text.length > 30) {
+                         // Full sentence
+                    } else if (pendingPrefix) {
+                         text = pendingPrefix + text.charAt(0).toLowerCase() + text.slice(1);
+                    }
+
+                    if (!results[currentReq].includes(text)) {
+                        results[currentReq].push(text);
+                    }
+                }
             }
         }
     }
@@ -86,4 +117,4 @@ Object.entries(results).forEach(([code, criteria]) => {
 });
 
 fs.writeFileSync('src/data/iso9001_seed.sql', sql);
-console.log('Extracted ISO 9001 criteria to src/data/iso9001_seed.sql');
+console.log('Total ISO 9001 criteria extracted:', Object.values(results).reduce((acc, curr) => acc + curr.length, 0));

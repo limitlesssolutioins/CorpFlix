@@ -152,10 +152,14 @@ export default function ChecklistPage() {
         const key = `${reqId}-${varId}`;
         const existing = varAnswers.get(key) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '', evidence: '' };
         
-        // If answer is 'si' or 'na', we usually don't want NC text, but user might want to keep it.
-        // However, the prompt specifically says "si seleccionas nc no puedes seleccionar op y viceversa"
-        // which applies to the NC/OP toggle buttons.
-        const newData = { ...existing, answer };
+        let newData = { ...existing, answer };
+        
+        if (answer === 'si' || answer === 'na') {
+            newData.nc_text = '';
+        }
+        if (answer === 'no' || answer === 'na') {
+            newData.op_text = '';
+        }
 
         const newAnswers = new Map(varAnswers);
         newAnswers.set(key, newData);

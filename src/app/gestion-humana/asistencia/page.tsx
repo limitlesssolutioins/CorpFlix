@@ -1,144 +1,157 @@
-
 'use client';
 
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { 
+    Clock, MapPin, User, Search, Filter, 
+    ArrowRight, CheckCircle2, AlertCircle, Calendar
+} from 'lucide-react';
+import moment from 'moment';
+import 'moment/locale/es';
 import { toast } from 'sonner';
 
+import { getEmployeesAction } from '@/actions/employee';
+import { clockInAction, clockOutAction, getActiveAttendanceLogAction } from '@/actions/attendance';
+
+moment.locale('es');
+
 export default function AsistenciaPage() {
-    const [employeeId, setEmployeeId] = useState('');
-    const [shiftId, setShiftId] = useState('');
-    const [checkIn, setCheckIn] = useState('');
-    const [checkOut, setCheckOut] = useState('');
-    const [notes, setNotes] = useState('');
+    const [employees, setEmployees] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeLogs, setActiveLogs] = useState<Map<string, any>>(new Map());
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        // Here you would typically fetch employee and shift data based on IDs.
-        // For now, we'll just simulate a submission.
-        console.log({
-            employeeId,
-            shiftId,
-            checkIn,
-            checkOut,
-            notes,
-        });
-
-        // Simulate API call
+    const fetchData = async () => {
+        setLoading(true);
         try {
-            const response = await fetch('/api/gestion/attendance', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    employeeId,
-                    shiftId,
-                    checkIn: checkIn ? new Date(checkIn).toISOString() : null,
-                    checkOut: checkOut ? new Date(checkOut).toISOString() : null,
-                    notes,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al registrar asistencia: ${response.statusText}`);
-            }
-
-            toast.success('Asistencia registrada exitosamente!');
-            // Clear form
-            setEmployeeId('');
-            setShiftId('');
-            setCheckIn('');
-            setCheckOut('');
-            setNotes('');
-        } catch (error: any) {
-            toast.error(error.message || 'Error al registrar asistencia');
+            const data = await getEmployeesAction();
+            setEmployees(data);
+            
+            // Check active logs for each employee
+            const logsMap = new Map();
+            await Promise.all(data.map(async (emp: any) => {
+                const log = await getActiveAttendanceLogAction(emp.id);
+                if (log) logsMap.set(emp.id, log);
+            }));
+            setActiveLogs(logsMap);
+        } catch (error) {
+            toast.error("Error al cargar datos de asistencia");
+        } finally {
+            setLoading(false);
         }
     };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const handleQuickClock = async (emp: any) => {
+        const active = activeLogs.get(emp.id);
+        try {
+            if (active) {
+                await clockOutAction(emp.id, active.id);
+                toast.success(`Salida registrada para ${emp.firstName}`);
+            } else {
+                await clockInAction(emp.id, undefined, undefined, 'MANUAL', 'Registro rápido desde panel central');
+                toast.success(`Entrada registrada para ${emp.firstName}`);
+            }
+            fetchData();
+        } catch (e) {
+            toast.error("Error al procesar asistencia");
+        }
+    };
+
+    const filtered = employees.filter(e => 
+        `${e.firstName} ${e.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (loading) return <div className="p-20 text-center font-black text-slate-400 animate-pulse">Sincronizando Reloj Biométrico...</div>;
+
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Registro de Asistencia</h1>
-
-            <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                    <div>
-                        <label htmlFor="employeeId" className="block text-slate-700 text-sm font-bold mb-2">
-                            ID Empleado:
-                        </label>
-                        <input
-                            type="text"
-                            id="employeeId"
-                            value={employeeId}
-                            onChange={(e) => setEmployeeId(e.target.value)}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="ID del Empleado"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="shiftId" className="block text-slate-700 text-sm font-bold mb-2">
-                            ID Turno:
-                        </label>
-                        <input
-                            type="text"
-                            id="shiftId"
-                            value={shiftId}
-                            onChange={(e) => setShiftId(e.target.value)}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
-                            placeholder="ID del Turno (Opcional)"
-                        />
-                    </div>
+        <div className="max-w-6xl mx-auto space-y-8 pb-20">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Control de Asistencia</h1>
+                    <p className="text-slate-500 font-medium italic">Monitoreo de entradas, salidas y tiempo laborado en tiempo real.</p>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                    <div>
-                        <label htmlFor="checkIn" className="block text-slate-700 text-sm font-bold mb-2">
-                            Hora de Entrada (Check-in):
-                        </label>
-                        <input
-                            type="datetime-local"
-                            id="checkIn"
-                            value={checkIn}
-                            onChange={(e) => setCheckIn(e.target.value)}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="checkOut" className="block text-slate-700 text-sm font-bold mb-2">
-                            Hora de Salida (Check-out):
-                        </label>
-                        <input
-                            type="datetime-local"
-                            id="checkOut"
-                            value={checkOut}
-                            onChange={(e) => setCheckOut(e.target.value)}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
-                        />
-                    </div>
+                <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
+                    <button className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Hoy</button>
+                    <button className="px-4 py-2 text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-600 transition-colors">Reportes</button>
                 </div>
+            </div>
 
-                <div className="mb-6">
-                    <label htmlFor="notes" className="block text-slate-700 text-sm font-bold mb-2">
-                        Notas:
-                    </label>
-                    <textarea
-                        id="notes"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        rows={3}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline"
-                        placeholder="Cualquier observación adicional (ej. Se quedó 2h extra)"
-                    ></textarea>
+            {/* BARRA DE BÚSQUEDA */}
+            <div className="relative">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
+                <input 
+                    type="text" 
+                    placeholder="Buscar colaborador por nombre..." 
+                    className="w-full pl-16 pr-6 py-5 bg-white border border-slate-200 rounded-[2rem] shadow-sm focus:ring-4 focus:ring-primary-500/10 outline-none font-bold text-slate-700"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+
+            {/* GRID DE COLABORADORES */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((emp) => {
+                    const active = activeLogs.get(emp.id);
+                    return (
+                        <div key={emp.id} className={`bg-white p-6 rounded-[2.5rem] border-2 transition-all group ${active ? 'border-emerald-100 shadow-emerald-500/10 shadow-xl' : 'border-slate-100 hover:border-slate-200 shadow-sm'}`}>
+                            <div className="flex items-start justify-between mb-6">
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg ${active ? 'bg-emerald-500 text-white animate-pulse' : 'bg-slate-100 text-slate-400'}`}>
+                                        {emp.firstName[0]}{emp.lastName[0]}
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-900">{emp.firstName} {emp.lastName}</h4>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{emp.positionName || 'Cargo'}</p>
+                                    </div>
+                                </div>
+                                {active ? (
+                                    <span className="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[8px] font-black uppercase tracking-widest">En Turno</span>
+                                ) : (
+                                    <span className="px-2 py-1 bg-slate-50 text-slate-400 rounded-lg text-[8px] font-black uppercase tracking-widest">Fuera</span>
+                                )}
+                            </div>
+
+                            <div className="space-y-4 mb-8">
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="font-bold text-slate-400 uppercase tracking-widest">Última Entrada</span>
+                                    <span className="font-black text-slate-700">{active ? moment(active.clockIn).format('HH:mm') : '--:--'}</span>
+                                </div>
+                                <div className="h-1 bg-slate-50 rounded-full overflow-hidden">
+                                    {active && <div className="h-full bg-emerald-500 w-1/2 animate-shimmer"></div>}
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={() => handleQuickClock(emp)}
+                                className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${active ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20'}`}
+                            >
+                                <Clock size={16} /> {active ? 'Registrar Salida' : 'Registrar Entrada'}
+                            </button>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* ESTADÍSTICAS RÁPIDAS */}
+            <div className="bg-slate-900 rounded-[3rem] p-10 text-white flex flex-wrap gap-12 items-center justify-center shadow-2xl">
+                <div className="text-center">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Colaboradores</p>
+                    <h4 className="text-4xl font-black">{employees.length}</h4>
                 </div>
-
-                <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition-colors"
-                >
-                    Registrar Asistencia
-                </button>
-            </form>
+                <div className="w-px h-12 bg-slate-800"></div>
+                <div className="text-center">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">En Turno Hoy</p>
+                    <h4 className="text-4xl font-black text-emerald-400">{activeLogs.size}</h4>
+                </div>
+                <div className="w-px h-12 bg-slate-800"></div>
+                <div className="text-center">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Retrasos</p>
+                    <h4 className="text-4xl font-black text-amber-400">0</h4>
+                </div>
+            </div>
         </div>
     );
 }

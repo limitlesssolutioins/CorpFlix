@@ -2,442 +2,478 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  DollarSign, 
-  Briefcase, 
-  FileBadge,
-  AlertCircle,
-  CheckCircle2,
-  ChevronRight,
-  CreditCard,
-  Download,
-  Plus,
-  FileText,
-  X,
-  Stethoscope,
-  TrendingUp,
-  History,
-  ShieldAlert
+  ArrowLeft, Calendar, Clock, DollarSign, Briefcase, FileBadge,
+  AlertCircle, CheckCircle2, ChevronRight, CreditCard, Download,
+  Plus, FileText, X, Stethoscope, TrendingUp, History, ShieldAlert,
+  MapPin, Phone, Mail, Home, Building, Landmark, User, HeartPulse,
+  Award, AlertTriangle, Search
 } from 'lucide-react';
 import moment from 'moment';
+import 'moment/locale/es';
+
+import { 
+    getEmployeeByIdAction, 
+    getEmployeeSalaryHistoryAction,
+    getEmployeePositionHistoryAction,
+    getEmployeeDisciplinaryRecordsAction,
+    getEmployeePerformanceEvaluationsAction
+} from '@/actions/employee';
+import { getEmployeeAttendanceLogsAction, getActiveAttendanceLogAction, clockInAction, clockOutAction } from '@/actions/attendance';
+
+moment.locale('es');
 
 const EmployeeProfile: React.FC = () => {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
   
-  // Estados de Datos
-  const [data, setData] = useState<any>(null);
-  const [docs, setDocs] = useState<any[]>([]);
-  const [absences, setAbsences] = useState<any[]>([]);
-  const [absenceTypes, setAbsenceTypes] = useState<any[]>([]);
+  // Datos
+  const [employee, setEmployee] = useState<any>(null);
+  const [salaryHistory, setSalaryHistory] = useState<any[]>([]);
+  const [positionHistory, setPositionHistory] = useState<any[]>([]);
+  const [disciplinary, setDisciplinary] = useState<any[]>([]);
+  const [evaluations, setEvaluations] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [activeLog, setActiveLog] = useState<any>(null);
   
-  // Estados de UI
+  // UI
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'absences' | 'shifts' | 'payroll' | 'docs'>('overview');
-  const [showAbsenceModal, setShowAbsenceModal] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'labor' | 'history' | 'attendance' | 'docs'>('overview');
 
-  // Formulario Novedad
-  const [newAbsence, setNewAbsence] = useState({
-    startDate: '',
-    endDate: '',
-    absenceTypeCode: '',
-    diagnosisCode: ''
-  });
-
-  const fetchAllData = async () => {
+  const fetchData = async () => {
     try {
-      const month = new Date().getMonth() + 1;
-      const year = new Date().getFullYear();
-      
-      // 1. Datos de Nómina y Base
-      const res = await axios.get(`http://localhost:3000/payroll/detail/${id}?month=${month}&year=${year}`);
-      setData(res.data);
-      
-      // 2. Documentos
-      axios.get(`http://localhost:3000/employees/${id}/documents`)
-        .then(r => setDocs(r.data)).catch(e => console.error("Error docs"));
-        
-      // 3. Novedades (Absences)
-      axios.get(`http://localhost:3000/absences`)
-        .then(r => setAbsences(r.data.filter((a:any) => a.employeeId === id))).catch(e => console.error("Error abs"));
-        
-      // 4. Catálogos
-      axios.get(`http://localhost:3000/catalogs/absence-types`)
-        .then(r => setAbsenceTypes(r.data)).catch(e => console.error("Error types"));
+      const emp = await getEmployeeByIdAction(id);
+      if (!emp) {
+        toast.error("Colaborador no encontrado");
+        return;
+      }
+      setEmployee(emp);
+
+      // Fetch parallel history
+      const [salaries, positions, disc, evals, logs, currentLog] = await Promise.all([
+        getEmployeeSalaryHistoryAction(id),
+        getEmployeePositionHistoryAction(id),
+        getEmployeeDisciplinaryRecordsAction(id),
+        getEmployeePerformanceEvaluationsAction(id),
+        getEmployeeAttendanceLogsAction(id),
+        getActiveAttendanceLogAction(id)
+      ]);
+
+      setSalaryHistory(salaries);
+      setPositionHistory(positions);
+      setDisciplinary(disc);
+      setEvaluations(evals);
+      setAttendance(logs);
+      setActiveLog(currentLog);
 
     } catch (error) {
-      console.error("Error crítico:", error);
-      toast.error("Error al cargar el perfil principal");
+      console.error("Error fetching profile:", error);
+      toast.error("Error al sincronizar el expediente");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (id) fetchAllData();
+    if (id) fetchData();
   }, [id]);
 
-  const handleReportAbsence = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const toastId = toast.loading("Registrando novedad legal...");
+  const handleClockToggle = async () => {
     try {
-        await axios.post('http://localhost:3000/absences', {
-            ...newAbsence,
-            employeeId: id
-        });
-        toast.success("Novedad registrada. Los turnos en conflicto han sido marcados.", { id: toastId });
-        setShowAbsenceModal(false);
-        fetchAllData();
-    } catch (error) {
-        toast.error("Error al registrar la novedad", { id: toastId });
+        if (activeLog) {
+            await clockOutAction(id, activeLog.id);
+            toast.success("Salida registrada");
+        } else {
+            // Get location if possible
+            let lat, lon;
+            try {
+                const pos = await new Promise<GeolocationPosition>((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+                lat = pos.coords.latitude;
+                lon = pos.coords.longitude;
+            } catch (e) {
+                console.warn("Location denied");
+            }
+            await clockInAction(id, lat, lon, lat ? 'GPS' : 'MANUAL');
+            toast.success("Entrada registrada");
+        }
+        fetchData();
+    } catch (e) {
+        toast.error("Error al registrar asistencia");
     }
-  };
-
-  const handleUploadDoc = async () => {
-    const title = prompt("Título del documento:");
-    if (!title) return;
-    setIsUploading(true);
-    try {
-        await axios.post(`http://localhost:3000/employees/${id}/documents`, {
-            title,
-            category: 'General',
-            fileUrl: 'https://placeholder.com/doc.pdf'
-        });
-        toast.success("Documento asociado");
-        fetchAllData();
-    } catch (e) { toast.error("Error"); } finally { setIsUploading(false); }
   };
 
   const formatCurrency = (val: number) => 
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
 
-  if (loading) return <div className="p-12 text-center text-slate-500 font-bold animate-pulse">Sincronizando Perfil 360...</div>;
-  if (!data) return <div className="p-12 text-center text-rose-500 font-bold">No se encontró el colaborador.</div>;
-
-  const { employee, summary, shifts } = data;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-slate-500 font-bold">Sincronizando Expediente 360...</p>
+    </div>
+  );
+  
+  if (!employee) return <div className="p-12 text-center text-rose-500 font-bold">No se encontró el colaborador.</div>;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
       
-      {/* HEADER DE ACCIONES */}
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <button onClick={() => router.push('/recursos-humanos/employees')} className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold transition-colors">
+        <button onClick={() => router.push('/gestion-humana/employees')} className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold transition-colors">
           <ArrowLeft size={20} /> Directorio de Personal
         </button>
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setShowAbsenceModal(true)}
-            className="px-6 py-2.5 bg-rose-600 text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-lg shadow-rose-500/20 hover:bg-rose-700 transition-all flex items-center gap-2"
+            onClick={handleClockToggle}
+            className={`px-6 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest shadow-lg transition-all flex items-center gap-2 ${activeLog ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-500/20'}`}
           >
-            <Stethoscope size={18} /> Reportar Novedad
+            <Clock size={18} /> {activeLog ? 'Registrar Salida' : 'Registrar Entrada'}
           </button>
           <button 
-            onClick={() => router.push(`/recursos-humanos/employees/edit/${id}`)}
+            onClick={() => router.push(`/gestion-humana/employees/edit/${id}`)}
             className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
           >
-            Editar Perfil
+            Editar Expediente
           </button>
         </div>
       </div>
 
-      {/* TARJETA PRINCIPAL (HERO) */}
+      {/* HERO CARD */}
       <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-        <div className="h-40 bg-slate-900 relative">
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+        <div className="h-44 bg-gradient-to-r from-slate-900 to-slate-800 relative">
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
             <div className="absolute -bottom-16 left-10 flex items-end gap-8">
                 <div className="h-32 w-32 bg-white rounded-[2rem] p-2 shadow-2xl">
                     <div className="h-full w-full bg-primary-100 rounded-[1.5rem] flex items-center justify-center text-4xl font-black text-primary-600">
-                        {employee.name.split(' ').map((n:any) => n[0]).join('')}
+                        {employee.firstName[0]}{employee.lastName[0]}
                     </div>
                 </div>
                 <div className="mb-4">
-                    <h1 className="text-3xl font-black text-white tracking-tight">{employee.name}</h1>
-                    <p className="text-primary-400 font-bold uppercase text-xs tracking-[0.2em] mt-1">{employee.position}</p>
+                    <h1 className="text-3xl font-black text-white tracking-tight">{employee.firstName} {employee.lastName}</h1>
+                    <div className="flex items-center gap-2 mt-1">
+                        <p className="text-primary-400 font-bold uppercase text-xs tracking-[0.2em]">{employee.positionName || 'Cargo no asignado'}</p>
+                        <span className="w-1 h-1 bg-slate-500 rounded-full"></span>
+                        <p className="text-slate-400 font-medium text-xs uppercase tracking-widest">{employee.teamName || 'Sin área'}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div className="pt-20 pb-8 px-10 flex flex-wrap gap-10 items-center">
+        <div className="pt-20 pb-8 px-10 flex flex-wrap gap-8 items-center border-b border-slate-100">
             <div className="flex items-center gap-3">
-                <div className="p-3 bg-slate-50 rounded-2xl text-slate-400"><CreditCard size={20} /></div>
+                <div className="p-3 bg-blue-50 rounded-2xl text-blue-500"><CreditCard size={20} /></div>
                 <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Documento</p>
-                    <p className="text-sm font-black text-slate-700">{employee.doc}</p>
+                    <p className="text-sm font-black text-slate-700">{employee.documentType} {employee.identification}</p>
                 </div>
             </div>
             <div className="flex items-center gap-3">
-                <div className="p-3 bg-slate-50 rounded-2xl text-slate-400"><DollarSign size={20} /></div>
+                <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-500"><Landmark size={20} /></div>
+                <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contrato</p>
+                    <p className="text-sm font-black text-slate-700">{employee.contractType}</p>
+                </div>
+            </div>
+            <div className="flex items-center gap-3">
+                <div className="p-3 bg-violet-50 rounded-2xl text-violet-500"><DollarSign size={20} /></div>
                 <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sueldo Base</p>
-                    <p className="text-sm font-black text-slate-700">{formatCurrency(employee.salary)}</p>
+                    <p className="text-sm font-black text-slate-700">{formatCurrency(employee.salaryAmount)}</p>
                 </div>
             </div>
             <div className="ml-auto">
-                <span className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-2xl text-xs font-black uppercase tracking-widest border border-emerald-100 flex items-center gap-2">
-                    <CheckCircle2 size={14} /> Colaborador Activo
+                <span className={`px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest border flex items-center gap-2 ${employee.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100'}`}>
+                    {employee.isActive ? <CheckCircle2 size={14} /> : <X size={14} />} 
+                    {employee.isActive ? 'Activo' : 'Inactivo'}
                 </span>
             </div>
         </div>
 
-        {/* SELECTOR DE PESTAÑAS */}
-        <div className="flex px-10 border-t border-slate-100 bg-slate-50/50 overflow-x-auto">
+        {/* TABS */}
+        <div className="flex px-10 bg-slate-50/50 overflow-x-auto">
             {[
-                { id: 'overview', label: 'Resumen', icon: TrendingUp },
-                { id: 'absences', label: 'Novedades', icon: AlertCircle },
-                { id: 'shifts', label: 'Asistencia', icon: Calendar },
-                { id: 'payroll', label: 'Nómina', icon: FileText },
-                { id: 'docs', label: 'Documentos', icon: FileBadge },
+                { id: 'overview', label: 'Personal', icon: User },
+                { id: 'labor', label: 'Laboral / Nómina', icon: Briefcase },
+                { id: 'history', label: 'Historial', icon: History },
+                { id: 'attendance', label: 'Asistencia', icon: Calendar },
+                { id: 'docs', label: 'Expediente Digital', icon: FileBadge },
             ].map(tab => (
                 <button 
                     key={tab.id} 
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`px-8 py-5 text-xs font-black uppercase tracking-widest transition-all border-b-4 flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id ? 'border-primary-600 text-primary-600 bg-white' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    className={`flex items-center gap-2 px-6 py-5 text-xs font-black uppercase tracking-widest transition-all border-b-2 relative ${activeTab === tab.id ? 'text-primary-600 border-primary-600 bg-white' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                 >
-                    <tab.icon size={16} /> {tab.label}
+                    <tab.icon size={16} />
+                    {tab.label}
                 </button>
             ))}
         </div>
-      </div>
 
-      {/* CONTENIDO DINÁMICO */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-            
-            {/* VISTA RESUMEN */}
+        <div className="p-10">
             {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm">
-                        <h3 className="font-black text-slate-900 text-lg mb-6 flex items-center gap-2"><Clock className="text-primary-500" /> Turnos Recientes</h3>
-                        <div className="space-y-4">
-                            {shifts.slice(0, 4).map((s:any, i:number) => (
-                                <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                                    <span className="text-sm font-bold text-slate-700">{moment(s.date).format('DD MMM, ddd')}</span>
-                                    <span className="text-xs font-black text-primary-600">{s.totalHours.toFixed(1)}h</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-8">
+                        <div>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <User size={18} className="text-primary-500" /> Información Básica
+                            </h3>
+                            <div className="grid grid-cols-2 gap-y-6">
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nacimiento</p>
+                                    <p className="text-sm font-bold text-slate-700">{employee.birthDate ? moment(employee.birthDate).format('LL') : 'No registrado'}</p>
                                 </div>
-                            ))}
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Género / Sangre</p>
+                                    <p className="text-sm font-bold text-slate-700">{employee.gender || '-'} / {employee.bloodType || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ciudad Expedición</p>
+                                    <p className="text-sm font-bold text-slate-700">{employee.documentExpeditionCity || 'No registrado'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Celular</p>
+                                    <p className="text-sm font-bold text-slate-700 flex items-center gap-1"><Phone size={14} className="text-slate-300" /> {employee.phone}</p>
+                                </div>
+                                <div className="col-span-2">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</p>
+                                    <p className="text-sm font-bold text-slate-700 flex items-center gap-1"><Mail size={14} className="text-slate-300" /> {employee.email}</p>
+                                </div>
+                                <div className="col-span-2">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dirección</p>
+                                    <p className="text-sm font-bold text-slate-700 flex items-center gap-1"><Home size={14} className="text-slate-300" /> {employee.address}, {employee.city}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="bg-slate-900 p-8 rounded-[2rem] text-white shadow-xl">
-                        <h3 className="font-black text-lg mb-6 flex items-center gap-2"><DollarSign className="text-primary-400" /> Nómina Actual</h3>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Neto Proyectado</p>
-                        <p className="text-4xl font-black mt-2">{formatCurrency(summary.totalPay)}</p>
-                        <button onClick={() => setActiveTab('payroll')} className="mt-8 text-xs font-black text-primary-400 uppercase tracking-widest hover:underline">Ver desglose completo →</button>
+
+                    <div className="space-y-8">
+                        <div>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <Building size={18} className="text-primary-500" /> Información Bancaria
+                            </h3>
+                            <div className="bg-slate-50 rounded-[1.5rem] p-6 border border-slate-100 grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Banco</p>
+                                    <p className="text-base font-black text-slate-800">{employee.bankName || 'Pendiente'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tipo</p>
+                                    <p className="text-sm font-bold text-slate-700">{employee.bankAccountType || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Número</p>
+                                    <p className="text-sm font-bold text-slate-700 font-mono tracking-wider">{employee.bankAccountNumber || '****'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <ShieldAlert size={18} className="text-rose-500" /> Contacto de Emergencia
+                            </h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nombre</p>
+                                    <p className="text-sm font-bold text-slate-700">{employee.emergencyContactName || 'No registrado'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Teléfono</p>
+                                    <p className="text-sm font-bold text-slate-700">{employee.emergencyContactPhone || '-'}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* VISTA NOVEDADES (LA QUE BUSCABAS) */}
-            {activeTab === 'absences' && (
-                <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-                    <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                        <h3 className="font-black text-slate-900 uppercase text-xs tracking-widest flex items-center gap-2">
-                            <Stethoscope size={18} className="text-rose-500" /> Registro de Incapacidades y Permisos
-                        </h3>
-                        <button onClick={() => setShowAbsenceModal(true)} className="px-4 py-2 bg-rose-50 text-rose-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition-all">+ Reportar</button>
+            {activeTab === 'labor' && (
+                <div className="space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="md:col-span-2 grid grid-cols-2 gap-8">
+                            <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Entidades de Seguridad Social</h4>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">EPS</span>
+                                        <span className="text-xs font-black text-slate-800 bg-blue-50 px-2 py-1 rounded-lg">{employee.healthFund || 'Pendiente'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">AFP (Pensión)</span>
+                                        <span className="text-xs font-black text-slate-800 bg-indigo-50 px-2 py-1 rounded-lg">{employee.pensionFund || 'Pendiente'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">Cesantías</span>
+                                        <span className="text-xs font-black text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">{employee.severanceFund || 'Pendiente'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">ARL / Clase</span>
+                                        <span className="text-xs font-black text-slate-800 bg-orange-50 px-2 py-1 rounded-lg">{employee.arl || '-'} / {employee.riskClass || 'I'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Información de Nómina</h4>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">Sueldo Integral</span>
+                                        <span className="text-xs font-black text-slate-800">{employee.isIntegralSalary ? 'Sí' : 'No'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">Centro de Costo</span>
+                                        <span className="text-xs font-black text-slate-800">{employee.costCenter || 'No asignado'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">Grupo Nómina</span>
+                                        <span className="text-xs font-black text-slate-800">{employee.payrollGroup || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-slate-500">Fecha Ingreso</span>
+                                        <span className="text-xs font-black text-slate-800">{moment(employee.startDate).format('LL')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-slate-900 text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden group">
+                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform"><DollarSign size={80} /></div>
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Salario Base Actual</p>
+                             <h4 className="text-3xl font-black mb-6">{formatCurrency(employee.salaryAmount)}</h4>
+                             <button className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                                 Ver Proyección de Nómina
+                             </button>
+                        </div>
                     </div>
-                    <div className="overflow-x-auto">
+                </div>
+            )}
+
+            {activeTab === 'history' && (
+                <div className="space-y-12">
+                    {/* SALARIOS */}
+                    <div>
+                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <TrendingUp size={18} className="text-emerald-500" /> Historial Salarial
+                        </h3>
+                        <div className="space-y-4">
+                            {salaryHistory.length > 0 ? salaryHistory.map((s, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:shadow-md transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg font-black text-xs">+{Math.round((s.amount/employee.salaryAmount)*100)}%</div>
+                                        <div>
+                                            <p className="text-sm font-black text-slate-800">{formatCurrency(s.amount)}</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">{s.reason || 'Ajuste anual'}</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs font-bold text-slate-400">{moment(s.changeDate).format('MMMM YYYY')}</span>
+                                </div>
+                            )) : (
+                                <p className="text-xs text-slate-400 italic">No hay registros previos de cambios salariales.</p>
+                            )}
+                        </div>
+                    </div>
+                    {/* SANCIONES */}
+                    <div>
+                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <AlertTriangle size={18} className="text-rose-500" /> Registro Disciplinario
+                        </h3>
+                        <div className="space-y-4">
+                            {disciplinary.length > 0 ? disciplinary.map((d, i) => (
+                                <div key={i} className="p-4 bg-rose-50/30 border border-rose-100 rounded-2xl flex items-start gap-4">
+                                    <div className="p-3 bg-rose-100 text-rose-600 rounded-xl"><AlertCircle size={20} /></div>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between mb-1">
+                                            <p className="text-sm font-black text-slate-800">{d.type}</p>
+                                            <span className="text-[10px] font-black text-slate-400">{moment(d.incidentDate).format('LL')}</span>
+                                        </div>
+                                        <p className="text-xs text-slate-600 leading-relaxed">{d.description}</p>
+                                    </div>
+                                </div>
+                            )) : (
+                                <div className="text-center py-10 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
+                                    <CheckCircle2 size={32} className="mx-auto text-emerald-400 mb-2" />
+                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Sin antecedentes disciplinarios</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'attendance' && (
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                            <Clock size={18} className="text-primary-500" /> Registros de Tiempo (Últimos 30 días)
+                        </h3>
+                        <div className="flex gap-2">
+                            <button className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest">Exportar Excel</button>
+                        </div>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden">
                         <table className="w-full text-left">
-                            <thead className="bg-slate-50/50 border-b border-slate-100">
-                                <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    <th className="px-8 py-4">Periodo</th>
-                                    <th className="px-8 py-4">Tipo de Novedad</th>
-                                    <th className="px-8 py-4 text-center">Días</th>
-                                    <th className="px-8 py-4 text-right">Acción</th>
+                            <thead>
+                                <tr className="bg-slate-50 border-b border-slate-200">
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Fecha</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Entrada</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Salida</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ubicación / Método</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Total Horas</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
-                                {absences.map((abs: any) => (
-                                    <tr key={abs.id} className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="px-8 py-5">
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-black text-slate-700">{moment(abs.startDate).format('DD MMM')} - {moment(abs.endDate).format('DD MMM')}</span>
-                                                <span className="text-[10px] font-bold text-slate-400">{moment(abs.startDate).format('YYYY')}</span>
+                                {attendance.map((log, i) => (
+                                    <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="px-6 py-4 text-xs font-bold text-slate-700">{moment(log.clockIn).format('ddd DD MMM')}</td>
+                                        <td className="px-6 py-4 text-xs font-black text-slate-900">{moment(log.clockIn).format('HH:mm')}</td>
+                                        <td className="px-6 py-4 text-xs font-black text-slate-900">{log.clockOut ? moment(log.clockOut).format('HH:mm') : '--:--'}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-1.5">
+                                                {log.method === 'GPS' ? <MapPin size={12} className="text-blue-500" /> : <User size={12} className="text-slate-400" />}
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase">{log.method}</span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-3">
-                                                <span className="px-2 py-1 bg-rose-50 text-rose-600 rounded-lg text-[10px] font-black">{abs.absenceTypeCode}</span>
-                                                <span className="text-sm font-bold text-slate-600">{abs.absenceType?.name}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-5 text-center">
-                                            <span className="text-sm font-black text-slate-700">
-                                                {Math.ceil((new Date(abs.endDate).getTime() - new Date(abs.startDate).getTime()) / (1000*3600*24)) + 1}
-                                            </span>
-                                        </td>
-                                        <td className="px-8 py-5 text-right">
-                                            <button className="p-2 text-slate-300 hover:text-slate-600 transition-colors"><FileText size={18} /></button>
+                                        <td className="px-6 py-4 text-right">
+                                            {log.clockOut ? (
+                                                <span className="text-xs font-black text-primary-600 bg-primary-50 px-2 py-1 rounded-lg">
+                                                    {(moment.duration(moment(log.clockOut).diff(moment(log.clockIn))).asHours()).toFixed(1)}h
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] font-black text-rose-500 animate-pulse">EN TURNO</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
-                                {absences.length === 0 && (
-                                    <tr><td colSpan={4} className="px-8 py-16 text-center text-slate-400 italic font-medium underline decoration-slate-200">No se registran novedades legales en el historial.</td></tr>
-                                )}
                             </tbody>
                         </table>
                     </div>
                 </div>
             )}
 
-            {/* OTRAS PESTAÑAS (Resumidas para brevedad pero funcionales) */}
-            {activeTab === 'shifts' && (
-                <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
-                    <div className="p-8 border-b bg-slate-50/50"><h3 className="font-black text-slate-900 uppercase text-xs flex items-center gap-2"><History size={18} className="text-indigo-500" /> Registro de Asistencia del Mes</h3></div>
-                    <table className="w-full text-left">
-                        <tbody className="divide-y divide-slate-100">
-                            {shifts.map((s:any, i:number) => (
-                                <tr key={i} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-8 py-4 font-black text-slate-700 text-sm">{moment(s.date).format('DD MMMM, dddd')}</td>
-                                    <td className="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Programado</td>
-                                    <td className="px-8 py-4 text-sm font-black text-primary-600 text-right">{s.totalHours.toFixed(1)}h</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {activeTab === 'payroll' && (
-                <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white shadow-2xl">
-                    <h3 className="text-2xl font-black mb-8">Estructura Salarial Mes Actual</h3>
-                    <div className="space-y-6">
-                        {[
-                            { label: 'Sueldo Básico', val: summary.basePay, color: 'white' },
-                            { label: 'Auxilio Transporte', val: summary.transportAid, color: 'white' },
-                            { label: 'Recargos y Extras', val: summary.totalSurcharges, color: 'primary-400' },
-                            { label: 'Deducciones Ley', val: -summary.socialSecurity.total, color: 'rose-400' },
-                        ].map((item, i) => (
-                            <div key={i} className={`flex justify-between items-center border-b border-white/10 pb-4 text-${item.color}`}>
-                                <span className="text-sm font-bold uppercase tracking-widest opacity-60">{item.label}</span>
-                                <span className="text-xl font-black">{formatCurrency(item.val)}</span>
-                            </div>
-                        ))}
-                        <div className="flex flex-col items-center justify-center bg-white/5 rounded-2xl p-6 border border-white/10">
-                            <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-2">Total a Recibir</p>
-                            <p className="text-4xl font-black">{formatCurrency(summary.totalPay)}</p>
-                            <button onClick={() => router.push(`/recursos-humanos/nomina/detalle/${id}`)} className="mt-6 px-6 py-2 bg-primary-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary-700 transition-all">Ver Colilla PDF</button>
-                        </div>
-                    </div>
-
-                    {/* ACUMULADOS REALES */}
-                    <div className="mt-10 pt-10 border-t border-white/10">
-                        <h4 className="text-sm font-black text-primary-400 uppercase tracking-[0.2em] mb-6">Prestaciones Acumuladas a la Fecha</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Prima de Servicios</p>
-                                <p className="text-2xl font-black text-white mt-1">{formatCurrency(summary.accumulated?.prima || 0)}</p>
-                                <p className="text-[9px] text-slate-500 mt-2">Acumulado semestre actual ({summary.accumulated?.days} días)</p>
-                            </div>
-                            <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Cesantías</p>
-                                <p className="text-2xl font-black text-white mt-1">{formatCurrency(summary.accumulated?.cesantias || 0)}</p>
-                                <p className="text-[9px] text-slate-500 mt-2">Valor proyectado para fondo</p>
-                            </div>
-                            <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Días de Vaca. Ganados</p>
-                                <p className="text-2xl font-black text-white mt-1">{(summary.accumulated?.days * 15 / 360).toFixed(1)}</p>
-                                <p className="text-[9px] text-slate-500 mt-2">Derecho a descanso pagado</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {activeTab === 'docs' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {docs.map((doc, i) => (
-                        <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-200 flex items-center justify-between hover:border-primary-500 transition-all shadow-sm">
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center"><FileBadge size={24} /></div>
-                                <div><p className="font-black text-slate-900 text-sm">{doc.title}</p><p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{doc.category}</p></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {[
+                        { title: 'Contrato Laboral', cat: 'CONTRACT', desc: 'Vigente y firmado', color: 'blue' },
+                        { title: 'Soportes Seguridad Social', cat: 'SS', desc: 'EPS, ARL, Pensión', color: 'emerald' },
+                        { title: 'Certificaciones Médicas', cat: 'MEDICAL', desc: 'Exámenes de ingreso/egreso', color: 'rose' },
+                        { title: 'Formación y Cursos', cat: 'TRAINING', desc: 'Diplomas y certificados', color: 'violet' },
+                        { title: 'Documento Identidad', cat: 'ID', desc: 'Copia CC/CE ampliada', color: 'orange' },
+                        { title: 'Otrosí / Adendas', cat: 'ANNEX', desc: 'Modificaciones al contrato', color: 'slate' },
+                    ].map((folder, i) => (
+                        <div key={i} className="p-6 bg-white border border-slate-200 rounded-3xl hover:border-primary-500 hover:shadow-xl hover:shadow-primary-500/10 transition-all group cursor-pointer">
+                            <div className={`w-12 h-12 bg-${folder.color}-50 text-${folder.color}-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                                <FileText size={24} />
                             </div>
-                            <button className="p-2 text-slate-400 hover:text-primary-600"><Download size={20} /></button>
+                            <h4 className="text-sm font-black text-slate-800 mb-1">{folder.title}</h4>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{folder.desc}</p>
+                            <div className="mt-4 flex items-center justify-between pt-4 border-t border-slate-50">
+                                <span className="text-[10px] font-black text-primary-600">Ver 0 archivos</span>
+                                <button className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl text-slate-400 transition-colors"><Plus size={16} /></button>
+                            </div>
                         </div>
                     ))}
-                    <div onClick={handleUploadDoc} className="border-4 border-dashed border-slate-100 rounded-[2rem] p-10 flex flex-col items-center justify-center gap-3 text-slate-300 hover:text-primary-600 hover:border-primary-100 cursor-pointer transition-all">
-                        <Plus size={32} /> <span className="text-sm font-black uppercase tracking-widest">Asociar Documento</span>
-                    </div>
-                </div>
-            )}
-        </div>
-
-        {/* SIDEBAR WIDGETS */}
-        <div className="space-y-8">
-            <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase mb-6 tracking-[0.2em]">Información de Contrato</h3>
-                <div className="space-y-5">
-                    <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-400">Cargo</span><span className="text-sm font-black text-slate-900">{employee.position}</span></div>
-                    <div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-400">Sede</span><span className="text-sm font-black text-slate-900">Principal</span></div>
-                    <div className="pt-5 border-t border-slate-100">
-                        <div className="flex items-center gap-2 mb-2"><div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse"></div><span className="text-[10px] font-black text-emerald-700 uppercase">Seguridad Social al día</span></div>
-                        <p className="text-[10px] text-slate-400 font-medium leading-relaxed">Este colaborador cumple con todos los requisitos legales para operar en el cuadrante actual.</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* ALERTA DE CONFLICTOS SI EXISTEN */}
-            {shifts.some((s:any) => s.resource?.conflictStatus === 'CRITICAL') && (
-                <div className="bg-rose-600 rounded-[2rem] p-8 text-white shadow-xl shadow-rose-600/30">
-                    <ShieldAlert size={40} className="mb-4 opacity-50" />
-                    <h3 className="text-lg font-black mb-2">Alerta de Bloqueo</h3>
-                    <p className="text-xs font-bold text-rose-100 leading-relaxed">Existen turnos programados que chocan con una incapacidad médica activa. Por favor, revise la pestaña de asistencia.</p>
                 </div>
             )}
         </div>
       </div>
-
-      {/* MODAL REPORTE NOVEDAD */}
-      {showAbsenceModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
-            <form className="bg-white rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200" onSubmit={handleReportAbsence}>
-                <div className="p-10 border-b bg-rose-50/50 flex justify-between items-center">
-                    <div>
-                        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Reportar Novedad Legal</h2>
-                        <p className="text-sm text-slate-500 font-medium">Registro para <strong>{employee.name}</strong></p>
-                    </div>
-                    <button type="button" onClick={() => setShowAbsenceModal(false)} className="p-3 bg-white rounded-2xl shadow-sm text-slate-400 hover:text-rose-600 transition-colors"><X size={24}/></button>
-                </div>
-                <div className="p-10 space-y-8">
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fecha Inicio</label>
-                            <input type="date" value={newAbsence.startDate} onChange={e => setNewAbsence({...newAbsence, startDate: e.target.value})} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-rose-500 transition-all" required />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fecha Fin</label>
-                            <input type="date" value={newAbsence.endDate} onChange={e => setNewAbsence({...newAbsence, endDate: e.target.value})} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-rose-500 transition-all" required />
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Novedad</label>
-                        <select 
-                            value={newAbsence.absenceTypeCode} 
-                            onChange={e => setNewAbsence({...newAbsence, absenceTypeCode: e.target.value})}
-                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-rose-500 transition-all" required
-                        >
-                            <option value="">Seleccione tipo...</option>
-                            {absenceTypes.map(t => <option key={t.code} value={t.code}>{t.name} ({t.code})</option>)}
-                        </select>
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Código Diagnóstico (CIE-10)</label>
-                        <input placeholder="Ej: M545" value={newAbsence.diagnosisCode} onChange={e => setNewAbsence({...newAbsence, diagnosisCode: e.target.value})} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-rose-500 transition-all" />
-                    </div>
-                </div>
-                <div className="p-10 bg-slate-50 border-t flex gap-4">
-                    <button type="button" onClick={() => setShowAbsenceModal(false)} className="flex-1 font-black text-slate-400 uppercase tracking-widest text-xs">Cancelar</button>
-                    <button type="submit" className="flex-[2] py-5 bg-rose-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 active:scale-95 transition-all">Registrar Novedad</button>
-                </div>
-            </form>
-        </div>
-      )}
     </div>
   );
 };

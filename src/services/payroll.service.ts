@@ -1,9 +1,14 @@
 import { getJsonDb, PayrollRecord } from '@/lib/json-db';
 import { v4 as uuidv4 } from 'uuid';
 import { getEmployeesService } from './employees.service';
-
-const SMLMV = 1300000;
-const AUX_TRANSPORTE = 162000;
+import { 
+  SMLMV_2026, 
+  AUX_TRANSPORTE_2026, 
+  calculateFSP, 
+  calculateWithholdingTax,
+  calculateProvisiones,
+  calculateAportesPatronales
+} from '@/lib/payroll-calculator';
 
 export class PayrollService {
   private db: ReturnType<typeof getJsonDb>;
@@ -14,32 +19,32 @@ export class PayrollService {
     this.db = getJsonDb(dataDir);
   }
 
-  async calculatePayroll(employeeId: string, periodName: string, excludeSS: boolean = false): Promise<PayrollRecord | null> {
+  async calculatePayroll(employeeId: string, periodName: string, options: { excludeSS?: boolean, days?: number } = {}): Promise<PayrollRecord | null> {
     const employeesService = getEmployeesService(this.dataDir);
     const employee = await employeesService.findOne(employeeId);
-    if (!employee) {
-      throw new Error(`Employee with ID ${employeeId} not found`);
-    }
+    if (!employee) throw new Error(`Employee with ID ${employeeId} not found`);
 
     const isQuincena = periodName.endsWith('-1') || periodName.endsWith('-2');
-    const days = isQuincena ? 15 : 30;
+    const workedDays = options.days !== undefined ? options.days : (isQuincena ? 15 : 30);
 
-    const fullSalary = Number(employee.salaryAmount);
-    const baseSalary = isQuincena ? fullSalary / 2 : fullSalary;
+    const fullSalary = Number(employee.salaryAmount || 0);
+    const baseSalary = (fullSalary / 30) * workedDays;
     
     const details: any[] = [];
 
+    // 1. DEVENGADOS
     details.push({
       concept: 'Salario Básico',
       type: 'EARNING',
       amount: baseSalary,
-      days: days,
+      days: workedDays,
       isWageForming: true
     });
 
     let transportAid = 0;
-    if (fullSalary <= (SMLMV * 2) && employee.contractType !== 'INDEPENDIENTE') {
-      transportAid = isQuincena ? AUX_TRANSPORTE / 2 : AUX_TRANSPORTE;
+    // Auxilio de transporte se paga si gana <= 2 SMLMV y no es integral
+    if (fullSalary <= (SMLMV_2026 * 2) && employee.isIntegralSalary !== 1 && employee.contractType !== 'INDEPENDIENTE') {
+      transportAid = (AUX_TRANSPORTE_2026 / 30) * workedDays;
       details.push({
         concept: 'Auxilio de Transporte',
         type: 'EARNING',
@@ -50,27 +55,40 @@ export class PayrollService {
 
     const totalDevengado = baseSalary + transportAid;
 
+    // 2. DEDUCCIONES
     let totalDeducciones = 0;
+    const ibc = baseSalary; // Simplificado: IBC = base salary (sin extras para este MVP)
 
-    if (!excludeSS) {
-      // Deducciones base
-      const healthDeduction = baseSalary * 0.04;
-      details.push({
-        concept: 'Aporte Salud (4%)',
-        type: 'DEDUCTION',
-        amount: healthDeduction
-      });
+    if (!options.excludeSS && employee.contractType !== 'INDEPENDIENTE') {
+      // Salud (4%)
+      const healthAmount = ibc * (employee.healthFundPercentage / 100 || 0.04);
+      details.push({ concept: `Aporte Salud (${employee.healthFundPercentage}%)`, type: 'DEDUCTION', amount: healthAmount });
 
-      const pensionDeduction = baseSalary * 0.04;
-      details.push({
-        concept: 'Aporte Pensión (4%)',
-        type: 'DEDUCTION',
-        amount: pensionDeduction
-      });
-      totalDeducciones = healthDeduction + pensionDeduction;
+      // Pensión (4%)
+      const pensionAmount = ibc * (employee.pensionFundPercentage / 100 || 0.04);
+      details.push({ concept: `Aporte Pensión (${employee.pensionFundPercentage}%)`, type: 'DEDUCTION', amount: pensionAmount });
+
+      // Fondo Solidaridad Pensional (FSP)
+      const fspAmount = calculateFSP(ibc, SMLMV_2026);
+      if (fspAmount > 0) {
+        details.push({ concept: 'Fondo Solidaridad Pensional', type: 'DEDUCTION', amount: fspAmount });
+      }
+
+      // Retención en la fuente (Estimado sobre base gravable simplificada)
+      const baseGravable = ibc - healthAmount - pensionAmount; // Muy simplificado
+      const retefuente = calculateWithholdingTax(baseGravable);
+      if (retefuente > 0) {
+        details.push({ concept: 'Retención en la Fuente', type: 'DEDUCTION', amount: retefuente });
+      }
+
+      totalDeducciones = details.filter(d => d.type === 'DEDUCTION').reduce((sum, d) => sum + d.amount, 0);
     }
 
     const netSalary = totalDevengado - totalDeducciones;
+
+    // 3. PROVISIONES Y COSTO EMPLEADOR (Informativo en el record de nómina)
+    const provisiones = calculateProvisiones(baseSalary, transportAid);
+    const aportesPatronales = calculateAportesPatronales(ibc, employee.riskClass, true); // Asumimos exoneración 114 ET
 
     const payrollRecord: PayrollRecord = {
       id: uuidv4(),
@@ -80,6 +98,10 @@ export class PayrollService {
       deductions: totalDeducciones,
       netSalary: netSalary,
       details: details,
+      employerCost: {
+        provisiones,
+        seguridadSocial: aportesPatronales
+      },
       status: 'DRAFT',
       createdAt: new Date().toISOString()
     };

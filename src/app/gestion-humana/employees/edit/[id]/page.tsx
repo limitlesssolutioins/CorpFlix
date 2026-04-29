@@ -96,8 +96,38 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
                 <input type="text" name="lastName" required defaultValue={employee.lastName} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
               </div>
               <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Tipo Documento</label>
+                <select name="documentType" defaultValue={employee.documentType} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold">
+                  <option value="CC">Cédula de Ciudadanía</option>
+                  <option value="CE">Cédula de Extranjería</option>
+                  <option value="PA">Pasaporte</option>
+                  <option value="PE">Permiso Especial de Permanencia</option>
+                </select>
+              </div>
+              <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Identificación</label>
                 <input type="text" name="identification" required defaultValue={employee.identification} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Ciudad Expedición</label>
+                <input type="text" name="documentExpeditionCity" defaultValue={employee.documentExpeditionCity} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Nacimiento</label>
+                <input type="date" name="birthDate" defaultValue={employee.birthDate?.split('T')[0]} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Género</label>
+                <select name="gender" defaultValue={employee.gender} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium">
+                  <option value="">Seleccione...</option>
+                  <option value="M">Masculino</option>
+                  <option value="F">Femenino</option>
+                  <option value="O">Otro</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Grupo Sanguíneo</label>
+                <input type="text" name="bloodType" placeholder="Ej: O+" defaultValue={employee.bloodType} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Teléfono</label>
@@ -110,6 +140,57 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Dirección</label>
                 <input type="text" name="address" defaultValue={employee.address} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Ciudad Residencia</label>
+                <input type="text" name="city" defaultValue={employee.city} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+              </div>
+            </div>
+          </section>
+
+          {/* SECCIÓN 1.5: INFORMACIÓN BANCARIA Y CONTACTO */}
+          <section className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {/* BANCO */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
+                  <h2 className="text-lg font-bold text-slate-700">Información Bancaria</h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Banco</label>
+                    <input type="text" name="bankName" defaultValue={employee.bankName} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Tipo Cuenta</label>
+                      <select name="bankAccountType" defaultValue={employee.bankAccountType} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium">
+                        <option value="Ahorros">Ahorros</option>
+                        <option value="Corriente">Corriente</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Número Cuenta</label>
+                      <input type="text" name="bankAccountNumber" defaultValue={employee.bankAccountNumber} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* EMERGENCIA */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
+                  <h2 className="text-lg font-bold text-slate-700">Contacto de Emergencia</h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Nombre Contacto</label>
+                    <input type="text" name="emergencyContactName" defaultValue={employee.emergencyContactName} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Teléfono Contacto</label>
+                    <input type="text" name="emergencyContactPhone" defaultValue={employee.emergencyContactPhone} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                  </div>
+                </div>
               </div>
             </div>
           </section>

@@ -183,9 +183,11 @@ const Sidebar = () => {
             </Section>
 
             <Section title="Gestión Humana" id="humana" icon={Users2}>
+              <NavItem href="/gestion-humana" label="Dashboard GH" icon={LayoutDashboard} exact />
               <NavItem href="/gestion-humana/employees" label="Directorio" icon={IdCard} />
+              <NavItem href="/gestion-humana/nomina" label="Nómina" icon={BadgeDollarSign} />
+              <NavItem href="/gestion-humana/asistencia" label="Asistencia" icon={Clock} />
               <NavItem href="/gestion-humana/domesticas" label="Domésticas" icon={Home} />
-              <NavItem href="/gestion-humana/independientes" label="Independientes" icon={User} />
               <NavItem href="/gestion-humana/configuracion" label="Configuración" icon={Settings2} />
             </Section>
 

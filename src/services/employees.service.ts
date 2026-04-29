@@ -88,27 +88,35 @@ export class EmployeesService {
         const id = uuidv4();
         await this.db.run(`
       INSERT INTO Employee (
-        id, firstName, lastName, identification, email, phone, address,
+        id, firstName, lastName, identification, documentType, documentExpeditionCity,
+        birthDate, gender, bloodType, email, phone, address, city,
+        bankName, bankAccountType, bankAccountNumber,
+        emergencyContactName, emergencyContactPhone,
         contractType, contractNumber, startDate, contractEndDate,
-        isIntegralSalary, salaryAmount, payrollGroup, costCenter,
-        defaultSiteId, defaultPositionId,
-        contributorType, contributorSubtype, 
+        isIntegralSalary, salaryAmount, salaryScheme, payrollGroup, costCenter,
+        contributorType, contributorSubtype,
         healthFund, healthFundPercentage,
         pensionFund, pensionFundPercentage,
         severanceFund, compensationFund,
         arl, riskClass, ciiuCode,
+        standardStartTime, standardEndTime, standardStartTime2, standardEndTime2, workDays,
+        defaultSiteId, defaultPositionId, teamId,
         isActive, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'), datetime('now'))
     `, [
-            id, data.firstName, data.lastName, data.identification, data.email, data.phone, data.address,
+            id, data.firstName, data.lastName, data.identification, data.documentType || 'CC', data.documentExpeditionCity,
+            data.birthDate, data.gender, data.bloodType, data.email, data.phone, data.address, data.city,
+            data.bankName, data.bankAccountType, data.bankAccountNumber,
+            data.emergencyContactName, data.emergencyContactPhone,
             data.contractType, data.contractNumber, data.startDate, data.contractEndDate,
-            data.isIntegralSalary, data.salaryAmount, data.payrollGroup, data.costCenter,
-            data.defaultSiteId, data.defaultPositionId,
-            data.contributorType, data.contributorSubtype,
-            data.healthFund, data.healthFundPercentage,
-            data.pensionFund, data.pensionFundPercentage,
+            data.isIntegralSalary || 0, data.salaryAmount || 0, data.salaryScheme || 'FIJO', data.payrollGroup, data.costCenter,
+            data.contributorType || '01', data.contributorSubtype || '00',
+            data.healthFund, data.healthFundPercentage || 4,
+            data.pensionFund, data.pensionFundPercentage || 4,
             data.severanceFund, data.compensationFund,
-            data.arl, data.riskClass, data.ciiuCode
+            data.arl, data.riskClass || 'I', data.ciiuCode,
+            data.standardStartTime, data.standardEndTime, data.standardStartTime2, data.standardEndTime2, data.workDays,
+            data.defaultSiteId, data.defaultPositionId, data.teamId
         ]);
 
         return this.findOne(id);
@@ -156,6 +164,30 @@ export class EmployeesService {
     `, [id, employeeId, data.title, data.category, data.fileUrl, data.expiryDate]);
 
         return this.db.get('SELECT * FROM EmployeeDocument WHERE id = ?', [id]);
+    }
+
+    // --- Historiales ---
+
+    async getSalaryHistory(employeeId: string) {
+        return this.db.all('SELECT * FROM SalaryHistory WHERE employeeId = ? ORDER BY changeDate DESC', [employeeId]);
+    }
+
+    async getPositionHistory(employeeId: string) {
+        return this.db.all(`
+            SELECT ph.*, p.name as positionName 
+            FROM PositionHistory ph 
+            JOIN Position p ON ph.positionId = p.id 
+            WHERE ph.employeeId = ? 
+            ORDER BY ph.changeDate DESC
+        `, [employeeId]);
+    }
+
+    async getDisciplinaryRecords(employeeId: string) {
+        return this.db.all('SELECT * FROM DisciplinaryRecord WHERE employeeId = ? ORDER BY incidentDate DESC', [employeeId]);
+    }
+
+    async getPerformanceEvaluations(employeeId: string) {
+        return this.db.all('SELECT * FROM PerformanceEvaluation WHERE employeeId = ? ORDER BY evaluationDate DESC', [employeeId]);
     }
 }
 

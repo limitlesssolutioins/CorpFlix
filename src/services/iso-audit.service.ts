@@ -619,22 +619,29 @@ class ISOAuditService {
     }
 
     private ensureAuditCriteria() {
-        // Check if ISO 14001 criteria are already seeded (using 4.1 as sentinel)
-        const hasISO14001Criteria = this.db.prepare(`
-            SELECT rv.id FROM requirement_variables rv
-            INNER JOIN iso_requirements ir ON rv.requirement_id = ir.id
-            INNER JOIN iso_chapters ic ON ir.chapter_id = ic.id
-            INNER JOIN audit_standards as_ ON ic.standard_id = as_.id
-            WHERE as_.code = 'ISO14001' AND ir.requirement_code = '4.1'
-            LIMIT 1
-        `).get();
+        const standards = ['ISO9001', 'ISO14001', 'MINTRABAJO', 'RES0312'];
+        
+        for (const stdCode of standards) {
+            // Check if this specific standard has criteria
+            const hasCriteria = this.db.prepare(`
+                SELECT rv.id FROM requirement_variables rv
+                INNER JOIN iso_requirements ir ON rv.requirement_id = ir.id
+                INNER JOIN iso_chapters ic ON ir.chapter_id = ic.id
+                INNER JOIN audit_standards as_ ON ic.standard_id = as_.id
+                WHERE as_.code = ?
+                LIMIT 1
+            `).get(stdCode);
 
-        if (hasISO14001Criteria) return;
+            if (!hasCriteria) {
+                console.log(`🔄 Seeding criteria for ${stdCode}...`);
+                this.seedStandardCriteria(stdCode);
+            }
+        }
+    }
 
-        console.log('🔄 Seeding predefined audit criteria (variables)...');
+    private seedStandardCriteria(stdCode: string) {
         try {
             this.db.exec('BEGIN TRANSACTION');
-            // Use criteria_seed.sql which contains all criteria (ISO 9001 and now 14001)
             const criteriaSeedPath = path.join(process.cwd(), 'src/data/criteria_seed.sql');
             let content = '';
             if (fs.existsSync(criteriaSeedPath)) {
@@ -643,26 +650,54 @@ class ISOAuditService {
                 content = fs.readFileSync(SCHEMA_PATH, 'utf-8');
             }
 
-            const startMarker = '-- VARIABLES DE REQUISITOS (CRITERIOS DE EVALUACIÓN)';
+            // Extract only the section for this standard if possible, or run everything with IGNORE
+            // For safety and simplicity, we'll run the relevant INSERT statements
+            const startMarker = `-- Standard: ${stdCode}`;
             const startIndex = content.indexOf(startMarker);
 
             if (startIndex !== -1) {
-                const insertSection = content.substring(startIndex);
-                const insertStatements = insertSection.match(/INSERT OR IGNORE INTO[\s\S]*?\)\);/g);
+                // Find next standard or end of file
+                let endIndex = content.length;
+                for (const otherStd of ['ISO9001', 'ISO14001', 'MINTRABAJO', 'RES0312']) {
+                    if (otherStd === stdCode) continue;
+                    const nextMarker = `-- Standard: ${otherStd}`;
+                    const nextIdx = content.indexOf(nextMarker, startIndex + 10);
+                    if (nextIdx !== -1 && nextIdx < endIndex) endIndex = nextIdx;
+                }
+
+                const insertSection = content.substring(startIndex, endIndex);
+                const insertStatements = insertSection.match(/INSERT OR IGNORE INTO[\s\S]*?;/g);
+                
                 if (insertStatements) {
                     for (const stmt of insertStatements) {
                         try {
-                            this.db.prepare(stmt).run();
-                        } catch (e) {
-                            // Ignore individual insert errors
+                            this.db.exec(stmt);
+                        } catch (e) { }
+                    }
+                }
+            } else {
+                // Fallback to old behavior: run everything from marker
+                const oldMarker = '-- VARIABLES DE REQUISITOS (CRITERIOS DE EVALUACIÓN)';
+                const oldStart = content.indexOf(oldMarker);
+                if (oldStart !== -1) {
+                    const insertStatements = content.substring(oldStart).match(/INSERT OR IGNORE INTO[\s\S]*?;/g);
+                    if (insertStatements) {
+                        for (const stmt of insertStatements) {
+                            try {
+                                // Only run if it mentions the standard
+                                if (stmt.includes(`'${stdCode}'`)) {
+                                    this.db.exec(stmt);
+                                }
+                            } catch (e) { }
                         }
                     }
                 }
             }
-            this.db.exec('COMMIT');            console.log('✅ Audit criteria seeded successfully');
+            this.db.exec('COMMIT');
+            console.log(`✅ Criteria for ${stdCode} seeded successfully`);
         } catch (error) {
             this.db.exec('ROLLBACK');
-            console.error('❌ Failed to seed audit criteria:', error);
+            console.error(`❌ Failed to seed criteria for ${stdCode}:`, error);
         }
     }
 

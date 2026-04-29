@@ -434,7 +434,10 @@ INSERT OR IGNORE INTO iso_chapters (standard_id, chapter_number, chapter_title, 
 ((SELECT id FROM audit_standards WHERE code='RES0312'), 'I', 'PLANEAR — Gestión Integral del SG-SST', 'Recursos, capacitación y gestión integral del sistema. Puntaje máximo: 25 puntos'),
 ((SELECT id FROM audit_standards WHERE code='RES0312'), 'II', 'HACER — Gestión de la Salud, Peligros y Amenazas', 'Gestión de la salud, peligros y riesgos, y amenazas. Puntaje máximo: 60 puntos'),
 ((SELECT id FROM audit_standards WHERE code='RES0312'), 'III', 'VERIFICAR — Verificación del SG-SST', 'Verificación del sistema de gestión SST. Puntaje máximo: 5 puntos'),
-((SELECT id FROM audit_standards WHERE code='RES0312'), 'IV', 'ACTUAR — Mejoramiento', 'Acciones preventivas y correctivas con base en los resultados. Puntaje máximo: 10 puntos');
+((SELECT id FROM audit_standards WHERE code='RES0312'), 'IV', 'ACTUAR — Mejoramiento', 'Acciones preventivas y correctivas con base en los resultados. Puntaje máximo: 10 puntos'),
+((SELECT id FROM audit_standards WHERE code='RES0312'), 'V', 'AMENAZAS', 'Prevención, preparación y respuesta ante emergencias'),
+((SELECT id FROM audit_standards WHERE code='RES0312'), 'VI', 'VERIFICACIÓN DEL SG-SST', 'Gestión de la mejora continua'),
+((SELECT id FROM audit_standards WHERE code='RES0312'), 'VII', 'MEJORAMIENTO', 'Acciones preventivas y correctivas');
 
 -- PLANEAR: Recursos (10 pts)
 INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, weight, profile) VALUES
@@ -510,7 +513,32 @@ INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requiremen
 ((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.1.1', 'Definición de acciones preventivas y correctivas con base en resultados del SG-SST', 2.5, '>50'),
 ((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.1.2', 'Acciones de mejora conforme a revisión de la alta dirección', 2.5, '>50'),
 ((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.1.3', 'Acciones de mejora con base en investigaciones de accidentes de trabajo y enfermedades laborales', 2.5, '>50'),
-((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.1.4', 'Elaboración Plan de Mejora e implementación de medidas y acciones correctivas solicitadas por autoridades', 2.5, '>50');
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.1.4', 'Elaboración Plan de Mejora e implementación de medidas y acciones correctivas solicitadas por autoridades', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.2.1', 'Implementación de medidas de prevención y control de peligros/riesgos identificados', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.2.2', 'Verificación de aplicación de medidas de prevención y control por los trabajadores', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.2.3', 'Mantenimiento periódico de instalaciones, equipos, máquinas, herramientas', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.2.4', 'Entrega de Elementos de Protección Personal EPP y capacitación en uso', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.2.5', 'Realización de mediciones ambientales, cuando se requiera', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='IV'), '4.2.6', 'Custodia de Historias Clínicas', 2.5, '>50');
+
+-- V. AMENAZAS
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, weight, profile) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='V'), '5.1.1', 'Plan de Prevención, Preparación y Respuesta ante emergencias', 5.0, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='V'), '5.1.2', 'Brigada de prevención conformada, capacitada y dotada', 5.0, '>50');
+
+-- VI. VERIFICACIÓN DEL SG-SST
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, weight, profile) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VI'), '6.1.1', 'Indicadores de estructura, proceso y resultado del SG-SST', 1.25, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VI'), '6.1.2', 'Auditoría anual con participación del COPASST', 1.25, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VI'), '6.1.3', 'Revisión anual por la alta dirección, resultados y alcance de la auditoría', 1.25, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VI'), '6.1.4', 'Planificación auditorías con el COPASST', 1.25, '>50');
+
+-- VII. MEJORAMIENTO
+INSERT OR IGNORE INTO iso_requirements (chapter_id, requirement_code, requirement_title, weight, profile) VALUES
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VII'), '7.1.1', 'Definición de acciones preventivas y correctivas con base en resultados', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VII'), '7.1.2', 'Acciones de mejora conforme a revisión de la alta dirección', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VII'), '7.1.3', 'Acciones de mejora con base en investigaciones de accidentes de trabajo', 2.5, '>50'),
+((SELECT id FROM iso_chapters WHERE standard_id=(SELECT id FROM audit_standards WHERE code='RES0312') AND chapter_number='VII'), '7.1.4', 'Elaboración Plan de Mejora e implementación de medidas y acciones correctivas', 2.5, '>50');
 
 -- =====================================================
 -- ISO 27001:2022 — CONTROLES Y CLÁUSULAS

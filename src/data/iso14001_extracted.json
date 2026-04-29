@@ -4,18 +4,17 @@
     "Realizar el seguimiento y la revisiòn de la informaciòn  sobre estas cuestiones internas y externas"
   ],
   "4.2": [
-    "a. Las partes interesadas que son pertinentes al sistema de gestión ambiental;",
-    "b.Las necesidades y expectativas pertinentes (es decir, requisitos) de estas partes interesadas;",
-    "c. cuáles de estas son requisitos legales y otros requisitos.",
+    "Las partes interesadas que son pertinentes al sistema de gestión ambiental;",
+    "Las necesidades y expectativas pertinentes (es decir, requisitos) de estas partes interesadas;",
+    "cuáles de estas son requisitos legales y otros requisitos.",
     "La organización debe realizar el seguimiento y la revisión de la información sobre estas partes interesadas y sus requisitos pertientes."
   ],
   "4.3": [
-    "Cuando se determina este alcance, la organización debe considerar:",
-    "a. Las cuestiones externas e internas referidas en el apartado 4.1;",
-    "b. Los requisitos legales y otros requisitos a que se hace referencia en el apartado 4.2;",
-    "c. Las unidades, funciones y límites físicos de la organización;",
-    "d. Sus actividades, productos y servicios;",
-    "e. Su autoridad y capacidad para ejercer control e influencia.",
+    "Las cuestiones externas e internas referidas en el apartado 4.1;",
+    "Los requisitos legales y otros requisitos a que se hace referencia en el apartado 4.2;",
+    "Las unidades, funciones y límites físicos de la organización;",
+    "Sus actividades, productos y servicios;",
+    "Su autoridad y capacidad para ejercer control e influencia.",
     "El alcance debe estar disponible y mantenerse  como información documentada estableciendo:",
     "Todas las actividades, productos y servicios cubiertos por el sistema de gestión ambiental;"
   ],
@@ -56,7 +55,6 @@
   "6.1": [],
   "6.1.1": [
     "La organización debe establecer, implementar y mantener los procesos necesarios para cumplir con los requisitos de los apartados 6.1.1 a 6.1.4.",
-    "Al planificar el sisteme de gestión ambiental la organización debe considerar: a) las cuestiones referidas en el apartado 4.1; b) los requisitos referidos en el apartado 4.2; c) el alcance de su sistema de gestión ambiental;",
     "Determina los riesgos y oportunidades relacionados con sus: aspectos ambientales; requisitos legales y otros requisitos; »otras cuestiones y requisitos identificados en los apartados 4.1  4.2",
     "Asegura que el sistema de gestión ambiental puede lograr los resultados previstos",
     "Prevenir o reducir los efectos no deseados.",
@@ -83,7 +81,9 @@
     "b) Debe planificar la manera de integrar e interpretar las acciones en los procesos de su sistema de gestión ambiental, planificar la manera de evaluar la eficacia de estas acciones.",
     "La organización debe considerar sus opciones tecnológicas y sus requisitos financieros, operacionales y de negocio."
   ],
-  "6.2": [],
+  "6.2": [
+    "Objetivos ambientales y planificación para lograrlos"
+  ],
   "6.2.1": [
     "La organización establece objetivos ambientales para las funciones y niveles pertinentes, teniendo en cuenta los aspectos ambientales significativos de la organización y sus requisitos legales y otros requisitos asociados y considerando sus riesgos y oportunidades. Los objetivos ambientales deben:",
     "a) Los objetivos ambientales son coherentes con la política ambiental;",
@@ -94,6 +94,7 @@
     "La organización conserva información documentada sobre los objetivos ambientales"
   ],
   "6.2.2": [
+    "Planificación de acciones para lograr los objetivos ambientales",
     "Al planificar cómo lograr sus objetivos ambientales, la organización determina, qué se va a hacer, qué recursos se requerirán, quién será responsable,  cuándo se finalizará, cómo se evaluarán los resultados",
     "La organización considera cómo se pueden integrar las acciones para el logro de sus objetivos ambientales a los procesos de negocio de la organización"
   ],
@@ -110,10 +111,10 @@
   ],
   "7.3": [
     "La organización debe asegurarse de que las personas que realicen el trabajo bajo el control de la organización tomen conciencia",
-    "a. La política ambiental",
-    "b. los aspectos ambientales significativos y los impactos ambientales reales o potenciales\r\nrelacionados, asociados con su trabajo;",
-    "c. su contribución a la eficacia del sistema de gestión ambiental, incluidos los beneficios\r\nde una mejora del desempeño ambiental;",
-    "d. las implicaciones de no satisfacer los requisitos del sistema de gestión ambiental,\r\nincluido el incumplimiento de los requisitos legales y otros requisitos de la organización."
+    "La política ambiental",
+    "los aspectos ambientales significativos y los impactos ambientales reales o potenciales\r\nrelacionados, asociados con su trabajo;",
+    "su contribución a la eficacia del sistema de gestión ambiental, incluidos los beneficios\r\nde una mejora del desempeño ambiental;",
+    "las implicaciones de no satisfacer los requisitos del sistema de gestión ambiental,\r\nincluido el incumplimiento de los requisitos legales y otros requisitos de la organización."
   ],
   "7.4": [],
   "7.4.1": [

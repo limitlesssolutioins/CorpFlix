@@ -47,71 +47,86 @@ FROM iso_requirements
 WHERE requirement_code = '4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Los tipos de productos y servicios cubiertos por el sistema de gestión de la calidad;', 5
+SELECT id, 'El alcance debe estar disponible y mantenerse  como información documentada estableciendo:', 5
 FROM iso_requirements 
 WHERE requirement_code = '4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La justificación para cualquier requisito de esta norma internacional que la organización determine que no es aplicable para el alcance de su SGC.', 6
+SELECT id, 'Los tipos de productos y servicios cubiertos por el sistema de gestión de la calidad;', 6
+FROM iso_requirements 
+WHERE requirement_code = '4.3' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'La justificación para cualquier requisito de esta norma internacional que la organización determine que no es aplicable para el alcance de su SGC.', 7
 FROM iso_requirements 
 WHERE requirement_code = '4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 4.4.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe:', 1
+SELECT id, 'La organización debe establecer, implementar, mantener y mejorar continuamente un sistema de gestión de la calidad, incluidos los procesos necesarios y sus interacciones, de acuerdo con los requisitos de esta Norma Internacional', 1
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) determinar las entradas requeridas y las salidas esperados de estos procesos;', 2
+SELECT id, 'La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe:', 2
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) determinar la secuencia e interacción de estos procesos;', 3
+SELECT id, 'determinar las entradas requeridas y las salidas esperados de estos procesos;', 3
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) determinar y aplicar los criterios y los métodos (incluyendo el seguimiento, la medición y los indicadores del desempeño relacionados) necesarios para asegurarse la operación eficaz y el control de estos procesos;', 4
+SELECT id, 'determinar la secuencia e interacción de estos procesos;', 4
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) determinar los recursos necesarios para estos procesos y asegurarse de su disponibilidad;', 5
+SELECT id, 'determinar y aplicar los criterios y los métodos (incluyendo el seguimiento, la medición y los indicadores del desempeño relacionados) necesarios para asegurarse la operación eficaz y el control de estos procesos;', 5
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) asignar las responsabilidades y autoridades para estos procesos;', 6
+SELECT id, 'determinar los recursos necesarios para estos procesos y asegurarse de su disponibilidad;', 6
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) abordar los riesgos y oportunidades determinados de acuerdo con los requisitos del apartado 6.1;', 7
+SELECT id, 'asignar las responsabilidades y autoridades para estos procesos;', 7
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'g) valorar estos procesos e implementar cualquier cambio necesario para asegurarse de que estos procesos logran los resultados previstos;', 8
+SELECT id, 'abordar los riesgos y oportunidades determinados de acuerdo con los requisitos del apartado 6.1;', 8
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'h) mejorar los procesos y el sistema de gestión de la calidad.', 9
+SELECT id, 'valorar estos procesos e implementar cualquier cambio necesario para asegurarse de que estos procesos logran los resultados previstos;', 9
+FROM iso_requirements 
+WHERE requirement_code = '4.4.1' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'mejorar los procesos y el sistema de gestión de la calidad.', 10
 FROM iso_requirements 
 WHERE requirement_code = '4.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 4.4.2
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) mantener información documentada para apoyar la operación de sus procesos;', 1
+SELECT id, 'En la medida en que sea necesario, la organización debe:', 1
 FROM iso_requirements 
 WHERE requirement_code = '4.4.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) conservar la información documentada para tener la confianza de que los procesos se realizan según lo planificado.', 2
+SELECT id, 'mantener información documentada para apoyar la operación de sus procesos;', 2
+FROM iso_requirements 
+WHERE requirement_code = '4.4.2' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'conservar la información documentada para tener la confianza de que los procesos se realizan según lo planificado.', 3
 FROM iso_requirements 
 WHERE requirement_code = '4.4.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -124,22 +139,22 @@ FROM iso_requirements
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) sea apropiada al propósito y al contexto de la organización y apoya su dirección estratégica;', 2
+SELECT id, 'sea apropiada al propósito y al contexto de la organización y apoya su dirección estratégica;', 2
 FROM iso_requirements 
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) proporcione un marco de referencia para el establecimiento de los objetivos de la calidad', 3
+SELECT id, 'proporcione un marco de referencia para el establecimiento de los objetivos de la calidad', 3
 FROM iso_requirements 
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) incluya el compromiso de cumplir los requisitos aplicables;', 4
+SELECT id, 'incluya el compromiso de cumplir los requisitos aplicables;', 4
 FROM iso_requirements 
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) incluya el compromiso de mejora continua del sistema de gestión de la calidad.', 5
+SELECT id, 'incluya el compromiso de mejora continua del sistema de gestión de la calidad.', 5
 FROM iso_requirements 
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -150,50 +165,55 @@ FROM iso_requirements
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) estar disponible y mantenerse como información documentada;', 7
+SELECT id, 'estar disponible y mantenerse como información documentada;', 7
 FROM iso_requirements 
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) comunicarse, entenderse y aplicarse dentro de la organización;', 8
+SELECT id, 'comunicarse, entenderse y aplicarse dentro de la organización;', 8
 FROM iso_requirements 
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) estar disponible para las partes interesadas pertinentes, según corresponda.', 9
+SELECT id, 'estar disponible para las partes interesadas pertinentes, según corresponda.', 9
 FROM iso_requirements 
 WHERE requirement_code = '5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 5.3
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'ROLES, RESPONSABILIDADES Y AUTORIDADES EN LA ORGANIZACIÓN', 1
+FROM iso_requirements 
+WHERE requirement_code = '5.3' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
 SELECT id, 'La alta dirección debe asegurarse de que las responsabilidades y autoridades para los roles pertinentes se asignen, se comuniquen y se entiendan dentro de la organización. 
-La alta dirección debe asignar la responsabilidad y autoridad para:', 1
+La alta dirección debe asignar la responsabilidad y autoridad para:', 2
 FROM iso_requirements 
 WHERE requirement_code = '5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) asegurarse de que el sistema de gestión de la calidad es conforme con los requisitos de esta Norma Internacional;', 2
+SELECT id, 'asegurarse de que el sistema de gestión de la calidad es conforme con los requisitos de esta Norma Internacional;', 3
 FROM iso_requirements 
 WHERE requirement_code = '5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) asegurarse de que los procesos están dando las salidas previstas;', 3
+SELECT id, 'asegurarse de que los procesos están dando las salidas previstas;', 4
 FROM iso_requirements 
 WHERE requirement_code = '5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) informar a la alta dirección sobre el desempeño del sistema de gestión de la calidad y sobre las oportunidades de mejora (véase 10.1);', 4
+SELECT id, 'informar a la alta dirección sobre el desempeño del sistema de gestión de la calidad y sobre las oportunidades de mejora (véase 10.1);', 5
 FROM iso_requirements 
 WHERE requirement_code = '5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) asegurarse de que se promueva el enfoque al cliente a través de la organización;', 5
+SELECT id, 'asegurarse de que se promueva el enfoque al cliente a través de la organización;', 6
 FROM iso_requirements 
 WHERE requirement_code = '5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) asegurarse de que la integridad del sistema de gestión de la calidad se mantiene cuando se planifican e implementan cambios en el sistema de gestión de la calidad', 6
+SELECT id, 'asegurarse de que la integridad del sistema de gestión de la calidad se mantiene cuando se planifican e implementan cambios en el sistema de gestión de la calidad', 7
 FROM iso_requirements 
 WHERE requirement_code = '5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -205,40 +225,40 @@ FROM iso_requirements
 WHERE requirement_code = '6.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) asegurar que el sistema de gestión de la calidad pueda lograr sus resultados previstos;', 2
+SELECT id, 'asegurar que el sistema de gestión de la calidad pueda lograr sus resultados previstos;', 2
 FROM iso_requirements 
 WHERE requirement_code = '6.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) aumentar los efectos deseables;', 3
+SELECT id, 'aumentar los efectos deseables;', 3
 FROM iso_requirements 
 WHERE requirement_code = '6.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) prevenir o reducir efectos no deseados;', 4
+SELECT id, 'prevenir o reducir efectos no deseados;', 4
 FROM iso_requirements 
 WHERE requirement_code = '6.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) lograr la mejora', 5
+SELECT id, 'lograr la mejora', 5
 FROM iso_requirements 
 WHERE requirement_code = '6.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 6.1.2
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) las acciones para abordar estos riesgos y oportunidades;', 1
+SELECT id, 'las acciones para abordar estos riesgos y oportunidades;', 1
 FROM iso_requirements 
 WHERE requirement_code = '6.1.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) La manera de:   
+SELECT id, 'La manera de:   
 1) integrar e implementar las acciones en sus procesos del sistema de gestión de la calidad;', 2
 FROM iso_requirements 
 WHERE requirement_code = '6.1.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '2) evaluar la eficacia de estas acciones.', 3
+SELECT id, 'evaluar la eficacia de estas acciones.', 3
 FROM iso_requirements 
 WHERE requirement_code = '6.1.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -248,104 +268,115 @@ FROM iso_requirements
 WHERE requirement_code = '6.1.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
+-- Criterios para requisito 6.2
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'OBJETIVOS DE LA CALIDAD Y PLANIFICACIÓN PARA LOGRARLOS', 1
+FROM iso_requirements 
+WHERE requirement_code = '6.2' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+
 -- Criterios para requisito 6.2.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Los objetivos de la calidad deben:', 1
+SELECT id, 'La organización debe establecer los objetivos de la calidad para las funciones, niveles y procesos pertinentes necesarios para el sistema de gestión de la calidad.', 1
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) ser coherentes con la política de la calidad;', 2
+SELECT id, 'Los objetivos de la calidad deben:', 2
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) ser medibles;', 3
+SELECT id, 'ser coherentes con la política de la calidad;', 3
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) tener en cuenta los requisitos aplicables;', 4
+SELECT id, 'ser medibles;', 4
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) ser pertinentes para la conformidad de los productos y servicios y para el aumento de la satisfacción del cliente;', 5
+SELECT id, 'tener en cuenta los requisitos aplicables;', 5
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) ser objeto de seguimiento;', 6
+SELECT id, 'ser pertinentes para la conformidad de los productos y servicios y para el aumento de la satisfacción del cliente;', 6
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) comunicarse', 7
+SELECT id, 'ser objeto de seguimiento;', 7
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'g) actualizarse, según corresponda.', 8
+SELECT id, 'comunicarse', 8
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe mantener información documentada sobre los objetivos de la calidad.', 9
+SELECT id, 'actualizarse, según corresponda.', 9
+FROM iso_requirements 
+WHERE requirement_code = '6.2.1' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'La organización debe mantener información documentada sobre los objetivos de la calidad.', 10
 FROM iso_requirements 
 WHERE requirement_code = '6.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 6.2.2
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) qué se va a hacer;', 1
+SELECT id, 'Al planificar cómo lograr sus objetivos de la calidad, la organización debe determinar:', 1
 FROM iso_requirements 
 WHERE requirement_code = '6.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) qué recursos se requerirán;', 2
+SELECT id, 'qué se va a hacer;', 2
 FROM iso_requirements 
 WHERE requirement_code = '6.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) quién será responsable;', 3
+SELECT id, 'qué recursos se requerirán;', 3
 FROM iso_requirements 
 WHERE requirement_code = '6.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) cuándo se finalizará;', 4
+SELECT id, 'quién será responsable;', 4
 FROM iso_requirements 
 WHERE requirement_code = '6.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) cómo se evaluarán los resultados.', 5
+SELECT id, 'cuándo se finalizará;', 5
+FROM iso_requirements 
+WHERE requirement_code = '6.2.2' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'cómo se evaluarán los resultados.', 6
 FROM iso_requirements 
 WHERE requirement_code = '6.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 6.3
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Cuando la organización determine la necesidad de cambios en el sistema de gestión de la calidad, estos cambios se deben llevar a cabo de manera planificada y sistemática (véase 4.4). 
-La organización debe considerar:', 1
+SELECT id, 'el propósito de los cambios y sus potenciales consecuencias;', 1
 FROM iso_requirements 
 WHERE requirement_code = '6.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) el propósito de los cambios y sus potenciales consecuencias;', 2
+SELECT id, 'la integridad del sistema de gestión de la calidad;', 2
 FROM iso_requirements 
 WHERE requirement_code = '6.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) la integridad del sistema de gestión de la calidad;', 3
+SELECT id, 'la disponibilidad de recursos;', 3
 FROM iso_requirements 
 WHERE requirement_code = '6.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la disponibilidad de recursos;', 4
-FROM iso_requirements 
-WHERE requirement_code = '6.3' 
-AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
-INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) la asignación o reasignación de responsabilidades y autoridades.', 5
+SELECT id, 'la asignación o reasignación de responsabilidades y autoridades.', 4
 FROM iso_requirements 
 WHERE requirement_code = '6.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -390,12 +421,12 @@ FROM iso_requirements
 WHERE requirement_code = '7.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) son adecuados para el tipo específico de actividades de seguimiento y medición realizadas;', 7
+SELECT id, 'son adecuados para el tipo específico de actividades de seguimiento y medición realizadas;', 7
 FROM iso_requirements 
 WHERE requirement_code = '7.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) se mantienen para asegurarse de la adecuación continua para su propósito.', 8
+SELECT id, 'se mantienen para asegurarse de la adecuación continua para su propósito.', 8
 FROM iso_requirements 
 WHERE requirement_code = '7.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -415,17 +446,17 @@ FROM iso_requirements
 WHERE requirement_code = '7.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) verificarse o calibrarse, o ambas, a intervalos especificados, o antes de su utilización, comparando con patrones de medición trazables a patrones de medición internacionales o nacionales; cuando no existan tales patrones, debe conservarse como información documentada la base utilizada para la calibración o la verificación;', 12
+SELECT id, 'verificarse o calibrarse, o ambas, a intervalos especificados, o antes de su utilización, comparando con patrones de medición trazables a patrones de medición internacionales o nacionales; cuando no existan tales patrones, debe conservarse como información documentada la base utilizada para la calibración o la verificación;', 12
 FROM iso_requirements 
 WHERE requirement_code = '7.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) identificarse para determinar su estado;', 13
+SELECT id, 'identificarse para determinar su estado;', 13
 FROM iso_requirements 
 WHERE requirement_code = '7.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) protegerse contra ajustes, daño o deterioro que pudieran invalidar el estado de calibración y los posteriores resultados de la medición.', 14
+SELECT id, 'protegerse contra ajustes, daño o deterioro que pudieran invalidar el estado de calibración y los posteriores resultados de la medición.', 14
 FROM iso_requirements 
 WHERE requirement_code = '7.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -459,22 +490,22 @@ FROM iso_requirements
 WHERE requirement_code = '7.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) determinar la competencia necesaria de las personas que realizan, bajo su control, un trabajo que afecta al desempeño y eficacia del sistema de gestión de la calidad;', 2
+SELECT id, 'determinar la competencia necesaria de las personas que realizan, bajo su control, un trabajo que afecta al desempeño y eficacia del sistema de gestión de la calidad;', 2
 FROM iso_requirements 
 WHERE requirement_code = '7.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) asegurarse de que estas personas sean competentes, basándose en la educación, formación o experiencia adecuadas;', 3
+SELECT id, 'asegurarse de que estas personas sean competentes, basándose en la educación, formación o experiencia adecuadas;', 3
 FROM iso_requirements 
 WHERE requirement_code = '7.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) cuando sea aplicable, tomar acciones para adquirir la competencia necesaria y evaluar la eficacia de las acciones tomadas;', 4
+SELECT id, 'cuando sea aplicable, tomar acciones para adquirir la competencia necesaria y evaluar la eficacia de las acciones tomadas;', 4
 FROM iso_requirements 
 WHERE requirement_code = '7.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) conservar la información documentada apropiada, como evidencia de la competencia.', 5
+SELECT id, 'conservar la información documentada apropiada, como evidencia de la competencia.', 5
 FROM iso_requirements 
 WHERE requirement_code = '7.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -486,22 +517,22 @@ FROM iso_requirements
 WHERE requirement_code = '7.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la política de la calidad;', 2
+SELECT id, 'la política de la calidad;', 2
 FROM iso_requirements 
 WHERE requirement_code = '7.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) los objetivos de la calidad pertinentes;', 3
+SELECT id, 'los objetivos de la calidad pertinentes;', 3
 FROM iso_requirements 
 WHERE requirement_code = '7.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) su contribución a la eficacia del sistema de gestión de la calidad, incluyendo los beneficios de una mejora del desempeño;', 4
+SELECT id, 'su contribución a la eficacia del sistema de gestión de la calidad, incluyendo los beneficios de una mejora del desempeño;', 4
 FROM iso_requirements 
 WHERE requirement_code = '7.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) las implicaciones de no cumplir los requisitos del sistema de gestión de la calidad.', 5
+SELECT id, 'las implicaciones de no cumplir los requisitos del sistema de gestión de la calidad.', 5
 FROM iso_requirements 
 WHERE requirement_code = '7.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -513,27 +544,27 @@ FROM iso_requirements
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) qué comunicar;', 2
+SELECT id, 'qué comunicar;', 2
 FROM iso_requirements 
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) cuándo comunicar;', 3
+SELECT id, 'cuándo comunicar;', 3
 FROM iso_requirements 
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) a quién comunicar;', 4
+SELECT id, 'a quién comunicar;', 4
 FROM iso_requirements 
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) cómo comunicar.', 5
+SELECT id, 'cómo comunicar.', 5
 FROM iso_requirements 
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) quién comunica.', 6
+SELECT id, 'quién comunica.', 6
 FROM iso_requirements 
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -549,12 +580,12 @@ FROM iso_requirements
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la información documentada requerida por esta Norma Internacional', 9
+SELECT id, 'la información documentada requerida por esta Norma Internacional', 9
 FROM iso_requirements 
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) la información documentada que la organización ha determinado que es necesaria para la eficacia del sistema de gestión de la calidad.', 10
+SELECT id, 'la información documentada que la organización ha determinado que es necesaria para la eficacia del sistema de gestión de la calidad.', 10
 FROM iso_requirements 
 WHERE requirement_code = '7.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -566,17 +597,17 @@ FROM iso_requirements
 WHERE requirement_code = '7.5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la identificación y descripción (por ejemplo, título, fecha, autor o número de referencia);', 2
+SELECT id, 'la identificación y descripción (por ejemplo, título, fecha, autor o número de referencia);', 2
 FROM iso_requirements 
 WHERE requirement_code = '7.5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) el formato (por ejemplo, idioma, versión del software, gráficos) y sus medios de soporte (por ejemplo, papel, electrónico);', 3
+SELECT id, 'el formato (por ejemplo, idioma, versión del software, gráficos) y sus medios de soporte (por ejemplo, papel, electrónico);', 3
 FROM iso_requirements 
 WHERE requirement_code = '7.5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la revisión y aprobación con respecto a la idoneidad y adecuación.', 4
+SELECT id, 'la revisión y aprobación con respecto a la idoneidad y adecuación.', 4
 FROM iso_requirements 
 WHERE requirement_code = '7.5.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -588,12 +619,12 @@ FROM iso_requirements
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) esté disponible y adecuada para su uso, dónde y cuándo se necesite;', 2
+SELECT id, 'esté disponible y adecuada para su uso, dónde y cuándo se necesite;', 2
 FROM iso_requirements 
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) esté protegida adecuadamente (por ejemplo, contra pérdida de la confidencialidad, uso inadecuado, o pérdida de integridad).', 3
+SELECT id, 'esté protegida adecuadamente (por ejemplo, contra pérdida de la confidencialidad, uso inadecuado, o pérdida de integridad).', 3
 FROM iso_requirements 
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -603,22 +634,22 @@ FROM iso_requirements
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) distribución, acceso, recuperación y uso;', 5
+SELECT id, 'distribución, acceso, recuperación y uso;', 5
 FROM iso_requirements 
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) almacenamiento y preservación, incluida la preservación de la legibilidad;', 6
+SELECT id, 'almacenamiento y preservación, incluida la preservación de la legibilidad;', 6
 FROM iso_requirements 
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) control de cambios (por ejemplo, control de versión);', 7
+SELECT id, 'control de cambios (por ejemplo, control de versión);', 7
 FROM iso_requirements 
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) conservación y disposición.', 8
+SELECT id, 'conservación y disposición.', 8
 FROM iso_requirements 
 WHERE requirement_code = '7.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -640,29 +671,29 @@ FROM iso_requirements
 WHERE requirement_code = '8.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la determinación de los requisitos para los productos y servicios;', 2
+SELECT id, 'la determinación de los requisitos para los productos y servicios;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) el establecimiento de criterios para:
+SELECT id, 'el establecimiento de criterios para:
 1) los procesos;
 2) la aceptación de los productos y servicios;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la determinación de los recursos necesarios para lograr la conformidad para los requisitos de los productos y servicios;', 4
+SELECT id, 'la determinación de los recursos necesarios para lograr la conformidad para los requisitos de los productos y servicios;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) la implementación del control de los procesos de acuerdo con los criterios;', 5
+SELECT id, 'la implementación del control de los procesos de acuerdo con los criterios;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) la determinación y almacenaje de la información documentada en la medida necesaria:
+SELECT id, 'la determinación y almacenaje de la información documentada en la medida necesaria:
 1) para confiar en que los procesos se han llevado a cabo según lo planificado;
 2) para demostrar la conformidad de los productos y servicios con sus requisitos..', 6
 FROM iso_requirements 
@@ -684,6 +715,13 @@ FROM iso_requirements
 WHERE requirement_code = '8.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
+-- Criterios para requisito 8.2
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'Determinación de los requisitos para los productos y servicios', 1
+FROM iso_requirements 
+WHERE requirement_code = '8.2' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+
 -- Criterios para requisito 8.2.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
 SELECT id, 'La comunicación con los clientes debe :', 1
@@ -691,115 +729,130 @@ FROM iso_requirements
 WHERE requirement_code = '8.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) proporcionar la información relativa a los productos y servicios;', 2
+SELECT id, 'proporcionar la información relativa a los productos y servicios;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) la atención de las consultas, los contratos o los pedidos, incluyendo los cambios;', 3
+SELECT id, 'la atención de las consultas, los contratos o los pedidos, incluyendo los cambios;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) obtener la retroalimentación de los clientes relativa a los productos y servicios, incluyendo las quejas de los clientes;', 4
+SELECT id, 'obtener la retroalimentación de los clientes relativa a los productos y servicios, incluyendo las quejas de los clientes;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) manipular o controlar las propiedades del cliente;', 5
+SELECT id, 'manipular o controlar las propiedades del cliente;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) establecer los requisitos específicos para las acciones de contingencia, cuando sea pertinente.', 6
+SELECT id, 'establecer los requisitos específicos para las acciones de contingencia, cuando sea pertinente.', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 8.2.2
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Cuando determina los requisitos para los productos y servicios que se van a ofrecer a los clientes, la organización debe asegurarse de que:', 1
+SELECT id, 'Determinación de los requisitos relativos a los productos y servicios', 1
 FROM iso_requirements 
 WHERE requirement_code = '8.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los requisitos para los productos y servicios se definen, incluyendo:
+SELECT id, 'Cuando determina los requisitos para los productos y servicios que se van a ofrecer a los clientes, la organización debe asegurarse de que:', 2
+FROM iso_requirements 
+WHERE requirement_code = '8.2.2' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'los requisitos para los productos y servicios se definen, incluyendo:
 1) cualquier requisito legal y reglamentario aplicable;
-2) aquellos considerados necesarios por la organización;', 2
+2) aquellos considerados necesarios por la organización;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) la organización puede cumplir las reclamaciones de los productos y servicios que ofrece.', 3
+SELECT id, 'la organización puede cumplir las reclamaciones de los productos y servicios que ofrece.', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 8.2.3
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '8.2.3.1 La organización debe asegurarse de que tiene la capacidad de cumplir los requisitos para los productos y servicios que se van a ofrecer a los clientes.', 1
+SELECT id, 'Revisión de los requisitos relacionados con los productos y servicios', 1
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir:', 2
+SELECT id, '8.2.3.1 La organización debe asegurarse de que tiene la capacidad de cumplir los requisitos para los productos y servicios que se van a ofrecer a los clientes.', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los requisitos especificados por el cliente, incluyendo los requisitos para las actividades de entrega y las posteriores a la misma;', 3
+SELECT id, 'La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir:', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) los requisitos no establecidos por el cliente, pero necesarios para el uso especificado o para el uso previsto, cuando sea conocido;', 4
+SELECT id, 'los requisitos especificados por el cliente, incluyendo los requisitos para las actividades de entrega y las posteriores a la misma;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) los requisitos especificados por la organización;', 5
+SELECT id, 'los requisitos no establecidos por el cliente, pero necesarios para el uso especificado o para el uso previsto, cuando sea conocido;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) los requisitos legales y reglamentarios adicionales aplicables a los productos y servicios;', 6
+SELECT id, 'los requisitos especificados por la organización;', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) las diferencias existentes entre los requisitos de contrato o pedido y los expresados previamente.', 7
+SELECT id, 'los requisitos legales y reglamentarios adicionales aplicables a los productos y servicios;', 7
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe asegurarse de que se resuelven las diferencias existentes entre los requisitos del contrato o pedido y los expresados previamente.', 8
+SELECT id, 'las diferencias existentes entre los requisitos de contrato o pedido y los expresados previamente.', 8
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe confirmar los requisitos del cliente antes de la aceptación, cuando el cliente no proporcione una declaración documentada de sus requisitos.', 9
+SELECT id, 'La organización debe asegurarse de que se resuelven las diferencias existentes entre los requisitos del contrato o pedido y los expresados previamente.', 9
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '8.2.3.2 La organización debe conservar la información documentada, cuando sea aplicable:', 10
+SELECT id, 'La organización debe confirmar los requisitos del cliente antes de la aceptación, cuando el cliente no proporcione una declaración documentada de sus requisitos.', 10
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) sobre los resultados de la revisión;', 11
+SELECT id, '8.2.3.2 La organización debe conservar la información documentada, cuando sea aplicable:', 11
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) sobre cualquier requisito nuevo para los productos y servicios.', 12
+SELECT id, 'sobre los resultados de la revisión;', 12
+FROM iso_requirements 
+WHERE requirement_code = '8.2.3' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'sobre cualquier requisito nuevo para los productos y servicios.', 13
 FROM iso_requirements 
 WHERE requirement_code = '8.2.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 8.2.4
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe asegurarse de que la información documentada pertinente sea modificada, y de que las personas correspondientes sean conscientes de los requisitos modificados, cuando se cambien los requisitos para los productos y servicios', 1
+SELECT id, 'Cambios en los requisitos para los productos y servicios', 1
+FROM iso_requirements 
+WHERE requirement_code = '8.2.4' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'La organización debe asegurarse de que la información documentada pertinente sea modificada, y de que las personas correspondientes sean conscientes de los requisitos modificados, cuando se cambien los requisitos para los productos y servicios', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.2.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -813,110 +866,99 @@ AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FR
 
 -- Criterios para requisito 8.3.2
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar:', 1
+SELECT id, 'la naturaleza, duración y complejidad de las actividades de diseño y desarrollo;', 1
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la naturaleza, duración y complejidad de las actividades de diseño y desarrollo;', 2
+SELECT id, 'las etapas del proceso requeridas, incluyendo las revisiones del diseño y desarrollo aplicables;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) las etapas del proceso requeridas, incluyendo las revisiones del diseño y desarrollo aplicables;', 3
+SELECT id, 'las actividades requeridas de verificación y validación del diseño y desarrollo;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) las actividades requeridas de verificación y validación del diseño y desarrollo;', 4
+SELECT id, 'las responsabilidades y autoridades involucradas en el proceso de diseño y desarrollo;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) las responsabilidades y autoridades involucradas en el proceso de diseño y desarrollo;', 5
+SELECT id, 'las necesidades de recursos internos y externos para el diseño y desarrollo de los productos y servicios;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) las necesidades de recursos internos y externos para el diseño y desarrollo de los productos y servicios;', 6
+SELECT id, 'la necesidad de controlar las interfaces entre las personas implicadas en el proceso de diseño y desarrollo;', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) la necesidad de controlar las interfaces entre las personas implicadas en el proceso de diseño y desarrollo;', 7
+SELECT id, 'la necesidad de la participación activa de los clientes y usuarios en el proceso de diseño y desarrollo;', 7
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'g) la necesidad de la participación activa de los clientes y usuarios en el proceso de diseño y desarrollo;', 8
+SELECT id, 'los requisitos para la posterior producción de productos y prestación de servicios;', 8
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'h) los requisitos para la posterior producción de productos y prestación de servicios;', 9
+SELECT id, 'el nivel de control del proceso de diseño y desarrollo esperado por los clientes y otras partes interesadas pertinentes;', 9
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'i) el nivel de control del proceso de diseño y desarrollo esperado por los clientes y otras partes interesadas pertinentes;', 10
-FROM iso_requirements 
-WHERE requirement_code = '8.3.2' 
-AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
-INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'j) la información documentada necesaria para demostrar que se han cumplido los requisitos del diseño y desarrollo.', 11
+SELECT id, 'la información documentada necesaria para demostrar que se han cumplido los requisitos del diseño y desarrollo.', 10
 FROM iso_requirements 
 WHERE requirement_code = '8.3.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 8.3.3
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe determinar los requisitos esenciales para los tipos específicos de productos y servicios que se van a diseñar y desarrollar.
- La organización debe considerar:', 1
+SELECT id, 'los requisitos funcionales y de desempeño;', 1
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los requisitos funcionales y de desempeño;', 2
+SELECT id, 'la información proveniente de actividades de diseño y desarrollo previas similares;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) la información proveniente de actividades de diseño y desarrollo previas similares;', 3
+SELECT id, 'los requisitos legales y reglamentarios;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) los requisitos legales y reglamentarios;', 4
+SELECT id, 'normas o códigos de prácticas que la organización se ha comprometido a implementar;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) normas o códigos de prácticas que la organización se ha comprometido a implementar;', 5
+SELECT id, 'las consecuencias potenciales del fracaso debido a la naturaleza de los productos y servicios;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) las consecuencias potenciales del fracaso debido a la naturaleza de los productos y servicios;', 6
+SELECT id, 'Los elementos de entrada deben ser adecuados para los fines de diseño y desarrollo, estar completos y sin ambigüedades. Los conflictos entre elementos de entrada deben resolverse.', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Los elementos de entrada deben ser adecuados para los fines de diseño y desarrollo, estar completos y sin ambigüedades. Los conflictos entre elementos de entrada deben resolverse.', 7
+SELECT id, 'Las entradas deben ser adecuadas para los fines de diseño y desarrollo, estar completos y sin ambigüedades.', 7
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Las entradas deben ser adecuadas para los fines de diseño y desarrollo, estar completos y sin ambigüedades.', 8
+SELECT id, 'Deben resolverse las entradas del diseño y desarrollo contradictorios.', 8
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Deben resolverse las entradas del diseño y desarrollo contradictorios.', 9
-FROM iso_requirements 
-WHERE requirement_code = '8.3.3' 
-AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
-INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe conservar la información documentada sobre las entradas del diseño y desarrollo.', 10
+SELECT id, 'La organización debe conservar la información documentada sobre las entradas del diseño y desarrollo.', 9
 FROM iso_requirements 
 WHERE requirement_code = '8.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -928,32 +970,32 @@ FROM iso_requirements
 WHERE requirement_code = '8.3.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los resultados a lograr están definidos;', 2
+SELECT id, 'los resultados a lograr están definidos;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.3.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) las revisiones se realizan para evaluar la capacidad de los resultados del diseño y desarrollo de cumplir los requisitos;', 3
+SELECT id, 'las revisiones se realizan para evaluar la capacidad de los resultados del diseño y desarrollo de cumplir los requisitos;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.3.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) se realizan actividades de verificación para asegurarse de que las salidas del diseño y desarrollo cumplen los requisitos de las entradas;', 4
+SELECT id, 'se realizan actividades de verificación para asegurarse de que las salidas del diseño y desarrollo cumplen los requisitos de las entradas;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.3.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) se realizan actividades de validación para asegurarse de que los productos y servicios resultantes satisfacen los requisitos para su aplicación especificada o uso previsto;', 5
+SELECT id, 'se realizan actividades de validación para asegurarse de que los productos y servicios resultantes satisfacen los requisitos para su aplicación especificada o uso previsto;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.3.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) se toma cualquier acción necesaria sobre los problemas determinados durante las revisiones, o las actividades de verificación y validación;', 6
+SELECT id, 'se toma cualquier acción necesaria sobre los problemas determinados durante las revisiones, o las actividades de verificación y validación;', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.3.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) se conserva la información documentada de estas actividades.', 7
+SELECT id, 'se conserva la información documentada de estas actividades.', 7
 FROM iso_requirements 
 WHERE requirement_code = '8.3.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -965,22 +1007,22 @@ FROM iso_requirements
 WHERE requirement_code = '8.3.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) cumplen los requisitos de las entradas;', 2
+SELECT id, 'cumplen los requisitos de las entradas;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.3.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) son adecuados para los procesos posteriores para la provisión de productos y servicios;', 3
+SELECT id, 'son adecuados para los procesos posteriores para la provisión de productos y servicios;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.3.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) incluyen o hacen referencia a los requisitos de seguimiento y medición, cuando sea adecuado, y a los criterios de aceptación;', 4
+SELECT id, 'incluyen o hacen referencia a los requisitos de seguimiento y medición, cuando sea adecuado, y a los criterios de aceptación;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.3.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) especifican las características de los productos y servicios que son esenciales para su propósito previsto y su uso seguro y correcto.', 5
+SELECT id, 'especifican las características de los productos y servicios que son esenciales para su propósito previsto y su uso seguro y correcto.', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.3.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -993,24 +1035,36 @@ FROM iso_requirements
 WHERE requirement_code = '8.3.6' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los cambios del diseño y desarrollo;', 2
+SELECT id, 'los cambios del diseño y desarrollo;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.3.6' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) los resultados de las revisiones;', 3
+SELECT id, 'los resultados de las revisiones;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.3.6' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la autorización de los cambios;', 4
+SELECT id, 'la autorización de los cambios;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.3.6' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) las acciones tomadas para prevenir los impactos adversos.', 5
+SELECT id, 'las acciones tomadas para prevenir los impactos adversos.', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.3.6' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+
+-- Criterios para requisito 8.4
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'CONTROL DE LOS PROCESOS, PRODUCTOS Y SERVICIOS SUMINISTRADOS EXTERNAMENTE', 1
+FROM iso_requirements 
+WHERE requirement_code = '8.4' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'Control de los productos y servicios suministrados externamente', 2
+FROM iso_requirements 
+WHERE requirement_code = '8.4' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 8.4.1
@@ -1025,17 +1079,17 @@ FROM iso_requirements
 WHERE requirement_code = '8.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los productos y servicios de proveedores externos están destinados a incorporarse dentro de los propios productos y servicios de la organización;', 3
+SELECT id, 'los productos y servicios de proveedores externos están destinados a incorporarse dentro de los propios productos y servicios de la organización;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) los productos y servicios son proporcionados directamente a los clientes por proveedores externos en nombre de la organización;', 4
+SELECT id, 'los productos y servicios son proporcionados directamente a los clientes por proveedores externos en nombre de la organización;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) un proceso, o una parte de un proceso, es proporcionado por un proveedor externo como resultado de una decisión de la organización.', 5
+SELECT id, 'un proceso, o una parte de un proceso, es proporcionado por un proveedor externo como resultado de una decisión de la organización.', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.4.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1057,24 +1111,24 @@ FROM iso_requirements
 WHERE requirement_code = '8.4.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) asegurarse de que los procesos suministrados externamente permanecen dentro del control de su sistema de gestión de la calidad;', 2
+SELECT id, 'asegurarse de que los procesos suministrados externamente permanecen dentro del control de su sistema de gestión de la calidad;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.4.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) definir los controles que pretende aplicar a un proveedor externo y los que pretende aplicar a las salidas resultantes;', 3
+SELECT id, 'definir los controles que pretende aplicar a un proveedor externo y los que pretende aplicar a las salidas resultantes;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.4.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) tener en consideración:
+SELECT id, 'tener en consideración:
 1) el impacto potencial de los procesos, productos y servicios suministrados externamente en la capacidad de la organización de cumplir regularmente los requisitos del cliente y los legales y reglamentarios aplicables;
 2) la eficacia de los controles aplicados por el proveedor externo;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.4.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) determinar la verificación, u otras actividades, necesarias para asegurarse de que los procesos, productos y servicios suministrados externamente cumplen los requisitos.', 5
+SELECT id, 'determinar la verificación, u otras actividades, necesarias para asegurarse de que los procesos, productos y servicios suministrados externamente cumplen los requisitos.', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.4.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1091,12 +1145,12 @@ FROM iso_requirements
 WHERE requirement_code = '8.4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los procesos, productos y servicios a proporcionar;', 3
+SELECT id, 'los procesos, productos y servicios a proporcionar;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) la aprobación de:
+SELECT id, 'la aprobación de:
 1) productos y servicios;
 2) métodos, procesos y equipo;
 3) la liberación de productos y servicios;', 4
@@ -1104,76 +1158,81 @@ FROM iso_requirements
 WHERE requirement_code = '8.4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la competencia, incluyendo cualquier calificación de las personas requerida;', 5
+SELECT id, 'la competencia, incluyendo cualquier calificación de las personas requerida;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) las interacciones del proveedor externo con la organización;', 6
+SELECT id, 'las interacciones del proveedor externo con la organización;', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) el control y el seguimiento del desempeño del proveedor externo a aplicar por la organización;', 7
+SELECT id, 'el control y el seguimiento del desempeño del proveedor externo a aplicar por la organización;', 7
 FROM iso_requirements 
 WHERE requirement_code = '8.4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) las actividades de verificación o validación que la organización, o su cliente, pretenden llevar a cabo en las instalaciones del proveedor externo.', 8
+SELECT id, 'las actividades de verificación o validación que la organización, o su cliente, pretenden llevar a cabo en las instalaciones del proveedor externo.', 8
 FROM iso_requirements 
 WHERE requirement_code = '8.4.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 8.5.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe implementar la producción y prestación del servicio bajo condiciones controladas.', 1
+SELECT id, 'Control de la producción y de la prestación del servicio', 1
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Las condiciones controladas deben incluir, cuando sea aplicable:', 2
+SELECT id, 'La organización debe implementar la producción y prestación del servicio bajo condiciones controladas.', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la disponibilidad de información documentada que defina:
+SELECT id, 'Las condiciones controladas deben incluir, cuando sea aplicable:', 3
+FROM iso_requirements 
+WHERE requirement_code = '8.5.1' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'la disponibilidad de información documentada que defina:
 1) las características de los productos a producir, los servicios a prestar, o las actividades a desempeñar;
-2) los resultados a alcanzar;', 3
+2) los resultados a alcanzar;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) la disponibilidad y el uso de los recursos de seguimiento y medición adecuados;', 4
+SELECT id, 'la disponibilidad y el uso de los recursos de seguimiento y medición adecuados;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la implementación de actividades de seguimiento y medición en las etapas apropiadas para verificar que se cumplen los criterios para el control de los procesos o las salidas, y los criterios de aceptación para los productos y servicios;', 5
+SELECT id, 'la implementación de actividades de seguimiento y medición en las etapas apropiadas para verificar que se cumplen los criterios para el control de los procesos o las salidas, y los criterios de aceptación para los productos y servicios;', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) el uso de la infraestructura y el ambiente adecuados para la operación de los procesos;', 6
+SELECT id, 'el uso de la infraestructura y el ambiente adecuados para la operación de los procesos;', 7
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) la designación de personas competentes, incluyendo cualquier calificación requerida;', 7
+SELECT id, 'la designación de personas competentes, incluyendo cualquier calificación requerida;', 8
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) la validación y revalidación periódica de la capacidad para alcanzar los resultados planificados de los procesos de producción y de prestación del servicio, donde el elemento de salida resultante no pueda verificarse mediante actividades de seguimiento o medición posteriores;', 8
+SELECT id, 'la validación y revalidación periódica de la capacidad para alcanzar los resultados planificados de los procesos de producción y de prestación del servicio, donde el elemento de salida resultante no pueda verificarse mediante actividades de seguimiento o medición posteriores;', 9
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'g) la implementación de acciones para prevenir los errores humanos;', 9
+SELECT id, 'la implementación de acciones para prevenir los errores humanos;', 10
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'h) la implementación de actividades de liberación, entrega y posteriores a la entrega.', 10
+SELECT id, 'la implementación de actividades de liberación, entrega y posteriores a la entrega.', 11
 FROM iso_requirements 
 WHERE requirement_code = '8.5.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1202,22 +1261,27 @@ AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FR
 
 -- Criterios para requisito 8.5.3
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe cuidar la propiedad perteneciente a los clientes o a proveedores externos mientras esté bajo el control de la organización o esté siendo utilizado por la misma', 1
+SELECT id, 'Propiedad perteneciente a los clientes o proveedores externos', 1
 FROM iso_requirements 
 WHERE requirement_code = '8.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe identificar, verificar, proteger y salvaguardar la propiedad de los clientes o de los proveedores externos suministrada para su utilización o incorporación dentro de los productos y servicios.', 2
+SELECT id, 'La organización debe cuidar la propiedad perteneciente a los clientes o a proveedores externos mientras esté bajo el control de la organización o esté siendo utilizado por la misma', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Cuando la propiedad de un cliente o de un proveedor externo se pierda, deteriore o que de algún otro modo se considere inadecuada para su uso, la organización debe informar de esto al cliente o proveedor externo y', 3
+SELECT id, 'La organización debe identificar, verificar, proteger y salvaguardar la propiedad de los clientes o de los proveedores externos suministrada para su utilización o incorporación dentro de los productos y servicios.', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'conservar la información documentada sobre lo que ha ocurrido..', 4
+SELECT id, 'Cuando la propiedad de un cliente o de un proveedor externo se pierda, deteriore o que de algún otro modo se considere inadecuada para su uso, la organización debe informar de esto al cliente o proveedor externo y', 4
+FROM iso_requirements 
+WHERE requirement_code = '8.5.3' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'conservar la información documentada sobre lo que ha ocurrido..', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.5.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1236,32 +1300,27 @@ FROM iso_requirements
 WHERE requirement_code = '8.5.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Al determinar el alcance de las actividades posteriores a la entrega que se requieren, la organización debe considerar:', 2
+SELECT id, 'los requisitos legales y reglamentarios;', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.5.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) los requisitos legales y reglamentarios;', 3
+SELECT id, 'las potenciales consecuencias no deseadas asociadas con sus productos y servicios;', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.5.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) las potenciales consecuencias no deseadas asociadas con sus productos y servicios;', 4
+SELECT id, 'la naturaleza, el uso y la vida prevista de sus productos y servicios;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.5.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la naturaleza, el uso y la vida prevista de sus productos y servicios;', 5
+SELECT id, 'los requisitos del cliente;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.5.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) los requisitos del cliente;', 6
-FROM iso_requirements 
-WHERE requirement_code = '8.5.5' 
-AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
-INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) retroalimentación del cliente;', 7
+SELECT id, 'retroalimentación del cliente;', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.5.5' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1304,87 +1363,97 @@ AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FR
 
 -- Criterios para requisito 8.7
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'PROMEDIO', 1
+SELECT id, 'Control de los elementos de salida del proceso, los productos y los servicios no conformes', 1
+FROM iso_requirements 
+WHERE requirement_code = '8.7' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'PROMEDIO', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.7' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 8.7.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe tomar las acciones adecuadas basándose en la naturaleza de la no conformidad y en su efecto sobre la conformidad de los productos y servicios. Esto se debe aplicar también a los productos y servicios no conformes detectados después de la entrega de los productos, durante o después de la provisión de los servicios.', 1
+SELECT id, 'La organización debe asegurarse de que las salidas que no sean conformes con sus requisitos se identifican y se controlan para prevenir su uso o entrega no intencional.', 1
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'La organización debe tratar las salidas no conformes de una o más de las siguientes maneras:', 2
+SELECT id, 'La organización debe tomar las acciones adecuadas basándose en la naturaleza de la no conformidad y en su efecto sobre la conformidad de los productos y servicios. Esto se debe aplicar también a los productos y servicios no conformes detectados después de la entrega de los productos, durante o después de la provisión de los servicios.', 2
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) corrección;', 3
+SELECT id, 'La organización debe tratar las salidas no conformes de una o más de las siguientes maneras:', 3
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) separación, contención, devolución o suspensión de la provisión de los productos y servicios;', 4
+SELECT id, 'corrección;', 4
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) informar al cliente;', 5
+SELECT id, 'separación, contención, devolución o suspensión de la provisión de los productos y servicios;', 5
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) obtener autorización para su aceptación bajo concesión.', 6
+SELECT id, 'informar al cliente;', 6
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Debe verificarse la conformidad con los requisitos cuando las salidas no conformes se corrigen.', 7
+SELECT id, 'obtener autorización para su aceptación bajo concesión.', 7
+FROM iso_requirements 
+WHERE requirement_code = '8.7.1' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'Debe verificarse la conformidad con los requisitos cuando las salidas no conformes se corrigen.', 8
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
 SELECT id, '8.7.2 La organización debe mantener la información documentada que:
-a) describa la no conformidad;', 8
+a) describa la no conformidad;', 9
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) describa las acciones tomadas;', 9
+SELECT id, 'describa las acciones tomadas;', 10
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) describa las concesiones obtenidas;', 10
+SELECT id, 'describa las concesiones obtenidas;', 11
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) identifique la autoridad que ha decidido la acción con respecto a la no conformidad.', 11
+SELECT id, 'identifique la autoridad que ha decidido la acción con respecto a la no conformidad.', 12
 FROM iso_requirements 
 WHERE requirement_code = '8.7.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 9.1.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) a qué es necesario hacer seguimiento y qué es necesario medir;', 1
+SELECT id, 'a qué es necesario hacer seguimiento y qué es necesario medir;', 1
 FROM iso_requirements 
 WHERE requirement_code = '9.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) los métodos de seguimiento, medición, análisis y evaluación necesarios para asegurar resultados válidos;', 2
+SELECT id, 'los métodos de seguimiento, medición, análisis y evaluación necesarios para asegurar resultados válidos;', 2
 FROM iso_requirements 
 WHERE requirement_code = '9.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) cuándo se deben llevar a cabo el seguimiento y la medición;', 3
+SELECT id, 'cuándo se deben llevar a cabo el seguimiento y la medición;', 3
 FROM iso_requirements 
 WHERE requirement_code = '9.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) cuándo se deben analizar y evaluar los resultados del seguimiento y la medición.', 4
+SELECT id, 'cuándo se deben analizar y evaluar los resultados del seguimiento y la medición.', 4
 FROM iso_requirements 
 WHERE requirement_code = '9.1.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1423,91 +1492,96 @@ FROM iso_requirements
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la conformidad de los productos y servicios;', 3
+SELECT id, 'la conformidad de los productos y servicios;', 3
 FROM iso_requirements 
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) el grado de satisfacción del cliente;', 4
+SELECT id, 'el grado de satisfacción del cliente;', 4
 FROM iso_requirements 
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) el desempeño y la eficacia del sistema de gestión de la calidad;', 5
+SELECT id, 'el desempeño y la eficacia del sistema de gestión de la calidad;', 5
 FROM iso_requirements 
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) si lo planificado se ha implementado de forma eficaz;', 6
+SELECT id, 'si lo planificado se ha implementado de forma eficaz;', 6
 FROM iso_requirements 
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) la eficacia de las acciones tomadas para abordar los riesgos y oportunidades;', 7
+SELECT id, 'la eficacia de las acciones tomadas para abordar los riesgos y oportunidades;', 7
 FROM iso_requirements 
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) el desempeño de los proveedores externos;', 8
+SELECT id, 'el desempeño de los proveedores externos;', 8
 FROM iso_requirements 
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'g) la necesidad de mejoras en el sistema de gestión de la calidad.', 9
+SELECT id, 'la necesidad de mejoras en el sistema de gestión de la calidad.', 9
 FROM iso_requirements 
 WHERE requirement_code = '9.1.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 9.2.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) cumple:', 1
+SELECT id, 'La organización debe llevar a cabo auditorías internas a intervalos planificados para proporcionar información acerca de si el sistema de gestión de la calidad:', 1
 FROM iso_requirements 
 WHERE requirement_code = '9.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '1) los requisitos propios de la organización para su sistema de gestión de la calidad;', 2
+SELECT id, 'cumple:', 2
 FROM iso_requirements 
 WHERE requirement_code = '9.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '2) los requisitos de esta Norma Internacional;', 3
+SELECT id, 'los requisitos propios de la organización para su sistema de gestión de la calidad;', 3
 FROM iso_requirements 
 WHERE requirement_code = '9.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) está implementado y mantenido eficazmente.', 4
+SELECT id, 'los requisitos de esta Norma Internacional;', 4
+FROM iso_requirements 
+WHERE requirement_code = '9.2.1' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'está implementado y mantenido eficazmente.', 5
 FROM iso_requirements 
 WHERE requirement_code = '9.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 9.2.2
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) planificar, establecer, implementar y mantener uno o varios programas de auditoría que incluyan la frecuencia, los métodos, las responsabilidades, los requisitos de planificación y la elaboración de informes, que deben tener en consideración la importancia de los procesos involucrados, los cambios que afecten a la organización y los resultados de las auditorías previas;', 1
+SELECT id, 'planificar, establecer, implementar y mantener uno o varios programas de auditoría que incluyan la frecuencia, los métodos, las responsabilidades, los requisitos de planificación y la elaboración de informes, que deben tener en consideración la importancia de los procesos involucrados, los cambios que afecten a la organización y los resultados de las auditorías previas;', 1
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) para cada auditoría, definir los criterios de la auditoría y el alcance de cada auditoría;', 2
+SELECT id, 'para cada auditoría, definir los criterios de la auditoría y el alcance de cada auditoría;', 2
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) seleccionar los auditores y llevar a cabo auditorías para asegurarse de la objetividad y la imparcialidad del proceso de auditoría;', 3
+SELECT id, 'seleccionar los auditores y llevar a cabo auditorías para asegurarse de la objetividad y la imparcialidad del proceso de auditoría;', 3
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) asegurarse de que los resultados de las auditorías se informan a la dirección pertinente;', 4
+SELECT id, 'asegurarse de que los resultados de las auditorías se informan a la dirección pertinente;', 4
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) realizar las correcciones y tomar las acciones correctivas adecuadas sin demora injustificada;', 5
+SELECT id, 'realizar las correcciones y tomar las acciones correctivas adecuadas sin demora injustificada;', 5
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) conservar la información documentada como evidencia de la implementación del programa de auditoría y los resultados de la auditoría.', 6
+SELECT id, 'conservar la información documentada como evidencia de la implementación del programa de auditoría y los resultados de la auditoría.', 6
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1529,67 +1603,67 @@ FROM iso_requirements
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) el estado de las acciones desde revisiones por la dirección previas;', 10
+SELECT id, 'el estado de las acciones desde revisiones por la dirección previas;', 10
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) los cambios en las cuestiones externas e internas que sean pertinentes al sistema de gestión de la calidad;', 11
+SELECT id, 'los cambios en las cuestiones externas e internas que sean pertinentes al sistema de gestión de la calidad;', 11
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) la información sobre el desempeño y la eficacia del sistema de gestión de la calidad, incluidas las tendencias relativas a:', 12
+SELECT id, 'la información sobre el desempeño y la eficacia del sistema de gestión de la calidad, incluidas las tendencias relativas a:', 12
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '1) satisfacción del cliente y la retroalimentación de las partes interesadas pertinentes;', 13
+SELECT id, 'satisfacción del cliente y la retroalimentación de las partes interesadas pertinentes;', 13
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '2) el grado en que se han cumplido los objetivos de la calidad;', 14
+SELECT id, 'el grado en que se han cumplido los objetivos de la calidad;', 14
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '3) desempeño de los procesos y conformidad de los productos y servicios;', 15
+SELECT id, 'desempeño de los procesos y conformidad de los productos y servicios;', 15
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '4) no conformidades y acciones correctivas;', 16
+SELECT id, 'no conformidades y acciones correctivas;', 16
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '5) resultados de seguimiento y medición;', 17
+SELECT id, 'resultados de seguimiento y medición;', 17
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '6) resultados de las auditorías;', 18
+SELECT id, 'resultados de las auditorías;', 18
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '7) el desempeño de los proveedores externos;', 19
+SELECT id, 'el desempeño de los proveedores externos;', 19
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) la adecuación de los recursos;', 20
+SELECT id, 'la adecuación de los recursos;', 20
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) la eficacia de las acciones tomadas para abordar los riesgos y las oportunidades (véase 6.1);', 21
+SELECT id, 'la eficacia de las acciones tomadas para abordar los riesgos y las oportunidades (véase 6.1);', 21
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) oportunidades de mejora.', 22
+SELECT id, 'oportunidades de mejora.', 22
 FROM iso_requirements 
 WHERE requirement_code = '9.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1602,12 +1676,12 @@ FROM iso_requirements
 WHERE requirement_code = '9.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) cualquier necesidad de cambio en el sistema de gestión de la calidad;', 2
+SELECT id, 'cualquier necesidad de cambio en el sistema de gestión de la calidad;', 2
 FROM iso_requirements 
 WHERE requirement_code = '9.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) las necesidades de recursos.', 3
+SELECT id, 'las necesidades de recursos.', 3
 FROM iso_requirements 
 WHERE requirement_code = '9.3.3' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
@@ -1629,83 +1703,93 @@ FROM iso_requirements
 WHERE requirement_code = '10.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) mejorar los productos y servicios para cumplir los requisitos, así como tratar las necesidades y expectativas futuras;', 3
+SELECT id, 'mejorar los productos y servicios para cumplir los requisitos, así como tratar las necesidades y expectativas futuras;', 3
 FROM iso_requirements 
 WHERE requirement_code = '10.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) corregir, prevenir o reducir los efectos indeseados;', 4
+SELECT id, 'corregir, prevenir o reducir los efectos indeseados;', 4
 FROM iso_requirements 
 WHERE requirement_code = '10.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) mejorar el desempeño y la eficacia del sistema de gestión de la calidad.', 5
+SELECT id, 'mejorar el desempeño y la eficacia del sistema de gestión de la calidad.', 5
 FROM iso_requirements 
 WHERE requirement_code = '10.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 10.2.1
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) reaccionar ante la no conformidad y, cuando sea aplicable:
+SELECT id, 'Cuando ocurra una no conformidad, incluida cualquiera originada por quejas, la organización debe:', 1
+FROM iso_requirements 
+WHERE requirement_code = '10.2.1' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'reaccionar ante la no conformidad y, cuando sea aplicable:
     1) tomar acciones para controlarla y corregirla;
-    2) hacer frente a las consecuencias;', 1
+    2) hacer frente a las consecuencias;', 2
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) evaluar la necesidad de acciones para eliminar las causas de la no conformidad, con el fin de que no vuelva a ocurrir ni ocurra en otra parte, mediante:', 2
+SELECT id, 'evaluar la necesidad de acciones para eliminar las causas de la no conformidad, con el fin de que no vuelva a ocurrir ni ocurra en otra parte, mediante:', 3
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '1) la revisión y el análisis de la no conformidad;', 3
+SELECT id, 'la revisión y el análisis de la no conformidad;', 4
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '2) la determinación de las causas de la no conformidad;', 4
+SELECT id, 'la determinación de las causas de la no conformidad;', 5
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, '3) la determinación de si existen no conformidades similares, o que potencialmente podrían ocurrir;', 5
+SELECT id, 'la determinación de si existen no conformidades similares, o que potencialmente podrían ocurrir;', 6
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'c) implementar cualquier acción necesaria;', 6
+SELECT id, 'implementar cualquier acción necesaria;', 7
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'd) revisar la eficacia de cualquier acción correctiva tomada;', 7
+SELECT id, 'revisar la eficacia de cualquier acción correctiva tomada;', 8
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'e) si es necesario, actualizar los riesgos y oportunidades determinados durante la planificación;', 8
+SELECT id, 'si es necesario, actualizar los riesgos y oportunidades determinados durante la planificación;', 9
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'f) si es necesario, hacer cambios al sistema de gestión de la calidad.', 9
+SELECT id, 'si es necesario, hacer cambios al sistema de gestión de la calidad.', 10
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'Las acciones correctivas deben ser adecuadas a los efectos de las no conformidades encontradas.', 10
+SELECT id, 'Las acciones correctivas deben ser adecuadas a los efectos de las no conformidades encontradas.', 11
 FROM iso_requirements 
 WHERE requirement_code = '10.2.1' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 
 -- Criterios para requisito 10.2.2
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'a) la naturaleza de las no conformidades y cualquier acción posterior tomada;', 1
+SELECT id, 'La organización debe conservar información documentada, como evidencia de:', 1
 FROM iso_requirements 
 WHERE requirement_code = '10.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
 INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
-SELECT id, 'b) los resultados de cualquier acción correctiva.', 2
+SELECT id, 'la naturaleza de las no conformidades y cualquier acción posterior tomada;', 2
+FROM iso_requirements 
+WHERE requirement_code = '10.2.2' 
+AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));
+INSERT OR IGNORE INTO requirement_variables (requirement_id, variable_text, variable_order)
+SELECT id, 'los resultados de cualquier acción correctiva.', 3
 FROM iso_requirements 
 WHERE requirement_code = '10.2.2' 
 AND chapter_id IN (SELECT id FROM iso_chapters WHERE standard_id = (SELECT id FROM audit_standards WHERE code = 'ISO9001'));

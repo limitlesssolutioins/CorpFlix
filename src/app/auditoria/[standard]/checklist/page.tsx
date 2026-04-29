@@ -762,47 +762,41 @@ export default function ChecklistPage() {
 
                                                                                                         {/* NC / OP Buttons & Fields */}
                                                                                                         <div className="flex flex-wrap items-center gap-2 flex-1">
-                                                                                                            <button onClick={() => {
-                                                                                                                const isActive = activeVarInputs[`${item.id}-${v.id}`]?.nc;
-                                                                                                                // Mutual exclusivity: if opening NC, close OP
-                                                                                                                setActiveVarInputs(prev => ({ 
-                                                                                                                    ...prev, 
-                                                                                                                    [`${item.id}-${v.id}`]: { 
-                                                                                                                        nc: !isActive, 
-                                                                                                                        op: false 
-                                                                                                                    } 
-                                                                                                                }));
-                                                                                                                if (!isActive) {
-                                                                                                                    // If opening NC, clear OP text
-                                                                                                                    setVarDetail(item.id, v.id, 'nc_text', data.nc_text);
-                                                                                                                } else {
-                                                                                                                    setVarDetail(item.id, v.id, 'nc_text', '');
-                                                                                                                }
-                                                                                                            }}
-                                                                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
-                                                                                                                NC
-                                                                                                            </button>
+                                                                                                            {ans === 'no' && (
+                                                                                                                <button onClick={() => {
+                                                                                                                    const isActive = activeVarInputs[`${item.id}-${v.id}`]?.nc;
+                                                                                                                    setActiveVarInputs(prev => ({ 
+                                                                                                                        ...prev, 
+                                                                                                                        [`${item.id}-${v.id}`]: { nc: !isActive, op: false } 
+                                                                                                                    }));
+                                                                                                                    if (!isActive) {
+                                                                                                                        setVarDetail(item.id, v.id, 'nc_text', data.nc_text);
+                                                                                                                    } else {
+                                                                                                                        setVarDetail(item.id, v.id, 'nc_text', '');
+                                                                                                                    }
+                                                                                                                }}
+                                                                                                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
+                                                                                                                    NC
+                                                                                                                </button>
+                                                                                                            )}
                                                                                                             
-                                                                                                            <button onClick={() => {
-                                                                                                                const isActive = activeVarInputs[`${item.id}-${v.id}`]?.op;
-                                                                                                                // Mutual exclusivity: if opening OP, close NC
-                                                                                                                setActiveVarInputs(prev => ({ 
-                                                                                                                    ...prev, 
-                                                                                                                    [`${item.id}-${v.id}`]: { 
-                                                                                                                        nc: false, 
-                                                                                                                        op: !isActive 
-                                                                                                                    } 
-                                                                                                                }));
-                                                                                                                if (!isActive) {
-                                                                                                                    // If opening OP, clear NC text
-                                                                                                                    setVarDetail(item.id, v.id, 'op_text', data.op_text);
-                                                                                                                } else {
-                                                                                                                    setVarDetail(item.id, v.id, 'op_text', '');
-                                                                                                                }
-                                                                                                            }}
-                                                                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
-                                                                                                                OP
-                                                                                                            </button>
+                                                                                                            {ans === 'si' && (
+                                                                                                                <button onClick={() => {
+                                                                                                                    const isActive = activeVarInputs[`${item.id}-${v.id}`]?.op;
+                                                                                                                    setActiveVarInputs(prev => ({ 
+                                                                                                                        ...prev, 
+                                                                                                                        [`${item.id}-${v.id}`]: { nc: false, op: !isActive } 
+                                                                                                                    }));
+                                                                                                                    if (!isActive) {
+                                                                                                                        setVarDetail(item.id, v.id, 'op_text', data.op_text);
+                                                                                                                    } else {
+                                                                                                                        setVarDetail(item.id, v.id, 'op_text', '');
+                                                                                                                    }
+                                                                                                                }}
+                                                                                                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
+                                                                                                                    OP
+                                                                                                                </button>
+                                                                                                            )}
 
                                                                                                             {/* Evidence for Criteria */}
                                                                                                             <div className="flex items-center gap-1.5">

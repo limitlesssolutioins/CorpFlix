@@ -21,25 +21,25 @@ sheets.forEach(sheetName => {
         const val = String(row[0] || '').trim();
         if (!val) continue;
 
-        // Skip headers
-        if (val.match(/^\d+\s+[A-ZÁÉÍÓÚÑ\s]+$/)) continue; // e.g. "4 CONTEXTO DE LA..."
-        if (val === 'La organización debe determinar:') continue;
-        if (val === 'Cuando se determina este alcance, la organización debe considerar:') continue;
-        if (val.startsWith('El alcance debe estar disponible y mantenerse')) continue;
-
+        // Skip standard headers
+        if (val.match(/^\d+\s*[A-ZÁÉÍÓÚÑ\s]{10,}$/)) continue; // e.g. "4.CONTEXTO DE LA ORGANIZACIÓN"
+        
         // Match requirement headers: "4.1 COMPRENSIÓN..." or "4.4.1 La organización..."
         const reqMatch = val.match(/^(\d+\.\d+(?:\.\d+)?)\s+(.+)$/);
         
         if (reqMatch) {
             currentReq = reqMatch[1];
             if (!results[currentReq]) results[currentReq] = [];
-            // Sometimes the requirement title itself is followed by text, we skip adding the title as a criterion.
-            // But if it's "4.4.1 The organization shall..." we might need to add it?
-            // Actually, we'll only extract the subsequent rows as criteria.
+            
+            // If the title contains significant text (more than just a title), it might be a criterion itself
+            const title = reqMatch[2];
+            if (title.length > 50 && !title.includes('COMPRENSIÓN') && !title.includes('DETERMINACIÓN')) {
+                 results[currentReq].push(title);
+            }
             continue;
         }
 
-        // Sometimes the requirement is just the number followed by text in the next line.
+        // Sometimes the requirement is just the number
         const reqMatch2 = val.match(/^(\d+\.\d+(?:\.\d+)?)$/);
         if (reqMatch2) {
             currentReq = reqMatch2[1];
@@ -50,10 +50,16 @@ sheets.forEach(sheetName => {
         if (currentReq) {
             // It's a criterion
             // Filter out noise
-            if (val === 'NUMERAL' || val === 'CUMPLIMIENTO' || val.includes('NO APLICA') || val === 'QUÉ TIENE?') continue;
+            if (val.length < 5) continue;
+            if (val === 'NUMERAL' || val === 'CUMPLIMIENTO' || val.includes('NO APLICA') || val === 'QUÉ TIENE?' || val === 'QUE NOS FALTA') continue;
+            if (val === 'La organización debe determinar:' || val.includes('debe considerar:')) continue;
             
-            // Clean up bullets
-            const cleanVal = val.replace(/^Ø\s*/, '').replace(/^a\)\s*/, 'a) ').replace(/^b\)\s*/, 'b) ').trim();
+            // Clean up bullets and sub-numbering
+            const cleanVal = val.replace(/^[\-Ø•\*]\s*/, '')
+                                .replace(/^[a-z]\)\s*/, '')
+                                .replace(/^\d+\)\s*/, '')
+                                .trim();
+
             if (cleanVal && !results[currentReq].includes(cleanVal)) {
                 results[currentReq].push(cleanVal);
             }

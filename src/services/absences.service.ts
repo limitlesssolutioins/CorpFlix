@@ -1,46 +1,48 @@
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-
-import { getDb } from '@/lib/db';
+import prisma from '@/lib/prisma';
+import { getCompanyId } from '@/lib/companyContext';
 
 export class AbsencesService {
-    private db: any;
+    constructor() {}
 
-    constructor(dataDir: string) {
-        this.db = getDb(path.join(dataDir, 'hr.db'));
+    private async getCompanyContext() {
+        const companyId = await getCompanyId();
+        if (!companyId) throw new Error("Unauthorized");
+        return companyId;
     }
 
-    async findAll() {
-        return this.db.all(`
-      SELECT a.*, e.firstName, e.lastName, at.name as absenceTypeName
-      FROM Absence a
-      JOIN Employee e ON a.employeeId = e.id
-      JOIN AbsenceType at ON a.absenceTypeCode = at.code
-      ORDER BY a.startDate DESC
-    `);
+    async getAbsences() {
+        const companyId = await this.getCompanyContext();
+        return await prisma.absence.findMany({
+            where: { companyId },
+            include: { employee: true, type: true },
+            orderBy: { startDate: 'desc' }
+        });
     }
 
-    async create(data: any) {
-        const id = uuidv4();
-        await this.db.run(`
-      INSERT INTO Absence (
-        id, employeeId, absenceTypeCode, startDate, endDate,
-        diagnosisCode, medicalCertificateUrl, status, createdAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING_APPROVAL', datetime('now'))
-    `, [
-            id, data.employeeId, data.absenceTypeCode, data.startDate, data.endDate,
-            data.diagnosisCode, data.medicalCertificateUrl
-        ]);
+    async createAbsence(data: any) {
+        const companyId = await this.getCompanyContext();
+        return await prisma.absence.create({
+            data: {
+                companyId,
+                employeeId: data.employeeId,
+                typeId: data.typeId,
+                startDate: new Date(data.startDate),
+                endDate: new Date(data.endDate),
+                status: data.status || 'PENDING_APPROVAL',
+                notes: data.notes
+            }
+        });
+    }
 
-        return this.db.get('SELECT * FROM Absence WHERE id = ?', [id]);
+    async updateStatus(id: string, status: string) {
+        const companyId = await this.getCompanyContext();
+        return await prisma.absence.updateMany({
+            where: { id, companyId },
+            data: { status }
+        });
     }
 }
 
-const instances = new Map<string, AbsencesService>();
-
 export function getAbsencesService(dataDir: string): AbsencesService {
-    if (!instances.has(dataDir)) {
-        instances.set(dataDir, new AbsencesService(dataDir));
-    }
-    return instances.get(dataDir)!;
+    return new AbsencesService();
 }

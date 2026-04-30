@@ -1,57 +1,100 @@
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-
-import { getDb } from '@/lib/db';
+import prisma from '@/lib/prisma';
+import { getCompanyId } from '@/lib/companyContext';
 
 export class SchedulerService {
-    private db: any;
+    constructor() {}
 
-    constructor(dataDir: string) {
-        this.db = getDb(path.join(dataDir, 'hr.db'));
+    private async getCompanyContext() {
+        const companyId = await getCompanyId();
+        if (!companyId) throw new Error("Unauthorized");
+        return companyId;
     }
 
     async getTeams() {
-        const teams = await this.db.all('SELECT * FROM Team ORDER BY name');
-
-        for (const team of teams) {
-            team.employees = await this.db.all(
-                'SELECT id, firstName, lastName FROM Employee WHERE teamId = ? AND isActive = 1',
-                [team.id]
-            );
-        }
-
-        return teams;
+        const companyId = await this.getCompanyContext();
+        return await prisma.team.findMany({
+            where: { companyId },
+            include: { employees: true },
+            orderBy: { name: 'asc' }
+        });
     }
 
     async createTeam(data: any) {
-        const id = uuidv4();
-        await this.db.run('INSERT INTO Team (id, name) VALUES (?, ?)', [id, data.name]);
-        return this.db.get('SELECT * FROM Team WHERE id = ?', [id]);
+        const companyId = await this.getCompanyContext();
+        return await prisma.team.create({
+            data: { companyId, name: data.name }
+        });
     }
 
     async getPatterns() {
-        return this.db.all('SELECT * FROM ShiftPattern ORDER BY createdAt DESC');
+        const companyId = await this.getCompanyContext();
+        return await prisma.shiftPattern.findMany({
+            where: { companyId },
+            orderBy: { createdAt: 'desc' }
+        });
     }
 
     async createPattern(data: any) {
-        const id = uuidv4();
-        await this.db.run(
-            'INSERT INTO ShiftPattern (id, name, description, sequence, createdAt) VALUES (?, ?, ?, ?, datetime("now"))',
-            [id, data.name, data.description, JSON.stringify(data.sequence)]
-        );
-        return this.db.get('SELECT * FROM ShiftPattern WHERE id = ?', [id]);
+        const companyId = await this.getCompanyContext();
+        return await prisma.shiftPattern.create({
+            data: {
+                companyId,
+                name: data.name,
+                startTime: data.startTime,
+                endTime: data.endTime,
+                days: typeof data.days === 'string' ? data.days : JSON.stringify(data.days)
+            }
+        });
     }
 
-    async generateSchedule(data: any) {
-        return { success: true, message: 'Schedule generation logic to be implemented' };
+    async assignPattern(employeeId: string, patternId: string) {
+        // Since patternId isn't on the Employee model directly,
+        // this typically involves generating actual shifts based on the pattern,
+        // or updating a field if it exists. For now, returning a stub success.
+        return { success: true, employeeId, patternId };
+    }
+
+    async getShiftsByTeamAndDate(teamId: string, startDate: string, endDate: string) {
+        const companyId = await this.getCompanyContext();
+        return await prisma.shift.findMany({
+            where: {
+                companyId,
+                employee: { teamId },
+                date: {
+                    gte: new Date(startDate),
+                    lte: new Date(endDate)
+                }
+            },
+            include: { employee: true }
+        });
+    }
+
+    async deleteShiftsForTeam(teamId: string, startDate: string, endDate: string) {
+        const companyId = await this.getCompanyContext();
+        
+        // Find employees first
+        const employees = await prisma.employee.findMany({
+            where: { companyId, teamId },
+            select: { id: true }
+        });
+        const employeeIds = employees.map(e => e.id);
+
+        if (employeeIds.length === 0) return true;
+
+        await prisma.shift.deleteMany({
+            where: {
+                companyId,
+                employeeId: { in: employeeIds },
+                date: {
+                    gte: new Date(startDate),
+                    lte: new Date(endDate)
+                }
+            }
+        });
+        return true;
     }
 }
 
-const instances = new Map<string, SchedulerService>();
-
 export function getSchedulerService(dataDir: string): SchedulerService {
-    if (!instances.has(dataDir)) {
-        instances.set(dataDir, new SchedulerService(dataDir));
-    }
-    return instances.get(dataDir)!;
+    return new SchedulerService();
 }

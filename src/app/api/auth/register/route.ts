@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
-import db from '@/lib/coreDb';
+import prisma from '@/lib/prisma';
 import { createSession } from '@/lib/auth';
 
 export async function POST(request: Request) {
@@ -12,8 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan credenciales' }, { status: 400 });
     }
 
-    // CRÍTICO: Añadido await
-    const existingUser = await db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json({ error: 'El usuario ya existe' }, { status: 409 });
     }
@@ -21,13 +20,30 @@ export async function POST(request: Request) {
     const id = uuidv4();
     const password_hash = await bcrypt.hash(password, 10);
 
-    // CRÍTICO: Añadido await en el .run()
-    await db.prepare(`
-      INSERT INTO users (id, email, password_hash, plan_id)
-      VALUES (?, ?, ?, 'pro')
-    `).run(id, email, password_hash);
+    // We need a default company because the schema requires it now.
+    // Ideally this comes from a registration form.
+    let company = await prisma.company.findFirst();
+    if (!company) {
+        company = await prisma.company.create({
+            data: {
+                id: uuidv4(),
+                name: 'Lidus Default',
+                nit: '000000000'
+            }
+        });
+    }
 
-    await createSession({ userId: id, email, companyId: null });
+    await prisma.user.create({
+        data: {
+            id,
+            email,
+            password: password_hash,
+            name: email.split('@')[0],
+            companyId: company.id
+        }
+    });
+
+    await createSession({ userId: id, email, companyId: company.id });
 
     return NextResponse.json({ success: true, user: { id, email } }, { status: 201 });
   } catch (error: any) {

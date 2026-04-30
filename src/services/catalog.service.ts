@@ -1,47 +1,45 @@
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-
-import { getDb } from '@/lib/db';
+import prisma from '@/lib/prisma';
+import { getCompanyId } from '@/lib/companyContext';
 
 export class CatalogService {
-    private db: any;
+    constructor() {}
 
-    constructor(dataDir: string) {
-        this.db = getDb(path.join(dataDir, 'hr.db'));
+    private async getCompanyContext() {
+        const companyId = await getCompanyId();
+        if (!companyId) throw new Error("Unauthorized");
+        return companyId;
     }
 
     async getSites() {
-        return this.db.all('SELECT * FROM Site ORDER BY name');
+        const companyId = await this.getCompanyContext();
+        return await prisma.site.findMany({ where: { companyId }, orderBy: { name: 'asc' } });
     }
 
-    async createSite(data: any) {
-        const id = uuidv4();
-        await this.db.run('INSERT INTO Site (id, name, address) VALUES (?, ?, ?)',
-            [id, data.name, data.address]);
-        return this.db.get('SELECT * FROM Site WHERE id = ?', [id]);
+    async addSite(data: any) {
+        const companyId = await this.getCompanyContext();
+        return await prisma.site.create({
+            data: { companyId, name: data.name, address: data.address }
+        });
     }
 
     async getPositions() {
-        return this.db.all('SELECT * FROM Position ORDER BY name');
+        const companyId = await this.getCompanyContext();
+        return await prisma.position.findMany({ where: { companyId }, orderBy: { name: 'asc' } });
     }
 
-    async createPosition(data: any) {
-        const id = uuidv4();
-        await this.db.run('INSERT INTO Position (id, name) VALUES (?, ?)', [id, data.name]);
-        return this.db.get('SELECT * FROM Position WHERE id = ?', [id]);
+    async addPosition(data: any) {
+        const companyId = await this.getCompanyContext();
+        return await prisma.position.create({
+            data: { companyId, name: data.name }
+        });
     }
 
-    async getConstants() {
-        const absenceTypes = await this.db.all('SELECT * FROM AbsenceType ORDER BY code');
-        return { absenceTypes };
+    async getAbsenceTypes() {
+        const companyId = await this.getCompanyContext();
+        return await prisma.absenceType.findMany({ where: { companyId }, orderBy: { name: 'asc' } });
     }
 }
 
-const instances = new Map<string, CatalogService>();
-
 export function getCatalogService(dataDir: string): CatalogService {
-    if (!instances.has(dataDir)) {
-        instances.set(dataDir, new CatalogService(dataDir));
-    }
-    return instances.get(dataDir)!;
+    return new CatalogService();
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import db from '@/lib/coreDb';
+import prisma from '@/lib/prisma';
 import { verifySession, createSession } from '@/lib/auth';
 import fs from 'fs';
 import path from 'path';
@@ -22,36 +22,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'El nombre de la empresa es obligatorio' }, { status: 400 });
     }
 
-    // CRÍTICO: Añadido await
-    const user: any = await db.prepare('SELECT company_id, plan_id FROM users WHERE id = ?').get(session.userId);
-    
-    if (user.company_id) {
+    const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        include: { company: true }
+    });
+
+    if (!user) {
+        return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+    }
+
+    if (user.company && user.company.name !== 'Lidus Default') {
       return NextResponse.json({ error: 'El usuario ya tiene una empresa registrada' }, { status: 400 });
     }
 
-    const companyId = uuidv4();
+    const companyId = user.companyId;
+
+    await prisma.company.update({
+        where: { id: companyId },
+        data: {
+            name: name.trim(),
+            nit: nit || "",
+            address: direccion || "",
+            phone: telefono || "",
+            email: email || "",
+            industry: sectorActividad || "",
+        }
+    });
 
     const companyDir = path.join(COMPANIES_DIR, companyId);
     fs.mkdirSync(companyDir, { recursive: true });
-
-    // CRÍTICO: Añadido await
-    await db.prepare(`
-      INSERT INTO companies (id, name, nit, sectorActividad, direccion, ciudad, telefono, email, sitioWeb)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      companyId, 
-      name.trim(), 
-      nit || null, 
-      sectorActividad || null, 
-      direccion || null, 
-      ciudad || null, 
-      telefono || null, 
-      email || null, 
-      sitioWeb || null
-    );
-
-    // CRÍTICO: Añadido await
-    await db.prepare('UPDATE users SET company_id = ? WHERE id = ?').run(companyId, session.userId);
 
     const adminPath = path.join(companyDir, 'admin.json');
     fs.writeFileSync(adminPath, JSON.stringify({
@@ -73,7 +72,7 @@ export async function POST(request: Request) {
       userId: session.userId,
       email: session.email,
       companyId: companyId,
-      planId: user.plan_id
+      planId: "MVP"
     });
 
     const response = NextResponse.json({ success: true, companyId });

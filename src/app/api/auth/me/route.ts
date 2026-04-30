@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifySession } from '@/lib/auth';
-import db from '@/lib/coreDb';
+import prisma from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -10,13 +10,23 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const user: any = await db.prepare('SELECT id, email, company_id, plan_id, status FROM users WHERE id = ?').get(session.userId);
+    const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { id: true, email: true, companyId: true, status: true }
+    });
 
     if (!user) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    // Map to legacy format expected by UI if necessary
+    const mappedUser = {
+        ...user,
+        company_id: user.companyId,
+        plan_id: "MVP"
+    };
+
+    return NextResponse.json({ user: mappedUser });
   } catch (error) {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }

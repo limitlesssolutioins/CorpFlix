@@ -1,284 +1,50 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import fs from 'fs';
-import { getIsoAuditService } from './iso-audit.service';
-import { getRiskService } from './risk.service';
+import prisma from '@/lib/prisma';
+import { getCompanyId } from '@/lib/companyContext';
 
-const SCHEMA_PATH = path.join(process.cwd(), 'src', 'data', 'schema_mejora_continua.sql');
+export class MejoraContinuaService {
+  constructor() {}
 
-class MejoraContinuaService {
-    private db: Database.Database;
-    private dataDir: string;
+  private async getCompanyContext() {
+      const companyId = await getCompanyId();
+      if (!companyId) throw new Error("Unauthorized");
+      return companyId;
+  }
 
-    constructor(dataDir: string) {
-        this.dataDir = dataDir;
-        const dbPath = path.join(dataDir, 'mejora_continua.db');
-        if (!fs.existsSync(dataDir)) {
-            fs.mkdirSync(dataDir, { recursive: true });
-        }
-        this.db = new Database(dbPath);
-        this.initializeDatabase();
-    }
+  async getDashboardStats() {
+    const companyId = await this.getCompanyContext();
+    const [suggestions, projects, lessons] = await Promise.all([
+      prisma.improvementSuggestion.count({ where: { companyId } }),
+      prisma.improvementProject.count({ where: { companyId } }),
+      prisma.lessonLearned.count({ where: { companyId } })
+    ]);
+    return { suggestions, projects, lessons };
+  }
 
-    private initializeDatabase() {
-        const schema = fs.readFileSync(SCHEMA_PATH, 'utf8');
-        this.db.exec(schema);
-    }
+  async getAllSuggestions() {
+    const companyId = await this.getCompanyContext();
+    return await prisma.improvementSuggestion.findMany({
+      where: { companyId },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
 
-    // Consolidated Actions (Bridge)
-    async getConsolidatedActions() {
-        const auditSvc = getIsoAuditService(this.dataDir);
-        const riskSvc = getRiskService(this.dataDir);
+  async getAllProjects() {
+    const companyId = await this.getCompanyContext();
+    return await prisma.improvementProject.findMany({
+      where: { companyId },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
 
-        const auditActions = auditSvc.getAllCorrectiveActions();
-        const riskPlans = riskSvc.getAllActionPlans();
-
-        // Map both to a unified format
-        const unified = [
-            ...auditActions.map(a => ({
-                id: `audit-${a.id}`,
-                realId: a.id,
-                source: 'AUDITORIA',
-                code: a.action_code,
-                title: a.corrective_action,
-                description: a.finding_description,
-                origin: `${a.standard_name || 'ISO'} - ${a.audit_code}`,
-                responsible: a.responsible,
-                target_date: a.target_date,
-                status: a.status,
-                progress: a.progress,
-                type: 'CORRECTIVA'
-            })),
-            ...riskPlans.map(p => ({
-                id: `risk-${p.id}`,
-                realId: p.id,
-                source: 'RIESGOS',
-                code: `PA-R${p.id}`,
-                title: p.action_description,
-                description: p.risk_description,
-                origin: `Riesgo: ${p.category_name}`,
-                responsible: p.responsible,
-                target_date: p.target_date,
-                status: p.status === 'PENDING' ? 'OPEN' : p.status,
-                progress: p.progress,
-                type: 'PREVENTIVA'
-            }))
-        ];
-
-        return unified.sort((a, b) => new Date(a.target_date || '').getTime() - new Date(b.target_date || '').getTime());
-    }
-
-    // SUGGESTIONS
-    getAllSuggestions(filters?: { status?: string; category?: string }) {
-        let query = `SELECT s.*, c.category_name, st.status_name, st.color as status_color
-                 FROM improvement_suggestions s
-                 LEFT JOIN improvement_categories c ON s.category_id = c.id
-                 LEFT JOIN suggestion_status st ON s.status_id = st.id
-                 WHERE 1=1`;
-        const params: any[] = [];
-
-        if (filters?.status) {
-            query += ' AND st.status_code = ?';
-            params.push(filters.status);
-        }
-
-        if (filters?.category) {
-            query += ' AND c.category_name = ?';
-            params.push(filters.category);
-        }
-
-        query += ' ORDER BY s.submitted_date DESC';
-        return this.db.prepare(query).all(...params);
-    }
-
-    createSuggestion(data: any) {
-        const code = `SUG-${Date.now()}`;
-        const stmt = this.db.prepare(`
-      INSERT INTO improvement_suggestions
-      (suggestion_code, title, description, category_id, submitted_by, area_affected,
-       current_situation, proposed_solution, expected_benefits, estimated_savings, priority)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-        const result = stmt.run(
-            code,
-            data.title,
-            data.description,
-            data.category_id || null,
-            data.submitted_by,
-            data.area_affected || null,
-            data.current_situation || null,
-            data.proposed_solution || null,
-            data.expected_benefits || null,
-            data.estimated_savings || 0,
-            data.priority || 3
-        );
-
-        return { id: result.lastInsertRowid, suggestion_code: code };
-    }
-
-    updateSuggestion(id: number, data: any) {
-        const stmt = this.db.prepare(`
-      UPDATE improvement_suggestions
-      SET status_id = ?, votes = ?, assigned_to = ?, evaluation_notes = ?,
-          implementation_date = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `);
-
-        stmt.run(
-            data.status_id || null,
-            data.votes || 0,
-            data.assigned_to || null,
-            data.evaluation_notes || null,
-            data.implementation_date || null,
-            id
-        );
-
-        return this.db.prepare('SELECT * FROM improvement_suggestions WHERE id = ?').get(id);
-    }
-
-    // PROJECTS
-    getAllProjects(filters?: { phase?: string; status?: string }) {
-        let query = `SELECT p.*, c.category_name
-                 FROM improvement_projects p
-                 LEFT JOIN improvement_categories c ON p.category_id = c.id
-                 WHERE 1=1`;
-        const params: any[] = [];
-
-        if (filters?.phase) {
-            query += ' AND p.current_phase = ?';
-            params.push(filters.phase);
-        }
-
-        if (filters?.status) {
-            query += ' AND p.status = ?';
-            params.push(filters.status);
-        }
-
-        query += ' ORDER BY p.start_date DESC';
-        return this.db.prepare(query).all(...params);
-    }
-
-    createProject(data: any) {
-        const code = `PRJ-${Date.now()}`;
-        const stmt = this.db.prepare(`
-      INSERT INTO improvement_projects
-      (project_code, title, description, category_id, suggestion_id, objective_smart,
-       scope, project_leader, team_members, start_date, target_end_date, budget, expected_roi)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-        const result = stmt.run(
-            code,
-            data.title,
-            data.description,
-            data.category_id || null,
-            data.suggestion_id || null,
-            data.objective_smart || null,
-            data.scope || null,
-            data.project_leader,
-            data.team_members || null,
-            data.start_date,
-            data.target_end_date || null,
-            data.budget || 0,
-            data.expected_roi || 0
-        );
-
-        return { id: result.lastInsertRowid, project_code: code };
-    }
-
-    updateProject(id: number, data: any) {
-        const stmt = this.db.prepare(`
-      UPDATE improvement_projects
-      SET current_phase = ?, status = ?, progress = ?, actual_cost = ?,
-          actual_roi = ?, actual_end_date = ?, updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `);
-
-        stmt.run(
-            data.current_phase || null,
-            data.status || null,
-            data.progress || 0,
-            data.actual_cost || null,
-            data.actual_roi || null,
-            data.actual_end_date || null,
-            id
-        );
-
-        return this.db.prepare('SELECT * FROM improvement_projects WHERE id = ?').get(id);
-    }
-
-    // LESSONS LEARNED
-    getAllLessons(filters?: { category?: string }) {
-        let query = `SELECT l.*, c.category_name
-                 FROM lessons_learned l
-                 LEFT JOIN improvement_categories c ON l.category_id = c.id
-                 WHERE l.is_public = 1`;
-        const params: any[] = [];
-
-        if (filters?.category) {
-            query += ' AND c.category_name = ?';
-            params.push(filters.category);
-        }
-
-        query += ' ORDER BY l.lesson_date DESC';
-        return this.db.prepare(query).all(...params);
-    }
-
-    createLesson(data: any) {
-        const code = `LES-${Date.now()}`;
-        const stmt = this.db.prepare(`
-      INSERT INTO lessons_learned
-      (lesson_code, title, description, context, what_worked, what_didnt_work,
-       recommendations, category_id, project_id, submitted_by, tags)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-        const result = stmt.run(
-            code,
-            data.title,
-            data.description,
-            data.context || null,
-            data.what_worked || null,
-            data.what_didnt_work || null,
-            data.recommendations || null,
-            data.category_id || null,
-            data.project_id || null,
-            data.submitted_by,
-            data.tags || null
-        );
-
-        return { id: result.lastInsertRowid, lesson_code: code };
-    }
-
-    // DASHBOARD
-    getDashboardKPIs() {
-        const totalSuggestions = (this.db.prepare('SELECT COUNT(*) as count FROM improvement_suggestions').get() as any).count;
-        const activeSuggestions = (this.db.prepare(`SELECT COUNT(*) as count FROM improvement_suggestions WHERE status_id IN (SELECT id FROM suggestion_status WHERE status_code IN ('NEW', 'UNDER_REVIEW', 'APPROVED'))`).get() as any).count;
-        const activeProjects = (this.db.prepare(`SELECT COUNT(*) as count FROM improvement_projects WHERE status = 'ACTIVE'`).get() as any).count;
-        const implementedImprovements = (this.db.prepare(`SELECT COUNT(*) as count FROM improvement_suggestions WHERE status_id = (SELECT id FROM suggestion_status WHERE status_code = 'IMPLEMENTED')`).get() as any).count;
-        const totalSavings = (this.db.prepare('SELECT COALESCE(SUM(estimated_savings), 0) as total FROM improvement_suggestions WHERE status_id = (SELECT id FROM suggestion_status WHERE status_code = \'IMPLEMENTED\')').get() as any).total;
-
-        return {
-            totalSuggestions,
-            activeSuggestions,
-            activeProjects,
-            implementedImprovements,
-            totalSavings
-        };
-    }
-
-    // CATEGORIES
-    getAllCategories() {
-        return this.db.prepare('SELECT * FROM improvement_categories ORDER BY category_name').all();
-    }
+  async getAllLessonsLearned() {
+    const companyId = await this.getCompanyContext();
+    return await prisma.lessonLearned.findMany({
+      where: { companyId },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
 }
 
-const instances = new Map<string, MejoraContinuaService>();
-
 export function getMejoraContinuaService(dataDir: string): MejoraContinuaService {
-    if (!instances.has(dataDir)) {
-        instances.set(dataDir, new MejoraContinuaService(dataDir));
-    }
-    return instances.get(dataDir)!;
+  return new MejoraContinuaService();
 }

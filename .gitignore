@@ -48,3 +48,5 @@ src/data/*.db-wal
 src/data/core.db
 public/uploads/*
 !public/uploads/.gitkeep
+
+/src/generated/prisma

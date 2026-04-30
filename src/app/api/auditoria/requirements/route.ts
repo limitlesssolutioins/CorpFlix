@@ -1,19 +1,31 @@
 import { NextResponse } from 'next/server';
-import { getCompanyDataDir } from '@/lib/companyContext';
-import { getIsoAuditService } from '@/services/iso-audit.service';
+import { getCompanyId } from '@/lib/companyContext';
+import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
     try {
-        const dataDir = await getCompanyDataDir();
-        const isoAuditService = getIsoAuditService(dataDir);
+        const companyId = await getCompanyId();
+        if (!companyId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const { searchParams } = new URL(request.url);
         const chapterId = searchParams.get('chapter_id');
 
-        const requirements = chapterId
-            ? isoAuditService.getRequirementsByChapter(parseInt(chapterId))
-            : isoAuditService.getAllRequirements();
+        const requirements = await prisma.auditRequirement.findMany({
+            where: chapterId ? { chapterId: parseInt(chapterId) } : undefined,
+            orderBy: { code: 'asc' }
+        });
 
-        return NextResponse.json(requirements);
+        const mappedReqs = requirements.map(r => ({
+            id: r.id,
+            chapter_id: r.chapterId,
+            requirement_code: r.code,
+            requirement_title: r.title,
+            requirement_description: r.description,
+            is_auditable: r.isAuditable ? 1 : 0,
+            weight: r.weight,
+        }));
+
+        return NextResponse.json(mappedReqs);
     } catch (error) {
         console.error('Error fetching requirements:', error);
         return NextResponse.json({ error: 'Failed to fetch requirements' }, { status: 500 });

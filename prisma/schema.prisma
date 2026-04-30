@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// =====================================================
+// CORE SAAS MODELS (MULTI-TENANCY)
+// =====================================================
+
+model SystemConfiguration {
+  id               String   @id @default("default")
+  companyName      String
+  city             String
+  currentYear      Int
+  smlmv            Float
+  transportAid     Float
+  paymentFrequency String
+  taxRegime        String
+  updatedAt        DateTime @updatedAt
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  nit       String   @unique
+  address   String?
+  phone     String?
+  email     String?
+  industry  String?
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      User[]
+  audits     Audit[]
+  risks      Risk[]
+  documents  Document[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+// =====================================================
+// AUDIT MODULE
+// =====================================================
+
+model AuditStandard {
+  id          Int            @id @default(autoincrement())
+  code        String         @unique // ISO9001, ISO14001, etc.
+  name        String
+  fullName    String
+  category    String?
+  color       String         @default("#3b82f6")
+  description String?        @db.Text
+  chapters    AuditChapter[]
+}
+
+model AuditChapter {
+  id            Int                @id @default(autoincrement())
+  standardId    Int
+  chapterNumber String
+  title         String
+  description   String?            @db.Text
+  createdAt     DateTime           @default(now())
+  standard      AuditStandard      @relation(fields: [standardId], references: [id], onDelete: Cascade)
+  requirements  AuditRequirement[]
+
+  @@unique([standardId, chapterNumber])
+}
+
+model AuditRequirement {
+  id             Int                   @id @default(autoincrement())
+  chapterId      Int
+  code           String
+  title          String
+  description    String?               @db.Text
+  isAuditable    Boolean               @default(true)
+  weight         Float                 @default(0)
+  createdAt      DateTime              @default(now())
+  chapter        AuditChapter          @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  findings       AuditFinding[]
+  auditVariables RequirementVariable[]
+
+  @@unique([chapterId, code])
+}
+
+model RequirementVariable {
+  id            Int              @id @default(autoincrement())
+  requirementId Int
+  text          String           @db.Text
+  order         Int
+  requirement   AuditRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+}
+
+model Audit {
+  id          String   @id @default(uuid())
+  companyId   String
+  title       String
+  date        DateTime @default(now())
+  status      String   @default("PLANNED") // PLANNED, IN_PROGRESS, COMPLETED
+  description String?  @db.Text
+
+  company  Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  findings AuditFinding[]
+
+  @@index([companyId])
+}
+
+model AuditFinding {
+  id            Int              @id @default(autoincrement())
+  auditId       String
+  requirementId Int
+  type          String // CONFORMITY, NON_CONFORMITY, OPPORTUNITY, etc.
+  description   String           @db.Text
+  evidence      String?          @db.Text
+  createdAt     DateTime         @default(now())
+
+  audit       Audit            @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  requirement AuditRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+}
+
+// =====================================================
+// RISK MANAGEMENT MODULE
+// =====================================================
+
+model RiskCategory {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  name        String
+  description String?  @db.Text
+  color       String?
+  icon        String?
+  risks       Risk[]
+}
+
+model Risk {
+  id           String   @id @default(uuid())
+  companyId    String
+  categoryId   Int
+  code         String?
+  title        String
+  description  String?  @db.Text
+  probability  Int? // 1-5
+  consequence  Int? // 1-5
+  residualRisk Float?
+  status       String   @default("IDENTIFIED")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  company  Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category RiskCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([companyId])
+  @@index([categoryId])
+}
+
+// =====================================================
+// LIBRARY / DOCUMENTATION MODULE
+// =====================================================
+
+model DocumentCategory {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String?    @db.Text
+  icon        String?
+  documents   Document[]
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  companyId  String
+  categoryId Int
+  title      String
+  url        String // URL to the file
+  type       String // PDF, DOCX, etc.
+  version    String   @default("1.0")
+  status     String   @default("ACTIVE")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  company  Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  category DocumentCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([companyId])
+  @@index([categoryId])
+}
+

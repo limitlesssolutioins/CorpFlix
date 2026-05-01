@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 const pool = mysql.createPool({
-  uri: process.env.DATABASE_URL || 'mysql://lidustechadmin_lidusadmin:LidusTech2026@160.153.188.144:3306/lidustechadmin_lidusdb',
+  uri: process.env.DATABASE_URL,
   connectionLimit: 10,
 });
 

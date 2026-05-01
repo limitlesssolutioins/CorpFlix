@@ -47,13 +47,6 @@ function groupByChapter(items: ChecklistItem[]) {
     );
 }
 function getIndentLevel(code: string) { return Math.max(0, (code.match(/\./g) || []).length - 1); }
-function isHiddenByCollapse(code: string, collapsed: Set<string>) {
-    const parts = code.split('.');
-    for (let i = 1; i < parts.length; i++) {
-        if (collapsed.has(parts.slice(0, i).join('.'))) return true;
-    }
-    return false;
-}
 
 export default function ChecklistPage() {
     const params = useParams();
@@ -66,7 +59,7 @@ export default function ChecklistPage() {
     const [findings, setFindings] = useState<Map<number, FindingState>>(new Map());
     const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
     const [collapsedChapters, setCollapsedChapters] = useState<Set<number>>(new Set());
-    const [collapsedParents, setCollapsedParents] = useState<Set<string>>(new Set());
+    const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saveResult, setSaveResult] = useState<{ saved: number; actionsCreated: number } | null>(null);
@@ -279,7 +272,7 @@ export default function ChecklistPage() {
         }
     };
 
-    const toggleExpand = async (reqId: number, item: ChecklistItem) => {
+    const toggleExpand = async (reqId: number) => {
         const willExpand = !expandedItems.has(reqId);
         setExpandedItems(prev => {
             const next = new Set(prev);
@@ -287,6 +280,27 @@ export default function ChecklistPage() {
             return next;
         });
         if (willExpand) await loadVariables(reqId);
+    };
+
+    const toggleParent = (code: string) => {
+        setExpandedParents(prev => {
+            const next = new Set(prev);
+            if (next.has(code)) next.delete(code); else next.add(code);
+            return next;
+        });
+    };
+
+    const isVisible = (code: string) => {
+        const parts = code.split('.');
+        // Top level items within a chapter (e.g., "4.1", "5.2") should always be visible
+        if (parts.length <= 2) return true;
+        
+        // Deeper levels (e.g., "4.4.1") only visible if their direct parent ("4.4") is expanded
+        for (let i = 2; i < parts.length; i++) {
+            const parentCode = parts.slice(0, i).join('.');
+            if (!expandedParents.has(parentCode)) return false;
+        }
+        return true;
     };
 
     const generateOpportunities = async () => {
@@ -378,6 +392,232 @@ export default function ChecklistPage() {
             else alert('❌ Error al guardar');
         } catch { alert('❌ Error al guardar'); }
         finally { setSaving(false); }
+    };
+
+    const renderVariables = (item: ChecklistItem) => {
+        const vars = reqVariables.get(item.id) || [];
+        const isLoadingV = loadingVars.has(item.id);
+        const isGeneratingV = generatingVars.has(item.id);
+        const isEditingV = editingVars.has(item.id);
+        const isSavingV = savingVars.has(item.id);
+        const drafts = varDrafts.get(item.id) || [];
+        const hasVars = vars.length > 0;
+        const answeredCount = hasVars ? vars.filter(v => varAnswers.has(`${item.id}-${v.id}`)).length : 0;
+        const f = findings.get(item.id);
+
+        return (
+            <div className="mt-3 border-t border-slate-100 pt-3 space-y-4">
+                {/* VARIABLES SECTION */}
+                <div>
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-black text-slate-600 uppercase tracking-wide">Criterios de evaluación</p>
+                        <div className="flex items-center gap-2">
+                            {hasVars && !isEditingV && (
+                                <span className="text-xs text-slate-400">{answeredCount}/{vars.length} respondidos</span>
+                            )}
+                            {!isLoadingV && !isGeneratingV && !isEditingV && (
+                                <button onClick={() => startEditVars(item.id)}
+                                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors border border-slate-200">
+                                    <Pencil size={10} /> {hasVars ? 'Editar' : 'Agregar Criterios'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {(isLoadingV || isGeneratingV) ? (
+                        <div className="flex items-center gap-2 py-3 text-sm text-slate-500">
+                            <Loader2 size={14} className="animate-spin" />
+                            {isGeneratingV ? 'Generando criterios con IA...' : 'Cargando criterios...'}
+                        </div>
+                    ) : isEditingV ? (
+                        <div className="space-y-2">
+                            {drafts.map((text, idx) => (
+                                <div key={idx} className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={text}
+                                        onChange={e => {
+                                            const next = [...drafts];
+                                            next[idx] = e.target.value;
+                                            setVarDrafts(prev => new Map(prev).set(item.id, next));
+                                        }}
+                                        className="flex-1 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-400"
+                                    />
+                                    <button onClick={() => {
+                                        const next = drafts.filter((_, i) => i !== idx);
+                                        setVarDrafts(prev => new Map(prev).set(item.id, next));
+                                    }} className="p-1 text-red-400 hover:text-red-600 transition-colors">
+                                        <Trash2 size={13} />
+                                    </button>
+                                </div>
+                            ))}
+                            <button onClick={() => setVarDrafts(prev => new Map(prev).set(item.id, [...drafts, '']))}
+                                className="flex items-center gap-1 text-xs text-violet-600 hover:text-violet-800 font-bold transition-colors">
+                                <Plus size={12} /> Agregar criterio
+                            </button>
+                            <div className="flex gap-2 pt-1">
+                                <button onClick={() => saveVarEdits(item.id)} disabled={isSavingV}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white rounded-lg text-xs font-bold hover:bg-violet-700 transition-colors disabled:opacity-50">
+                                    {isSavingV ? <Loader2 size={11} className="animate-spin" /> : <Save size={11} />} Guardar
+                                </button>
+                                <button onClick={() => cancelEditVars(item.id)} disabled={isSavingV}
+                                    className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors border border-slate-200">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    ) : hasVars ? (
+                        <div className="space-y-2">
+                            {vars.map(v => {
+                                const data = varAnswers.get(`${item.id}-${v.id}`) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '', evidence: '' };
+                                const ans = data.answer;
+                                return (
+                                    <div key={v.id} className={`p-3 rounded-xl border transition-all ${ans === 'si' ? 'bg-emerald-50/50 border-emerald-200' : ans === 'no' ? 'bg-red-50/50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
+                                        <div className="flex flex-col md:flex-row gap-4">
+                                            <p className="text-xs text-slate-700 flex-1 pt-1 leading-relaxed font-medium">{v.variable_text}</p>
+                                            
+                                            {/* Actions and inputs */}
+                                            <div className="flex flex-col gap-2 shrink-0 md:w-2/3">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    {/* Buttons Si/No/NA */}
+                                                    <div className="flex gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                                                        {(['si', 'no', 'na'] as VarAnswer[]).map(a => (
+                                                            <button key={a} onClick={() => setVarAnswer(item.id, v.id, a)}
+                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${ans === a
+                                                                    ? a === 'si' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
+                                                                        : a === 'no' ? 'bg-red-500 text-white shadow-lg shadow-red-200'
+                                                                            : 'bg-slate-500 text-white shadow-lg shadow-slate-200'
+                                                                    : 'text-slate-400 hover:bg-slate-50'}`}>
+                                                                {a === 'si' ? 'Sí' : a === 'no' ? 'No' : 'N/A'}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* NC / OP Buttons & Fields */}
+                                                    <div className="flex flex-wrap items-center gap-2 flex-1">
+                                                        {ans === 'no' && (
+                                                            <button onClick={() => {
+                                                                const isActive = activeVarInputs[`${item.id}-${v.id}`]?.nc;
+                                                                setActiveVarInputs(prev => ({ 
+                                                                    ...prev, 
+                                                                    [`${item.id}-${v.id}`]: { nc: !isActive, op: false } 
+                                                                }));
+                                                                if (!isActive) {
+                                                                    setVarDetail(item.id, v.id, 'nc_text', data.nc_text);
+                                                                } else {
+                                                                    setVarDetail(item.id, v.id, 'nc_text', '');
+                                                                }
+                                                            }}
+                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
+                                                                NC
+                                                            </button>
+                                                        )}
+                                                        
+                                                        {ans === 'si' && (
+                                                            <button onClick={() => {
+                                                                const isActive = activeVarInputs[`${item.id}-${v.id}`]?.op;
+                                                                setActiveVarInputs(prev => ({ 
+                                                                    ...prev, 
+                                                                    [`${item.id}-${v.id}`]: { nc: false, op: !isActive } 
+                                                                }));
+                                                                if (!isActive) {
+                                                                    setVarDetail(item.id, v.id, 'op_text', data.op_text);
+                                                                } else {
+                                                                    setVarDetail(item.id, v.id, 'op_text', '');
+                                                                }
+                                                            }}
+                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
+                                                                OP
+                                                            </button>
+                                                        )}
+
+                                                        {/* Evidence for Criteria */}
+                                                        <div className="flex items-center gap-1.5">
+                                                            <input 
+                                                                type="file" 
+                                                                id={`evidence-var-${v.id}`}
+                                                                className="hidden" 
+                                                                accept="image/*,application/pdf"
+                                                                onChange={async (e) => {
+                                                                    const file = e.target.files?.[0];
+                                                                    if (!file) return;
+                                                                    const formData = new FormData();
+                                                                    formData.append('file', file);
+                                                                    const tId = toast.loading('Subiendo evidencia...');
+                                                                    try {
+                                                                        const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+                                                                        if (res.ok) {
+                                                                            const up = await res.json();
+                                                                            setVarDetail(item.id, v.id, 'evidence', up.url);
+                                                                            toast.success('Evidencia subida', { id: tId });
+                                                                        } else toast.error('Error al subir', { id: tId });
+                                                                    } catch { toast.error('Error al subir', { id: tId }); }
+                                                                }}
+                                                            />
+                                                            <button onClick={() => document.getElementById(`evidence-var-${v.id}`)?.click()}
+                                                                className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition-all ${data.evidence ? 'bg-blue-100 border-blue-300 text-blue-700' : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100'}`}>
+                                                                <Plus size={10} className="inline mr-1" /> Evidencia
+                                                            </button>
+                                                            {data.evidence && (
+                                                                <a href={data.evidence} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-blue-500 hover:underline">Ver</a>
+                                                            )}
+                                                        </div>
+
+                                                        {(activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text) && (
+                                                            <div className="flex-1 min-w-[120px]">
+                                                                <input 
+                                                                    type="text" 
+                                                                    placeholder="Detalle de la No Conformidad..."
+                                                                    value={data.nc_text}
+                                                                    onChange={e => setVarDetail(item.id, v.id, 'nc_text', e.target.value)}
+                                                                    className="w-full px-2 py-1.5 text-[10px] border border-red-200 bg-red-50 text-red-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-400 placeholder-red-300"
+                                                                />
+                                                            </div>
+                                                        )}
+
+                                                        {(activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text) && (
+                                                            <div className="flex-1 min-w-[120px]">
+                                                                <input 
+                                                                    type="text" 
+                                                                    placeholder="Detalle de la Oportunidad de Mejora..."
+                                                                    value={data.op_text}
+                                                                    onChange={e => setVarDetail(item.id, v.id, 'op_text', e.target.value)}
+                                                                    className="w-full px-2 py-1.5 text-[10px] border border-amber-200 bg-amber-50 text-amber-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder-amber-300"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                            <p className="text-xs text-slate-500 flex-1">No hay criterios de evaluación definidos.</p>
+                            <button onClick={() => generateVariables(item)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 text-violet-600 rounded-lg text-xs font-bold hover:bg-violet-100 transition-colors">
+                                <Sparkles size={12} /> Generar con IA
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-slate-100" />
+
+                {/* Observaciones Finales del Punto */}
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones Finales</label>
+                    <textarea rows={2} value={f?.observations || ''}
+                        onChange={e => setFindingDetail(item.id, 'observations', e.target.value)}
+                        placeholder="Notas adicionales sobre el cumplimiento..."
+                        className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
+                </div>
+            </div>
+        );
     };
 
     const leafItems = items.filter(i => i.is_auditable === 1);
@@ -528,27 +768,39 @@ export default function ChecklistPage() {
                             {!isCollapsed && (
                                 <div className="border-t border-slate-100">
                                     {chapter.items.map(item => {
-                                        if (isHiddenByCollapse(item.requirement_code, collapsedParents)) return null;
+                                        if (!isVisible(item.requirement_code)) return null;
                                         const indent = getIndentLevel(item.requirement_code);
+                                        const isExpanded = expandedItems.has(item.id);
 
                                         // PARENT item
                                         if (item.is_auditable === 0) {
-                                            const isParentCollapsed = collapsedParents.has(item.requirement_code);
+                                            const isParentExpanded = expandedParents.has(item.requirement_code);
                                             const childCount = countLeafChildren(item.requirement_code);
                                             const evalCount = countEvaluated(item.requirement_code);
+                                            
                                             return (
                                                 <div key={item.id} className="border-b border-slate-100 last:border-0" style={{ paddingLeft: `${indent * 20}px` }}>
-                                                    <button onClick={() => setCollapsedParents(prev => { const n = new Set(prev); n.has(item.requirement_code) ? n.delete(item.requirement_code) : n.add(item.requirement_code); return n; })}
-                                                        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors text-left">
-                                                        <div className="flex items-center gap-2 min-w-0">
+                                                    <div className="flex items-center px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                                                        <button onClick={() => toggleParent(item.requirement_code)}
+                                                            className="flex items-center gap-2 min-w-0 flex-1 text-left">
                                                             <div className="w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: `${accentColor}18`, color: accentColor }}>
-                                                                {isParentCollapsed ? <Plus size={12} /> : <Minus size={12} />}
+                                                                {isParentExpanded ? <Minus size={12} /> : <Plus size={12} />}
                                                             </div>
                                                             <span className="text-xs font-mono font-black text-slate-500 shrink-0">{item.requirement_code}</span>
                                                             <span className="text-sm font-bold text-slate-700 truncate">{item.requirement_title}</span>
+                                                            <span className="text-[10px] text-slate-400 shrink-0 ml-2">({evalCount}/{childCount})</span>
+                                                        </button>
+                                                        
+                                                        <button onClick={() => toggleExpand(item.id)}
+                                                            className={`p-1.5 rounded-lg border transition-all ${isExpanded ? 'bg-slate-100 border-slate-300' : 'border-transparent hover:bg-slate-100'}`}>
+                                                            {isExpanded ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-400" />}
+                                                        </button>
+                                                    </div>
+                                                    {isExpanded && (
+                                                        <div className="px-4 pb-4">
+                                                            {renderVariables(item)}
                                                         </div>
-                                                        <span className="text-xs text-slate-400 shrink-0 ml-2">{evalCount}/{childCount}</span>
-                                                    </button>
+                                                    )}
                                                 </div>
                                             );
                                         }
@@ -557,7 +809,7 @@ export default function ChecklistPage() {
                                         const f = findings.get(item.id);
                                         const isCumple = f?.type_id === CUMPLE_ID;
                                         const isNC = f?.type_id === NC_ID;
-                                        const isExpanded = expandedItems.has(item.id);
+                                        // isExpanded is already declared above
                                         const vars = reqVariables.get(item.id) || [];
                                         const isLoadingV = loadingVars.has(item.id);
                                         const isGeneratingV = generatingVars.has(item.id);
@@ -608,7 +860,7 @@ export default function ChecklistPage() {
                                                                         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isNC ? 'bg-red-50 border-red-400 text-red-700' : 'border-slate-200 hover:border-red-300 bg-white text-slate-500'}`}>
                                                                         <XCircle size={12} /> No Cumple
                                                                     </button>
-                                                                    <button onClick={() => toggleExpand(item.id, item)}
+                                                                    <button onClick={() => toggleExpand(item.id)}
                                                                         className={`p-1.5 rounded-lg border-2 transition-all ${isExpanded ? 'border-slate-300 bg-slate-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
                                                                         {isExpanded ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-400" />}
                                                                     </button>
@@ -676,215 +928,7 @@ export default function ChecklistPage() {
                                                             </div>
 
                                                             {/* Expanded panel */}
-                                                            {isExpanded && (
-                                                                <div className="mt-3 border-t border-slate-100 pt-3 space-y-4">
-                                                                    {/* VARIABLES SECTION */}
-                                                                    <div>
-                                                                        <div className="flex items-center justify-between mb-2">
-                                                                            <p className="text-xs font-black text-slate-600 uppercase tracking-wide">Criterios de evaluación</p>
-                                                                            <div className="flex items-center gap-2">
-                                                                                {hasVars && !isEditingV && (
-                                                                                    <span className="text-xs text-slate-400">{answeredCount}/{vars.length} respondidos</span>
-                                                                                )}
-                                                                                {hasVars && !isLoadingV && !isGeneratingV && !isEditingV && (
-                                                                                    <button onClick={() => startEditVars(item.id)}
-                                                                                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors border border-slate-200">
-                                                                                        <Pencil size={10} /> Editar
-                                                                                    </button>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-
-                                                                        {(isLoadingV || isGeneratingV) ? (
-                                                                            <div className="flex items-center gap-2 py-3 text-sm text-slate-500">
-                                                                                <Loader2 size={14} className="animate-spin" />
-                                                                                {isGeneratingV ? 'Generando criterios con IA...' : 'Cargando criterios...'}
-                                                                            </div>
-                                                                        ) : isEditingV ? (
-                                                                            <div className="space-y-2">
-                                                                                {drafts.map((text, idx) => (
-                                                                                    <div key={idx} className="flex items-center gap-2">
-                                                                                        <input
-                                                                                            type="text"
-                                                                                            value={text}
-                                                                                            onChange={e => {
-                                                                                                const next = [...drafts];
-                                                                                                next[idx] = e.target.value;
-                                                                                                setVarDrafts(prev => new Map(prev).set(item.id, next));
-                                                                                            }}
-                                                                                            className="flex-1 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-400"
-                                                                                        />
-                                                                                        <button onClick={() => {
-                                                                                            const next = drafts.filter((_, i) => i !== idx);
-                                                                                            setVarDrafts(prev => new Map(prev).set(item.id, next));
-                                                                                        }} className="p-1 text-red-400 hover:text-red-600 transition-colors">
-                                                                                            <Trash2 size={13} />
-                                                                                        </button>
-                                                                                    </div>
-                                                                                ))}
-                                                                                <button onClick={() => setVarDrafts(prev => new Map(prev).set(item.id, [...drafts, '']))}
-                                                                                    className="flex items-center gap-1 text-xs text-violet-600 hover:text-violet-800 font-bold transition-colors">
-                                                                                    <Plus size={12} /> Agregar criterio
-                                                                                </button>
-                                                                                <div className="flex gap-2 pt-1">
-                                                                                    <button onClick={() => saveVarEdits(item.id)} disabled={isSavingV}
-                                                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-600 text-white rounded-lg text-xs font-bold hover:bg-violet-700 transition-colors disabled:opacity-50">
-                                                                                        {isSavingV ? <Loader2 size={11} className="animate-spin" /> : <Save size={11} />} Guardar
-                                                                                    </button>
-                                                                                    <button onClick={() => cancelEditVars(item.id)} disabled={isSavingV}
-                                                                                        className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors border border-slate-200">
-                                                                                        Cancelar
-                                                                                    </button>
-                                                                                </div>
-                                                                            </div>
-                                                                        ) : hasVars ? (
-                                                                            <div className="space-y-2">
-                                                                                {vars.map(v => {
-                                                                                    const data = varAnswers.get(`${item.id}-${v.id}`) || { answer: 'na' as VarAnswer, nc_text: '', op_text: '', evidence: '' };
-                                                                                    const ans = data.answer;
-                                                                                    return (
-                                                                                        <div key={v.id} className={`p-3 rounded-xl border transition-all ${ans === 'si' ? 'bg-emerald-50/50 border-emerald-200' : ans === 'no' ? 'bg-red-50/50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
-                                                                                            <div className="flex flex-col md:flex-row gap-4">
-                                                                                                <p className="text-xs text-slate-700 flex-1 pt-1 leading-relaxed font-medium">{v.variable_text}</p>
-                                                                                                
-                                                                                                {/* Actions and inputs */}
-                                                                                                <div className="flex flex-col gap-2 shrink-0 md:w-2/3">
-                                                                                                    <div className="flex flex-wrap items-center gap-2">
-                                                                                                        {/* Buttons Si/No/NA */}
-                                                                                                        <div className="flex gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
-                                                                                                            {(['si', 'no', 'na'] as VarAnswer[]).map(a => (
-                                                                                                                <button key={a} onClick={() => setVarAnswer(item.id, v.id, a)}
-                                                                                                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${ans === a
-                                                                                                                        ? a === 'si' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
-                                                                                                                            : a === 'no' ? 'bg-red-500 text-white shadow-lg shadow-red-200'
-                                                                                                                                : 'bg-slate-500 text-white shadow-lg shadow-slate-200'
-                                                                                                                        : 'text-slate-400 hover:bg-slate-50'}`}>
-                                                                                                                    {a === 'si' ? 'Sí' : a === 'no' ? 'No' : 'N/A'}
-                                                                                                                </button>
-                                                                                                            ))}
-                                                                                                        </div>
-
-                                                                                                        {/* NC / OP Buttons & Fields */}
-                                                                                                        <div className="flex flex-wrap items-center gap-2 flex-1">
-                                                                                                            {ans === 'no' && (
-                                                                                                                <button onClick={() => {
-                                                                                                                    const isActive = activeVarInputs[`${item.id}-${v.id}`]?.nc;
-                                                                                                                    setActiveVarInputs(prev => ({ 
-                                                                                                                        ...prev, 
-                                                                                                                        [`${item.id}-${v.id}`]: { nc: !isActive, op: false } 
-                                                                                                                    }));
-                                                                                                                    if (!isActive) {
-                                                                                                                        setVarDetail(item.id, v.id, 'nc_text', data.nc_text);
-                                                                                                                    } else {
-                                                                                                                        setVarDetail(item.id, v.id, 'nc_text', '');
-                                                                                                                    }
-                                                                                                                }}
-                                                                                                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
-                                                                                                                    NC
-                                                                                                                </button>
-                                                                                                            )}
-                                                                                                            
-                                                                                                            {ans === 'si' && (
-                                                                                                                <button onClick={() => {
-                                                                                                                    const isActive = activeVarInputs[`${item.id}-${v.id}`]?.op;
-                                                                                                                    setActiveVarInputs(prev => ({ 
-                                                                                                                        ...prev, 
-                                                                                                                        [`${item.id}-${v.id}`]: { nc: false, op: !isActive } 
-                                                                                                                    }));
-                                                                                                                    if (!isActive) {
-                                                                                                                        setVarDetail(item.id, v.id, 'op_text', data.op_text);
-                                                                                                                    } else {
-                                                                                                                        setVarDetail(item.id, v.id, 'op_text', '');
-                                                                                                                    }
-                                                                                                                }}
-                                                                                                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-slate-200 hover:bg-slate-100'}`}>
-                                                                                                                    OP
-                                                                                                                </button>
-                                                                                                            )}
-
-                                                                                                            {/* Evidence for Criteria */}
-                                                                                                            <div className="flex items-center gap-1.5">
-                                                                                                                <input 
-                                                                                                                    type="file" 
-                                                                                                                    id={`evidence-var-${v.id}`}
-                                                                                                                    className="hidden" 
-                                                                                                                    accept="image/*,application/pdf"
-                                                                                                                    onChange={async (e) => {
-                                                                                                                        const file = e.target.files?.[0];
-                                                                                                                        if (!file) return;
-                                                                                                                        const formData = new FormData();
-                                                                                                                        formData.append('file', file);
-                                                                                                                        const tId = toast.loading('Subiendo evidencia...');
-                                                                                                                        try {
-                                                                                                                            const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
-                                                                                                                            if (res.ok) {
-                                                                                                                                const up = await res.json();
-                                                                                                                                setVarDetail(item.id, v.id, 'evidence', up.url);
-                                                                                                                                toast.success('Evidencia subida', { id: tId });
-                                                                                                                            } else toast.error('Error al subir', { id: tId });
-                                                                                                                        } catch { toast.error('Error al subir', { id: tId }); }
-                                                                                                                    }}
-                                                                                                                />
-                                                                                                                <button onClick={() => document.getElementById(`evidence-var-${v.id}`)?.click()}
-                                                                                                                    className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition-all ${data.evidence ? 'bg-blue-100 border-blue-300 text-blue-700' : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100'}`}>
-                                                                                                                    <Plus size={10} className="inline mr-1" /> Evidencia
-                                                                                                                </button>
-                                                                                                                {data.evidence && (
-                                                                                                                    <a href={data.evidence} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-blue-500 hover:underline">Ver</a>
-                                                                                                                )}
-                                                                                                            </div>
-
-                                                                                                            {(activeVarInputs[`${item.id}-${v.id}`]?.nc || data.nc_text) && (
-                                                                                                                <div className="flex-1 min-w-[120px]">
-                                                                                                                    <input 
-                                                                                                                        type="text" 
-                                                                                                                        placeholder="Detalle de la No Conformidad..."
-                                                                                                                        value={data.nc_text}
-                                                                                                                        onChange={e => setVarDetail(item.id, v.id, 'nc_text', e.target.value)}
-                                                                                                                        className="w-full px-2 py-1.5 text-[10px] border border-red-200 bg-red-50 text-red-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-400 placeholder-red-300"
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                            )}
-
-                                                                                                            {(activeVarInputs[`${item.id}-${v.id}`]?.op || data.op_text) && (
-                                                                                                                <div className="flex-1 min-w-[120px]">
-                                                                                                                    <input 
-                                                                                                                        type="text" 
-                                                                                                                        placeholder="Detalle de la Oportunidad de Mejora..."
-                                                                                                                        value={data.op_text}
-                                                                                                                        onChange={e => setVarDetail(item.id, v.id, 'op_text', e.target.value)}
-                                                                                                                        className="w-full px-2 py-1.5 text-[10px] border border-amber-200 bg-amber-50 text-amber-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder-amber-300"
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                            )}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    );
-                                                                                })}
-                                                                            </div>
-                                                                        ) : (
-                                                                            <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                                                                                <p className="text-xs text-slate-500 flex-1">No hay criterios de evaluación definidos para este requisito.</p>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-
-                                                                    {/* Divider */}
-                                                                    <div className="border-t border-slate-100" />
-
-                                                                    {/* Observaciones Finales del Punto */}
-                                                                    <div>
-                                                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Observaciones Finales</label>
-                                                                        <textarea rows={2} value={f?.observations || ''}
-                                                                            onChange={e => setFindingDetail(item.id, 'observations', e.target.value)}
-                                                                            placeholder="Notas adicionales sobre el cumplimiento..."
-                                                                            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" />
-                                                                    </div>
-                                                                </div>
-                                                            )}
+                                                            {isExpanded && renderVariables(item)}
                                                         </div>
                                                     </div>
                                                 </div>

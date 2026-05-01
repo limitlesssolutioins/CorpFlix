@@ -15,8 +15,7 @@ export async function GET() {
         `;
         const standards = await query<any[]>(sql);
         
-        // Map to match old API format expectations if necessary, 
-        // though Prisma format is often directly usable.
+        // Map to match old API format expectations if necessary.
         const mappedStandards = standards.map(s => ({
             id: s.id,
             code: s.code,

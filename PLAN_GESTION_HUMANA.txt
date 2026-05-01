@@ -69,6 +69,6 @@ Objetivo: Que el empleado gestione sus propios trámites.
 ---
 
 PASOS INMEDIATOS SUGERIDOS:
-1. Ampliar el `schema.prisma` para soportar `Payroll` (Nómina) y `Liquidation`.
+1. Ampliar el esquema de base de datos para soportar `Payroll` (Nómina) y `Liquidation`.
 2. Crear el servicio de cálculo de nómina (`finance.service.ts` o `payroll.service.ts`).
 3. Conectar la asistencia (`Attendance`) con el cálculo de horas trabajadas.

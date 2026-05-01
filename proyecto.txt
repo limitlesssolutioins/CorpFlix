@@ -1,7 +1,7 @@
 Estado Actual:
-   1. Núcleo Sólido: Tienes una buena base para Recursos Humanos y Turnos. El esquema de base de datos (prisma/schema.prisma) cubre empleados, turnos, ausencias, asistencia y configuración básica de
+   1. Núcleo Sólido: Tienes una buena base para Recursos Humanos y Turnos. El esquema de base de datos cubre empleados, turnos, ausencias, asistencia y configuración básica de
       nómina.
-   2. Tecnología Moderna: Usas Next.js 15, React 19, Tailwind, Prisma y librerías potentes como react-big-calendar y reactflow. Tienes integración con Gemini AI (@google/generative-ai).
+   2. Tecnología Moderna: Usas Next.js 15, React 19, Tailwind, MySQL y librerías potentes como react-big-calendar y reactflow. Tienes integración con Gemini AI (@google/generative-ai).
    3. Faltantes Críticos para una App "Real" (SaaS):
        * Gestión/BPM (Procesos): No existe en la base de datos. Probablemente es solo frontend (reactflow) sin persistencia.
        * Multi-tenant (SaaS): El sistema actual está diseñado para una sola empresa (tabla SystemConfiguration única). Para venderlo a Pymes y Corps, necesitamos aislar los datos por Organization o
@@ -15,7 +15,7 @@ Estado Actual:
   🚀 Fase 1: Arquitectura SaaS y Seguridad (Cimientos)
   Objetivo: Que múltiples empresas puedan usar la app de forma segura y aislada.
    1. Autenticación: Implementar Auth.js (NextAuth). Separar el concepto de User (login) del de Employee (datos de RRHH).
-   2. Multi-tenancy: Crear el modelo Organization en Prisma y vincular todos los datos (Empleados, Turnos, Procesos) a una organización.
+   2. Multi-tenancy: Crear el modelo Organization en la base de datos y vincular todos los datos (Empleados, Turnos, Procesos) a una organización.
    3. Roles y Permisos: Definir roles (Admin, Gestor, Empleado) para controlar el acceso a módulos.
 
   🧠 Fase 2: Módulo de Gestión Inteligente (BPM & Calidad)

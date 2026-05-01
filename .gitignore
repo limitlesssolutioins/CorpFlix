@@ -40,13 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Lidus Data & Databases
-src/data/companies/
-src/data/*.db
-src/data/*.db-journal
-src/data/*.db-wal
-src/data/core.db
+# Lidus Data
 public/uploads/*
 !public/uploads/.gitkeep
-
-/src/generated/prisma

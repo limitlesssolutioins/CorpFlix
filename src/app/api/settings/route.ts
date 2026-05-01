@@ -8,7 +8,7 @@ export async function GET() {
     const dataDir = await getCompanyDataDir();
     const adminSettings = getAdminService(dataDir).getGeneralSettings();
 
-    // 2. Define HR/Legal Settings Defaults (Removed Prisma Dependency)
+    // 2. Define HR/Legal Settings Defaults
     const config = {
         smlmv: 1300000,
         transportAid: 162000,

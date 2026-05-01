@@ -18,7 +18,7 @@
 
 *   **Frontend:** Next.js (App Router), Tailwind CSS, Lucide React.
 *   **Backend:** Node.js, API Routes.
-*   **Base de Datos:** SQLite (vía Prisma / Lib DB local) y JSON para configuración rápida.
+*   **Base de Datos:** MySQL y JSON para configuración rápida.
 
 ## Inicio Rápido
 

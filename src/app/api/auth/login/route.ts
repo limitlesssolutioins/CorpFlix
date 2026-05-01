@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { createSession } from '@/lib/auth';
 
 export async function POST(request: Request) {
@@ -11,14 +11,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan credenciales' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-        where: { email },
-        include: { company: true }
-    });
-
-    if (!user) {
+    const users = await query<any[]>('SELECT id, email, password, companyId FROM User WHERE email = ? LIMIT 1', [email]);
+    
+    if (users.length === 0) {
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
     }
+
+    const user = users[0];
 
     // Assuming plain text match right now due to early MVP, but keeping bcrypt for future
     // In our new schema we seeded plain text for now, but you should hash them

@@ -64,7 +64,8 @@ export class ISOAuditService {
 
     const sql = `
         SELECT req.id as requirement_id, req.code as requirement_code, req.title as requirement_title, req.description as requirement_description,
-            ch.chapterNumber as chapter_number, ch.title as chapter_title, ch.standardId as standard_id,
+            ch.id as chapter_id, ch.chapterNumber as chapter_number, ch.title as chapter_title, ch.standardId as standard_id,
+            req.isAuditable as is_auditable, req.weight as weight,
             af.id as finding_id, af.type as finding_type_name, af.description as finding_description,
             af.evidence, af.evidence as observations,
             CASE

@@ -79,8 +79,8 @@ export class ISOAuditService {
         FROM AuditRequirement req
         INNER JOIN AuditChapter ch ON req.chapterId = ch.id
         LEFT JOIN AuditFinding af ON af.requirementId = req.id AND af.auditId = ?
-        WHERE (? IS NULL OR ch.standardId = (SELECT id FROM AuditStandard WHERE code = ?))
-        ORDER BY req.code
+        WHERE (? IS NULL OR ch.standardId = (SELECT id FROM AuditStandard WHERE code = ? LIMIT 1))
+        ORDER BY CAST(ch.chapterNumber AS UNSIGNED), req.code
     `;
     return await query<any[]>(sql, [auditId, standardCode || null, standardCode || null]);
   }

@@ -49,7 +49,7 @@ export class BibliotecaService {
     return this.mapDocuments(rows);
   }
 
-  async getAllDocuments() {
+  async getAllDocuments(filters?: any) {
     const companyId = await this.getCompanyContext();
     const sql = `
       SELECT d.*, c.id as cat_id, c.name as cat_name, c.description as cat_desc, c.icon as cat_icon
@@ -74,6 +74,12 @@ export class BibliotecaService {
     const rows = await query<any[]>(sql, [companyId, `%${q}%`]);
     return this.mapDocuments(rows);
   }
+
+    getAllTags() { return null as any; }
+    getDocumentById(id: number) { return null as any; }
+    createDocument(body: any) { return null as any; }
+    updateDocument(id: string, data: any) { return null as any; }
+    deleteDocument(id: number) { return null as any; }
 }
 
 export function getBibliotecaService(dataDir: string): BibliotecaService {

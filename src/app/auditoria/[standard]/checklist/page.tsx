@@ -597,10 +597,6 @@ export default function ChecklistPage() {
                     ) : (
                         <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
                             <p className="text-xs text-slate-500 flex-1">No hay criterios de evaluación definidos.</p>
-                            <button onClick={() => generateVariables(item)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 text-violet-600 rounded-lg text-xs font-bold hover:bg-violet-100 transition-colors">
-                                <Sparkles size={12} /> Generar con IA
-                            </button>
                         </div>
                     )}
                 </div>

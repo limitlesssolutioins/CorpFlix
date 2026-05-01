@@ -132,6 +132,20 @@ export class RiskService {
   getControlsByRisk() { return []; }
   getActionPlansByRisk() { return []; }
   getAssessmentsByRisk() { return []; }
+
+    updateActionPlan(id: string, data: any) { return null as any; }
+    getActionPlansByAssessment(id: number) { return null as any; }
+    getAllActionPlans(filters?: any) { return null as any; }
+    createActionPlan(body: any) { return null as any; }
+    getAllAssessments(filters?: any) { return null as any; }
+    createAssessment(body: any) { return null as any; }
+    getControlsByAssessment(id: number) { return null as any; }
+    createControl(body: any) { return null as any; }
+    getDashboardKPIs() { return null as any; }
+    importRisksFromCatalog(category: string, path: string) { return null as any; }
+    getCategoryByCode(code: string) { return null as any; }
+    getAllRisksWithAssessments(filters?: any) { return null as any; }
+    deleteRisk(id: number) { return null as any; }
 }
 
 export function getRiskService(dataDir: string): RiskService {

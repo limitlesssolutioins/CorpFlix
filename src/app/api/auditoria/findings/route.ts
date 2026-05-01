@@ -13,7 +13,7 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Audit ID is required' }, { status: 400 });
         }
 
-        const findings = isoAuditService.getFindingsByAudit(parseInt(auditId));
+        const findings = isoAuditService.getFindingsByAudit(auditId);
         return NextResponse.json(findings);
     } catch (error) {
         console.error('Error fetching findings:', error);

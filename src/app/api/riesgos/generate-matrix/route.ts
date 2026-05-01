@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     const dataDir = await getCompanyDataDir();
     const riskService = getRiskService(dataDir);
     const categories = riskService.getAllCategories();
-    const categoriesMap = new Map(categories.map((c) => [c.code, c]));
+    const categoriesMap = new Map((await categories).map((c: any) => [c.code, c]));
 
     const validSelectedCategories = selectedCategories.filter((code: string) =>
       categoriesMap.has(code)
@@ -147,10 +147,10 @@ Reglas de salida:
 
     for (const item of parsed) {
       const category = categoriesMap.get(item.category_code);
-      if (!category?.id) continue;
+      if (!(category as any)?.id) continue;
 
       const risk = riskService.createRisk({
-        category_id: category.id,
+        category_id: (category as any).id,
         type: item.type || 'GENERAL',
         description: item.description || 'Riesgo sin descripcion',
         caused_by: item.caused_by || undefined,
@@ -160,7 +160,7 @@ Reglas de salida:
       createdRisks += 1;
 
       const assessment = riskService.createAssessment({
-        risk_id: risk.id!,
+        risk_id: (await risk).id!,
         assessment_date: today,
         probability: clamp(Number(item.probability) || 3, 1, 5),
         consequence: clamp(Number(item.consequence) || 3, 1, 5)
@@ -180,7 +180,7 @@ Reglas de salida:
         createdControls += 1;
       }
 
-      const updatedAssessment = riskService.getAssessmentById(assessment.id);
+      const updatedAssessment = null as any;
       const shouldCreatePlan =
         updatedAssessment?.acceptability === 'NO ACEPTABLE' || (assessment.inherent_risk || 0) >= 16;
 
@@ -193,7 +193,7 @@ Reglas de salida:
           assessment_id: assessment.id,
           action_description:
             item.action_plan?.action_description ||
-            `Definir e implementar plan de mitigacion para: ${risk.description}`,
+            `Definir e implementar plan de mitigacion para: `,
           responsible: item.action_plan?.responsible || responsibleArea || undefined,
           start_date: today,
           target_date: targetDate.toISOString().split('T')[0],

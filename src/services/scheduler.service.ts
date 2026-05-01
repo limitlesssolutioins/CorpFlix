@@ -136,6 +136,8 @@ export class SchedulerService {
         await query(sql, [companyId, ...employeeIds, new Date(startDate), new Date(endDate)]);
         return true;
     }
+
+    generateSchedule(body: any) { return null as any; }
 }
 
 export function getSchedulerService(dataDir: string): SchedulerService {

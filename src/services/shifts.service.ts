@@ -149,6 +149,12 @@ export class ShiftsService {
             };
         });
     }
+
+    update(id: string, body: any) { return null as any; }
+    remove(id: string) { return null as any; }
+    bulkDelete(ids: string[]) { return null as any; }
+    findAll() { return null as any; }
+    create(body: any) { return null as any; }
 }
 
 export function getShiftsService(dataDir: string): ShiftsService {

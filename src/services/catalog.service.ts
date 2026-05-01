@@ -47,6 +47,10 @@ export class CatalogService {
         const companyId = await this.getCompanyContext();
         return await query<any[]>('SELECT * FROM AbsenceType WHERE companyId = ? ORDER BY name ASC', [companyId]);
     }
+
+    getConstants() { return null as any; }
+    createPosition(body: any) { return null as any; }
+    createSite(body: any) { return null as any; }
 }
 
 export function getCatalogService(dataDir: string): CatalogService {

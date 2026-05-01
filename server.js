@@ -4,7 +4,9 @@ const next = require('next');
 const { Server } = require('socket.io');
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = '0.0.0.0';
+// In development, bind to localhost (or omit to let Node use 0.0.0.0 + localhost implicitly)
+// In production, bind to 0.0.0.0 to allow external traffic
+const hostname = dev ? 'localhost' : '0.0.0.0';
 const port = process.env.PORT || 3000;
 
 const app = next({ dev, hostname, port });

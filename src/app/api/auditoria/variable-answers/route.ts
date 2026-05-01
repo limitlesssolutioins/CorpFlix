@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
         const dataDir = await getCompanyDataDir();
         const service = getIsoAuditService(dataDir);
-        const answers = service.getBulkVariableAnswers(parseInt(auditId));
+        const answers = service.getBulkVariableAnswers(auditId);
         return NextResponse.json(answers);
     } catch (error) {
         return NextResponse.json({ error: 'Failed to fetch answers' }, { status: 500 });
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
         const dataDir = await getCompanyDataDir();
         const service = getIsoAuditService(dataDir);
-        service.saveVariableAnswer(parseInt(audit_id), parseInt(requirement_id), parseInt(variable_id), answer, nc_text, op_text, evidence);
+        service.saveVariableAnswer(audit_id, parseInt(requirement_id), parseInt(variable_id), answer, nc_text, op_text, evidence);
         return NextResponse.json({ ok: true });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to save answer' }, { status: 500 });

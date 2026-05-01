@@ -6,7 +6,7 @@ import { getAbsencesService } from '@/services/absences.service';
 export async function GET() {
     const dataDir = await getCompanyDataDir();
     const absencesService = getAbsencesService(dataDir);
-    const data = await absencesService.findAll();
+    const data = await absencesService.getAbsences();
     return NextResponse.json(data);
 }
 
@@ -14,6 +14,6 @@ export async function POST(req: Request) {
     const dataDir = await getCompanyDataDir();
     const absencesService = getAbsencesService(dataDir);
     const body = await req.json();
-    const data = await absencesService.create(body);
+    const data = await absencesService.createAbsence(body);
     return NextResponse.json(data);
 }

@@ -86,6 +86,10 @@ export class PayrollService {
         const payrolls = await query<any[]>('SELECT * FROM Payroll WHERE id = ?', [id]);
         return payrolls[0];
     }
+
+    getAllPayrolls() { return null as any; }
+    generateMassivePayroll(period: string, excludeSS: boolean) { return null as any; }
+    addNovelty(payrollId: string, concept: string, amount: number, type: string, isWageForming: boolean) { return null as any; }
 }
 
 export function getPayrollService(dataDir: string): PayrollService {

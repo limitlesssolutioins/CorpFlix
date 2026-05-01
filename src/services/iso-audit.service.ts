@@ -30,8 +30,9 @@ export class ISOAuditService {
       return companyId;
   }
   
-  getDashboardKPIs() { return {}; }
-  getPrograms() { return []; }
+  getDashboardKPIs(standardId?: number) { return {}; }
+  getPrograms(standardId?: number, year?: number) { return []; }
+  saveAuditPlan(auditId: string, plan: any, activities: any[]) { return null as any; }
   async getAuditTeam(auditId: string): Promise<any[]> {
     return await query<any[]>(`
         SELECT at.*, aa.name, aa.email, aa.role, aa.area
@@ -52,7 +53,7 @@ export class ISOAuditService {
     }
   }
 
-  getAuditPlan() { return { plan: null, activities: [] }; }
+  getAuditPlan(auditId: string) { return { plan: null, activities: [] }; }
 
   // ==========================================
   // FINDINGS AND CHECKLIST
@@ -63,7 +64,7 @@ export class ISOAuditService {
     if (!audit) return [];
 
     const sql = `
-        SELECT req.id as requirement_id, req.code as requirement_code, req.title as requirement_title, req.description as requirement_description,
+        SELECT req.id as id, req.id as requirement_id, req.code as requirement_code, req.title as requirement_title, req.description as requirement_description,
             ch.id as chapter_id, ch.chapterNumber as chapter_number, ch.title as chapter_title, ch.standardId as standard_id,
             req.isAuditable as is_auditable, req.weight as weight,
             af.id as finding_id, af.type as finding_type_name, af.description as finding_description,
@@ -142,7 +143,7 @@ export class ISOAuditService {
     }
   }
 
-  getFindingsByAudit() { return []; }
+  getFindingsByAudit(auditId: string) { return []; }
   // ==========================================
   // AUDITS
   // ==========================================
@@ -266,6 +267,14 @@ export class ISOAuditService {
     await query('DELETE FROM AuditAuditor WHERE id = ?', [id]);
     return { success: true };
   }
+
+    getAllCorrectiveActions(filters?: any) { return null as any; }
+    createCorrectiveAction(body: any) { return null as any; }
+    updateCorrectiveAction(id: string, updateData: any) { return null as any; }
+    createFinding(body: any) { return null as any; }
+    saveRequirementVariables(reqId: number, vars: string[]) { return null as any; }
+    createProgram(body: any) { return null as any; }
+    updateProgram(id: string, data: any) { return null as any; }
 }
 
 let instance: ISOAuditService | null = null;

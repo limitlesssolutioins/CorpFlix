@@ -24,7 +24,7 @@ export class MejoraContinuaService {
     };
   }
 
-  async getAllSuggestions() {
+  async getAllSuggestions(filters?: any) {
     const companyId = await this.getCompanyContext();
     return await query<any[]>(
       'SELECT * FROM ImprovementSuggestion WHERE companyId = ? ORDER BY createdAt DESC',
@@ -32,7 +32,7 @@ export class MejoraContinuaService {
     );
   }
 
-  async getAllProjects() {
+  async getAllProjects(filters?: any) {
     const companyId = await this.getCompanyContext();
     return await query<any[]>(
       'SELECT * FROM ImprovementProject WHERE companyId = ? ORDER BY createdAt DESC',
@@ -47,6 +47,16 @@ export class MejoraContinuaService {
       [companyId]
     );
   }
+
+    getConsolidatedActions() { return null as any; }
+    getDashboardKPIs() { return null as any; }
+    getAllCategories() { return null as any; }
+    getAllLessons(filters?: any) { return null as any; }
+    createLesson(body: any) { return null as any; }
+    createProject(body: any) { return null as any; }
+    updateProject(id: string, data: any) { return null as any; }
+    createSuggestion(body: any) { return null as any; }
+    updateSuggestion(id: string, data: any) { return null as any; }
 }
 
 export function getMejoraContinuaService(dataDir: string): MejoraContinuaService {

@@ -82,7 +82,7 @@ export class ISOAuditService {
         WHERE (? IS NULL OR ch.standardId = (SELECT id FROM AuditStandard WHERE code = ?))
         ORDER BY req.code
     `;
-    return await query<any[]>(sql, [auditId, standardCode, standardCode]);
+    return await query<any[]>(sql, [auditId, standardCode || null, standardCode || null]);
   }
 
   async saveBulkFindings(auditId: string, findings: any[]): Promise<{ saved: number; actionsCreated: number }> {

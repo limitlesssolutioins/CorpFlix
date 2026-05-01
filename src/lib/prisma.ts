@@ -1,33 +1,22 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import * as mariadb from 'mariadb';
 
 const prismaClientSingleton = () => {
-  console.log('🔌 Initializing new MariaDB Connection Pool...');
+  console.log('🔌 Initializing native Prisma Client...');
   
-  // Use explicit connection object to avoid parsing errors
-  const pool = mariadb.createPool({
-      host: '160.153.188.144',
-      port: 3306,
-      user: 'lidustechadmin_lidusadmin',
-      password: 'LidusTech2026',
-      database: 'lidustechadmin_lidusdb',
-      connectTimeout: 20000,      // Increased to 20s
-      acquireTimeout: 30000,      // Increased to 30s
-      connectionLimit: 50,        // Increased to 50 for production load
-      idleTimeout: 30000,         // Close idle connections after 30s
-      minimumIdle: 2,             // Keep at least 2 connections ready
-      noDelay: true,              // Performance optimization
-      ssl: false
-  });
+  let databaseUrl = process.env.DATABASE_URL || '';
+  
+  // Ensure we optimize the connection pool natively through the connection string
+  // if the parameters are not already present in the environment variable.
+  if (databaseUrl && !databaseUrl.includes('connection_limit')) {
+    const separator = databaseUrl.includes('?') ? '&' : '?';
+    // connection_limit: Max connections in the pool
+    // connect_timeout: Max seconds waiting for a NEW connection to the DB
+    // pool_timeout: Max seconds waiting to get an existing connection FROM the pool
+    databaseUrl += `${separator}connection_limit=50&connect_timeout=30&pool_timeout=30`;
+  }
 
-  pool.on('error', (err) => {
-    console.error('❌ MariaDB Pool Error:', err);
-  });
-
-  const adapter = new PrismaMariaDb(pool);
   return new PrismaClient({ 
-    adapter,
+    datasourceUrl: databaseUrl,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
   });
 };

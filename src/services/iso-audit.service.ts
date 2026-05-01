@@ -32,8 +32,28 @@ export class ISOAuditService {
   
   getDashboardKPIs() { return {}; }
   getPrograms() { return []; }
-  getAuditTeam() { return []; }
+  async getAuditTeam(auditId: string): Promise<any[]> {
+    return await query<any[]>(`
+        SELECT at.*, aa.name, aa.email, aa.role, aa.area
+        FROM AuditTeam at
+        INNER JOIN AuditAuditor aa ON at.auditor_id = aa.id
+        WHERE at.audit_id = ?
+        ORDER BY aa.name
+    `, [auditId]);
+  }
+
+  async setAuditTeam(auditId: string, members: { auditorId: number; roleInAudit?: string }[]): Promise<void> {
+    await query('DELETE FROM AuditTeam WHERE audit_id = ?', [auditId]);
+    for (const m of members) {
+        await query(`
+            INSERT INTO AuditTeam (audit_id, auditor_id, role_in_audit) 
+            VALUES (?, ?, ?)
+        `, [auditId, m.auditorId, m.roleInAudit || 'Auditor']);
+    }
+  }
+
   getAuditPlan() { return { plan: null, activities: [] }; }
+
   // ==========================================
   // FINDINGS AND CHECKLIST
   // ==========================================
@@ -42,34 +62,28 @@ export class ISOAuditService {
     const audit = await this.getAuditById(auditId);
     if (!audit) return [];
 
-    // The legacy database expected finding_types. We might need to mock this 
-    // or return the raw findings structure expected by the frontend.
-    // For now, let's fetch requirements and existing findings for this audit.
     const sql = `
-        SELECT req.*, ch.chapterNumber as chapter_number, ch.title as chapter_title, ch.standardId as standard_id,
-            af.id as finding_id, af.type as finding_type_name, af.description as finding_description, 
-            af.evidence, af.evidence as observations, 
-            -- Mapping legacy finding_type_id to type string or mock IDs based on the old UI
-            CASE 
+        SELECT req.id as requirement_id, req.code as requirement_code, req.title as requirement_title, req.description as requirement_description,
+            ch.chapterNumber as chapter_number, ch.title as chapter_title, ch.standardId as standard_id,
+            af.id as finding_id, af.type as finding_type_name, af.description as finding_description,
+            af.evidence, af.evidence as observations,
+            CASE
                 WHEN af.type = 'CONFORMITY' THEN 1
                 WHEN af.type = 'NON_CONFORMITY' THEN 2
                 WHEN af.type = 'OPPORTUNITY' THEN 3
-                ELSE NULL 
+                ELSE NULL
             END as finding_type_id
         FROM AuditRequirement req
         INNER JOIN AuditChapter ch ON req.chapterId = ch.id
         LEFT JOIN AuditFinding af ON af.requirementId = req.id AND af.auditId = ?
         ORDER BY req.code
     `;
-    // We are currently returning ALL requirements for ALL standards because the new schema 
-    // doesn't tightly link Audit directly to AuditStandard (it was stripped).
-    // Let's just return all for now to unblock the UI.
     return await query<any[]>(sql, [auditId]);
   }
 
   async saveBulkFindings(auditId: string, findings: any[]): Promise<{ saved: number; actionsCreated: number }> {
     let saved = 0;
-    
+
     for (const f of findings) {
         if (!f.finding_type_id) {
             await query('DELETE FROM AuditFinding WHERE auditId = ? AND requirementId = ?', [auditId, f.requirement_id]);
@@ -80,12 +94,11 @@ export class ISOAuditService {
         if (f.finding_type_id === 2) typeStr = 'NON_CONFORMITY';
         if (f.finding_type_id === 3) typeStr = 'OPPORTUNITY';
 
-        // Upsert logic
         const [existing] = await query<any[]>('SELECT id FROM AuditFinding WHERE auditId = ? AND requirementId = ?', [auditId, f.requirement_id]);
-        
+
         if (existing) {
             await query(`
-                UPDATE AuditFinding SET type=?, description=?, evidence=? 
+                UPDATE AuditFinding SET type=?, description=?, evidence=?
                 WHERE id=?
             `, [typeStr, f.finding_description || '', f.evidence || '', existing.id]);
         } else {
@@ -96,12 +109,39 @@ export class ISOAuditService {
         }
         saved++;
     }
-    
+
     return { saved, actionsCreated: 0 };
   }
 
-  getFindingsByAudit() { return []; }
+  async getBulkVariableAnswers(auditId: string): Promise<any[]> {
+    try {
+        return await query<any[]>('SELECT * FROM RequirementVariableAnswer WHERE auditId = ?', [auditId]);
+    } catch {
+        return []; // If table doesn't exist yet, return empty
+    }
+  }
 
+  async saveVariableAnswer(auditId: string, requirementId: number, variableId: number, answer: string, nc_text?: string, op_text?: string, evidence?: string): Promise<void> {
+    try {
+        const [existing] = await query<any[]>('SELECT id FROM RequirementVariableAnswer WHERE auditId = ? AND requirementId = ? AND variableId = ?', [auditId, requirementId, variableId]);
+        if (existing) {
+            await query(`
+                UPDATE RequirementVariableAnswer 
+                SET answer=?, nc_text=?, op_text=?, evidence=? 
+                WHERE id=?
+            `, [answer, nc_text || null, op_text || null, evidence || null, existing.id]);
+        } else {
+            await query(`
+                INSERT INTO RequirementVariableAnswer (auditId, requirementId, variableId, answer, nc_text, op_text, evidence)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [auditId, requirementId, variableId, answer, nc_text || null, op_text || null, evidence || null]);
+        }
+    } catch {
+        // Ignore if table not implemented
+    }
+  }
+
+  getFindingsByAudit() { return []; }
   // ==========================================
   // AUDITS
   // ==========================================

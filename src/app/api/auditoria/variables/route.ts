@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCompanyId } from '@/lib/companyContext';
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET(request: Request) {
     try {
@@ -11,10 +11,7 @@ export async function GET(request: Request) {
         const requirementId = searchParams.get('requirement_id');
         if (!requirementId) return NextResponse.json({ error: 'requirement_id required' }, { status: 400 });
 
-        const variables = await prisma.requirementVariable.findMany({
-            where: { requirementId: parseInt(requirementId) },
-            orderBy: { order: 'asc' }
-        });
+        const variables = await query<any[]>('SELECT * FROM RequirementVariable WHERE requirementId = ? ORDER BY `order` ASC', [parseInt(requirementId)]);
 
         const mappedVars = variables.map(v => ({
             id: v.id,
@@ -43,22 +40,21 @@ export async function POST(request: Request) {
         const reqId = parseInt(requirement_id);
 
         // Delete existing variables
-        await prisma.requirementVariable.deleteMany({
-            where: { requirementId: reqId }
-        });
+        await query('DELETE FROM RequirementVariable WHERE requirementId = ?', [reqId]);
 
         // Create new ones
-        const newVariables = await prisma.$transaction(
-            variables.map((text: string, index: number) => 
-                prisma.requirementVariable.create({
-                    data: {
-                        requirementId: reqId,
-                        text,
-                        order: index + 1
-                    }
-                })
-            )
-        );
+        const newVariables = [];
+        for (let i = 0; i < variables.length; i++) {
+            const text = variables[i];
+            const order = i + 1;
+            const insertResult = await query<any>('INSERT INTO RequirementVariable (requirementId, text, `order`) VALUES (?, ?, ?)', [reqId, text, order]);
+            newVariables.push({
+                id: insertResult.insertId,
+                requirementId: reqId,
+                text,
+                order
+            });
+        }
 
         const mappedVars = newVariables.map(v => ({
             id: v.id,

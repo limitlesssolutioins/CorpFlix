@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCompanyId } from '@/lib/companyContext';
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET(request: Request) {
     try {
@@ -10,10 +10,12 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const chapterId = searchParams.get('chapter_id');
 
-        const requirements = await prisma.auditRequirement.findMany({
-            where: chapterId ? { chapterId: parseInt(chapterId) } : undefined,
-            orderBy: { code: 'asc' }
-        });
+        let requirements;
+        if (chapterId) {
+            requirements = await query<any[]>('SELECT * FROM AuditRequirement WHERE chapterId = ? ORDER BY code ASC', [parseInt(chapterId)]);
+        } else {
+            requirements = await query<any[]>('SELECT * FROM AuditRequirement ORDER BY code ASC');
+        }
 
         const mappedReqs = requirements.map(r => ({
             id: r.id,

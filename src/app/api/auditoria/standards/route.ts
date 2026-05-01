@@ -1,20 +1,19 @@
 import { NextResponse } from 'next/server';
 import { getCompanyId } from '@/lib/companyContext';
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET() {
     try {
         const companyId = await getCompanyId();
         if (!companyId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        const standards = await prisma.auditStandard.findMany({
-            orderBy: { id: 'asc' },
-            include: {
-                _count: {
-                    select: { chapters: true }
-                }
-            }
-        });
+        const sql = `
+            SELECT s.*, 
+                   (SELECT COUNT(*) FROM AuditChapter c WHERE c.standardId = s.id) as chaptersCount 
+            FROM AuditStandard s 
+            ORDER BY s.id ASC
+        `;
+        const standards = await query<any[]>(sql);
         
         // Map to match old API format expectations if necessary, 
         // though Prisma format is often directly usable.
@@ -26,7 +25,7 @@ export async function GET() {
             category: s.category,
             color: s.color,
             description: s.description,
-            total_requirements: s._count.chapters // approximate mapped value for UI
+            total_requirements: s.chaptersCount // approximate mapped value for UI
         }));
 
         return NextResponse.json(mappedStandards);

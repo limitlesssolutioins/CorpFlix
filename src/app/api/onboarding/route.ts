@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { verifySession, createSession } from '@/lib/auth';
 import fs from 'fs';
 import path from 'path';
@@ -22,14 +22,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'El nombre de la empresa es obligatorio' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-        where: { id: session.userId },
-        include: { company: true }
-    });
+    const users = await query<any[]>('SELECT * FROM User WHERE id = ?', [session.userId]);
+    let user = users[0];
 
     if (!user) {
         return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
+
+    const companies = await query<any[]>('SELECT * FROM Company WHERE id = ?', [user.companyId]);
+    user.company = companies[0];
 
     if (user.company && user.company.name !== 'Lidus Default') {
       return NextResponse.json({ error: 'El usuario ya tiene una empresa registrada' }, { status: 400 });
@@ -37,17 +38,10 @@ export async function POST(request: Request) {
 
     const companyId = user.companyId;
 
-    await prisma.company.update({
-        where: { id: companyId },
-        data: {
-            name: name.trim(),
-            nit: nit || "",
-            address: direccion || "",
-            phone: telefono || "",
-            email: email || "",
-            industry: sectorActividad || "",
-        }
-    });
+    await query(
+        'UPDATE Company SET name = ?, nit = ?, address = ?, phone = ?, email = ?, industry = ? WHERE id = ?',
+        [name.trim(), nit || "", direccion || "", telefono || "", email || "", sectorActividad || "", companyId]
+    );
 
     const companyDir = path.join(COMPANIES_DIR, companyId);
     fs.mkdirSync(companyDir, { recursive: true });

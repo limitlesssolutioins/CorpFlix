@@ -1,30 +1,30 @@
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
+import { v4 as uuidv4 } from 'uuid';
 
 export class SaasSupportDb {
   constructor() {}
 
   async getAllTickets() {
-    return await prisma.supportTicket.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
+    return await query<any[]>('SELECT * FROM SupportTicket ORDER BY createdAt DESC');
   }
 
   async createTicket(data: any) {
-    return await prisma.supportTicket.create({
-      data: {
-        companyId: data.companyId,
-        subject: data.subject,
-        description: data.description,
-        priority: data.priority || 'MEDIUM'
-      }
-    });
+    const id = uuidv4();
+    await query('INSERT INTO SupportTicket (id, companyId, subject, description, priority, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, NOW(), NOW())', [
+      id,
+      data.companyId,
+      data.subject,
+      data.description,
+      data.priority || 'MEDIUM'
+    ]);
+    const tickets = await query<any[]>('SELECT * FROM SupportTicket WHERE id = ?', [id]);
+    return tickets[0];
   }
 
   async updateTicketStatus(id: string, status: string) {
-    return await prisma.supportTicket.update({
-      where: { id },
-      data: { status }
-    });
+    await query('UPDATE SupportTicket SET status = ?, updatedAt = NOW() WHERE id = ?', [status, id]);
+    const tickets = await query<any[]>('SELECT * FROM SupportTicket WHERE id = ?', [id]);
+    return tickets[0];
   }
 }
 

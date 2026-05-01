@@ -86,7 +86,7 @@ export default function ChecklistPage() {
         try {
             const [auditRes, checklistRes, answersRes] = await Promise.all([
                 fetch(`/api/auditoria/audits`).then(r => r.json()),
-                fetch(`/api/auditoria/checklist?audit_id=${auditId}`).then(r => r.json()),
+                fetch(`/api/auditoria/checklist?audit_id=${auditId}&standard=${code}`).then(r => r.json()),
                 fetch(`/api/auditoria/variable-answers?audit_id=${auditId}`).then(r => r.json()),
             ]);
 

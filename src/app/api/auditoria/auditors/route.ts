@@ -6,7 +6,8 @@ export async function GET() {
     try {
         const dataDir = await getCompanyDataDir();
         const svc = getIsoAuditService(dataDir);
-        return NextResponse.json(svc.getAuditors());
+        const auditors = await svc.getAuditors();
+        return NextResponse.json(auditors);
     } catch (error) {
         return NextResponse.json({ error: 'Failed to fetch auditors' }, { status: 500 });
     }
@@ -18,7 +19,8 @@ export async function POST(request: Request) {
         const svc = getIsoAuditService(dataDir);
         const body = await request.json();
         if (!body.name) return NextResponse.json({ error: 'name is required' }, { status: 400 });
-        return NextResponse.json(svc.createAuditor(body), { status: 201 });
+        const newAuditor = await svc.createAuditor(body);
+        return NextResponse.json(newAuditor, { status: 201 });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to create auditor' }, { status: 500 });
     }
@@ -31,7 +33,7 @@ export async function PUT(request: Request) {
         const body = await request.json();
         const { id, ...data } = body;
         if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
-        const updated = svc.updateAuditor(id, data);
+        const updated = await svc.updateAuditor(id, data);
         if (!updated) return NextResponse.json({ error: 'Auditor not found' }, { status: 404 });
         return NextResponse.json(updated);
     } catch (error) {
@@ -46,7 +48,7 @@ export async function DELETE(request: Request) {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
         if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
-        const result = svc.deleteAuditor(Number(id));
+        const result = await svc.deleteAuditor(Number(id));
         if (!result.success) return NextResponse.json({ error: result.reason }, { status: 409 });
         return NextResponse.json({ success: true });
     } catch (error) {

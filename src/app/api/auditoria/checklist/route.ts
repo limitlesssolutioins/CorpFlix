@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
         const dataDir = await getCompanyDataDir();
         const service = getIsoAuditService(dataDir);
-        const findings = service.getBulkFindings(parseInt(auditId));
+        const findings = await service.getBulkFindings(auditId);
         return NextResponse.json(findings);
     } catch (error) {
         console.error('Error fetching checklist:', error);
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'audit_id and findings array are required' }, { status: 400 });
         }
 
-        const result = service.saveBulkFindings(parseInt(audit_id), findings);
+        const result = await service.saveBulkFindings(audit_id, findings);
         return NextResponse.json(result, { status: 200 });
     } catch (error) {
         console.error('Error saving checklist:', error);

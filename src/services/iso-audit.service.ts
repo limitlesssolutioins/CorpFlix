@@ -34,12 +34,73 @@ export class ISOAuditService {
   getPrograms() { return []; }
   getAuditTeam() { return []; }
   getAuditPlan() { return { plan: null, activities: [] }; }
+  // ==========================================
+  // FINDINGS AND CHECKLIST
+  // ==========================================
+
+  async getBulkFindings(auditId: string): Promise<any[]> {
+    const audit = await this.getAuditById(auditId);
+    if (!audit) return [];
+
+    // The legacy database expected finding_types. We might need to mock this 
+    // or return the raw findings structure expected by the frontend.
+    // For now, let's fetch requirements and existing findings for this audit.
+    const sql = `
+        SELECT req.*, ch.chapterNumber as chapter_number, ch.title as chapter_title, ch.standardId as standard_id,
+            af.id as finding_id, af.type as finding_type_name, af.description as finding_description, 
+            af.evidence, af.evidence as observations, 
+            -- Mapping legacy finding_type_id to type string or mock IDs based on the old UI
+            CASE 
+                WHEN af.type = 'CONFORMITY' THEN 1
+                WHEN af.type = 'NON_CONFORMITY' THEN 2
+                WHEN af.type = 'OPPORTUNITY' THEN 3
+                ELSE NULL 
+            END as finding_type_id
+        FROM AuditRequirement req
+        INNER JOIN AuditChapter ch ON req.chapterId = ch.id
+        LEFT JOIN AuditFinding af ON af.requirementId = req.id AND af.auditId = ?
+        ORDER BY req.code
+    `;
+    // We are currently returning ALL requirements for ALL standards because the new schema 
+    // doesn't tightly link Audit directly to AuditStandard (it was stripped).
+    // Let's just return all for now to unblock the UI.
+    return await query<any[]>(sql, [auditId]);
+  }
+
+  async saveBulkFindings(auditId: string, findings: any[]): Promise<{ saved: number; actionsCreated: number }> {
+    let saved = 0;
+    
+    for (const f of findings) {
+        if (!f.finding_type_id) {
+            await query('DELETE FROM AuditFinding WHERE auditId = ? AND requirementId = ?', [auditId, f.requirement_id]);
+            continue;
+        }
+
+        let typeStr = 'CONFORMITY';
+        if (f.finding_type_id === 2) typeStr = 'NON_CONFORMITY';
+        if (f.finding_type_id === 3) typeStr = 'OPPORTUNITY';
+
+        // Upsert logic
+        const [existing] = await query<any[]>('SELECT id FROM AuditFinding WHERE auditId = ? AND requirementId = ?', [auditId, f.requirement_id]);
+        
+        if (existing) {
+            await query(`
+                UPDATE AuditFinding SET type=?, description=?, evidence=? 
+                WHERE id=?
+            `, [typeStr, f.finding_description || '', f.evidence || '', existing.id]);
+        } else {
+            await query(`
+                INSERT INTO AuditFinding (auditId, requirementId, type, description, evidence, createdAt)
+                VALUES (?, ?, ?, ?, ?, NOW())
+            `, [auditId, f.requirement_id, typeStr, f.finding_description || '', f.evidence || '']);
+        }
+        saved++;
+    }
+    
+    return { saved, actionsCreated: 0 };
+  }
+
   getFindingsByAudit() { return []; }
-  getBulkFindings() { return []; }
-  getAllCorrectiveActions() { return []; }
-  getBulkVariableAnswers() { return []; }
-  saveVariableAnswer() { return true; }
-  saveBulkFindings() { return { saved: 0, actionsCreated: 0 }; }
 
   // ==========================================
   // AUDITS

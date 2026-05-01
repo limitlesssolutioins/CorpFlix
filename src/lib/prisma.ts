@@ -15,12 +15,10 @@ const prismaClientSingleton = () => {
     databaseUrl += `${separator}connection_limit=50&connect_timeout=30&pool_timeout=30`;
   }
 
+  // Set the modified URL directly in the environment so Prisma picks it up natively
+  process.env.DATABASE_URL = databaseUrl;
+
   return new PrismaClient({ 
-    datasources: {
-      db: {
-        url: databaseUrl,
-      },
-    },
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
   });
 };

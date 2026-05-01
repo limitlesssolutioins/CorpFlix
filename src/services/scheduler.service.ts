@@ -1,4 +1,5 @@
-import prisma from '@/lib/prisma';
+import { v4 as uuidv4 } from 'uuid';
+import { query } from '@/lib/db';
 import { getCompanyId } from '@/lib/companyContext';
 
 export class SchedulerService {
@@ -12,39 +13,65 @@ export class SchedulerService {
 
     async getTeams() {
         const companyId = await this.getCompanyContext();
-        return await prisma.team.findMany({
-            where: { companyId },
-            include: { employees: true },
-            orderBy: { name: 'asc' }
-        });
+        
+        const teams = await query<any[]>(
+            'SELECT * FROM Team WHERE companyId = ? ORDER BY name ASC',
+            [companyId]
+        );
+        
+        if (teams.length === 0) return [];
+        
+        const teamIds = teams.map(t => t.id);
+        const placeholders = teamIds.map(() => '?').join(',');
+        
+        const employees = await query<any[]>(
+            `SELECT * FROM Employee WHERE teamId IN (${placeholders}) AND companyId = ? AND isActive = 1`,
+            [...teamIds, companyId]
+        );
+        
+        const employeesByTeam = employees.reduce((acc: any, emp: any) => {
+            if (!acc[emp.teamId]) acc[emp.teamId] = [];
+            acc[emp.teamId].push(emp);
+            return acc;
+        }, {});
+        
+        return teams.map(t => ({
+            ...t,
+            employees: employeesByTeam[t.id] || []
+        }));
     }
 
     async createTeam(data: any) {
         const companyId = await this.getCompanyContext();
-        return await prisma.team.create({
-            data: { companyId, name: data.name }
-        });
+        const id = uuidv4();
+        await query(
+            'INSERT INTO Team (id, companyId, name, createdAt) VALUES (?, ?, ?, NOW())',
+            [id, companyId, data.name]
+        );
+        const teams = await query<any[]>('SELECT * FROM Team WHERE id = ?', [id]);
+        return teams[0];
     }
 
     async getPatterns() {
         const companyId = await this.getCompanyContext();
-        return await prisma.shiftPattern.findMany({
-            where: { companyId },
-            orderBy: { createdAt: 'desc' }
-        });
+        return await query<any[]>(
+            'SELECT * FROM ShiftPattern WHERE companyId = ? ORDER BY createdAt DESC',
+            [companyId]
+        );
     }
 
     async createPattern(data: any) {
         const companyId = await this.getCompanyContext();
-        return await prisma.shiftPattern.create({
-            data: {
-                companyId,
-                name: data.name,
-                startTime: data.startTime,
-                endTime: data.endTime,
-                days: typeof data.days === 'string' ? data.days : JSON.stringify(data.days)
-            }
-        });
+        const id = uuidv4();
+        const daysStr = typeof data.days === 'string' ? data.days : JSON.stringify(data.days);
+        
+        await query(
+            'INSERT INTO ShiftPattern (id, companyId, name, startTime, endTime, days, createdAt) VALUES (?, ?, ?, ?, ?, ?, NOW())',
+            [id, companyId, data.name, data.startTime, data.endTime, daysStr]
+        );
+        
+        const patterns = await query<any[]>('SELECT * FROM ShiftPattern WHERE id = ?', [id]);
+        return patterns[0];
     }
 
     async assignPattern(employeeId: string, patternId: string) {
@@ -56,16 +83,31 @@ export class SchedulerService {
 
     async getShiftsByTeamAndDate(teamId: string, startDate: string, endDate: string) {
         const companyId = await this.getCompanyContext();
-        return await prisma.shift.findMany({
-            where: {
-                companyId,
-                employee: { teamId },
-                date: {
-                    gte: new Date(startDate),
-                    lte: new Date(endDate)
-                }
-            },
-            include: { employee: true }
+        
+        const sql = `
+            SELECT s.*, 
+                   e.id as emp_id, e.firstName, e.lastName, e.identification, e.teamId
+            FROM Shift s
+            JOIN Employee e ON s.employeeId = e.id
+            WHERE s.companyId = ? 
+              AND e.teamId = ?
+              AND s.date >= ? 
+              AND s.date <= ?
+        `;
+        
+        const shifts = await query<any[]>(sql, [
+            companyId, 
+            teamId, 
+            new Date(startDate), 
+            new Date(endDate)
+        ]);
+        
+        return shifts.map(s => {
+            const { emp_id, firstName, lastName, identification, teamId, ...shiftData } = s;
+            return {
+                ...shiftData,
+                employee: emp_id ? { id: emp_id, firstName, lastName, identification, teamId } : null
+            };
         });
     }
 
@@ -73,24 +115,25 @@ export class SchedulerService {
         const companyId = await this.getCompanyContext();
         
         // Find employees first
-        const employees = await prisma.employee.findMany({
-            where: { companyId, teamId },
-            select: { id: true }
-        });
+        const employees = await query<any[]>(
+            'SELECT id FROM Employee WHERE companyId = ? AND teamId = ?',
+            [companyId, teamId]
+        );
         const employeeIds = employees.map(e => e.id);
 
         if (employeeIds.length === 0) return true;
-
-        await prisma.shift.deleteMany({
-            where: {
-                companyId,
-                employeeId: { in: employeeIds },
-                date: {
-                    gte: new Date(startDate),
-                    lte: new Date(endDate)
-                }
-            }
-        });
+        
+        const placeholders = employeeIds.map(() => '?').join(',');
+        
+        const sql = `
+            DELETE FROM Shift
+            WHERE companyId = ? 
+              AND employeeId IN (${placeholders})
+              AND date >= ?
+              AND date <= ?
+        `;
+        
+        await query(sql, [companyId, ...employeeIds, new Date(startDate), new Date(endDate)]);
         return true;
     }
 }

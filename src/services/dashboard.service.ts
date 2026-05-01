@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { getCompanyId } from '@/lib/companyContext';
 
 export class DashboardService {
@@ -13,18 +13,34 @@ export class DashboardService {
     async getStats() {
         const companyId = await this.getCompanyContext();
         
-        const [totalEmployees, totalShifts, totalSites, activeAbsences] = await Promise.all([
-            prisma.employee.count({ where: { companyId, isActive: true } }),
-            prisma.shift.count({ where: { companyId } }),
-            prisma.site.count({ where: { companyId } }),
-            prisma.absence.count({ where: { companyId, status: 'PENDING_APPROVAL' } })
+        const [
+            [{ count: totalEmployees }],
+            [{ count: totalShifts }],
+            [{ count: totalSites }],
+            [{ count: activeAbsences }]
+        ] = await Promise.all([
+            query<any[]>('SELECT COUNT(*) as count FROM Employee WHERE companyId = ? AND isActive = 1', [companyId]),
+            query<any[]>('SELECT COUNT(*) as count FROM Shift WHERE companyId = ?', [companyId]),
+            query<any[]>('SELECT COUNT(*) as count FROM Site WHERE companyId = ?', [companyId]),
+            query<any[]>('SELECT COUNT(*) as count FROM Absence WHERE companyId = ? AND status = ?', [companyId, 'PENDING_APPROVAL'])
         ]);
 
-        const recentShifts = await prisma.shift.findMany({
-            where: { companyId },
-            include: { employee: true },
-            orderBy: { date: 'desc' },
-            take: 5
+        const sql = `
+            SELECT s.*, 
+                   e.id as emp_id, e.firstName, e.lastName, e.identification
+            FROM Shift s
+            LEFT JOIN Employee e ON s.employeeId = e.id
+            WHERE s.companyId = ?
+            ORDER BY s.date DESC
+            LIMIT 5
+        `;
+        const shiftRows = await query<any[]>(sql, [companyId]);
+        const recentShifts = shiftRows.map(r => {
+            const { emp_id, firstName, lastName, identification, ...shiftData } = r;
+            return {
+                ...shiftData,
+                employee: emp_id ? { id: emp_id, firstName, lastName, identification } : null
+            };
         });
 
         return {

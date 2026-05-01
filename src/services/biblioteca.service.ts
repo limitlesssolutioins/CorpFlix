@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { getCompanyId } from '@/lib/companyContext';
 
 export class BibliotecaService {
@@ -12,52 +12,67 @@ export class BibliotecaService {
 
   async getDashboardStats() {
     const companyId = await this.getCompanyContext();
-    const totalDocuments = await prisma.document.count({ where: { companyId, status: 'ACTIVE' } });
-    const totalCategories = await prisma.documentCategory.count();
-    const recentUploads = await prisma.document.count({ 
-      where: { 
-        companyId, 
-        createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } 
-      } 
-    });
+    const [{ count: totalDocuments }] = await query<any[]>('SELECT COUNT(*) as count FROM Document WHERE companyId = ? AND status = ?', [companyId, 'ACTIVE']);
+    const [{ count: totalCategories }] = await query<any[]>('SELECT COUNT(*) as count FROM DocumentCategory');
+    
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const [{ count: recentUploads }] = await query<any[]>('SELECT COUNT(*) as count FROM Document WHERE companyId = ? AND createdAt >= ?', [companyId, sevenDaysAgo]);
 
     return { totalDocuments, totalCategories, recentUploads, totalViews: 0, categoryStats: [], recentDocuments: [] };
   }
 
   async getAllCategories() {
-    return await prisma.documentCategory.findMany({ orderBy: { name: 'asc' } });
+    return await query<any[]>('SELECT * FROM DocumentCategory ORDER BY name ASC');
+  }
+
+  private mapDocuments(rows: any[]) {
+    return rows.map(r => {
+      const { cat_id, cat_name, cat_desc, cat_icon, ...docData } = r;
+      return {
+        ...docData,
+        category: cat_id ? { id: cat_id, name: cat_name, description: cat_desc, icon: cat_icon } : null
+      };
+    });
   }
 
   async getRecentDocuments() {
     const companyId = await this.getCompanyContext();
-    return await prisma.document.findMany({
-      where: { companyId, status: 'ACTIVE' },
-      include: { category: true },
-      orderBy: { createdAt: 'desc' },
-      take: 10
-    });
+    const sql = `
+      SELECT d.*, c.id as cat_id, c.name as cat_name, c.description as cat_desc, c.icon as cat_icon
+      FROM Document d
+      LEFT JOIN DocumentCategory c ON d.categoryId = c.id
+      WHERE d.companyId = ? AND d.status = 'ACTIVE'
+      ORDER BY d.createdAt DESC
+      LIMIT 10
+    `;
+    const rows = await query<any[]>(sql, [companyId]);
+    return this.mapDocuments(rows);
   }
 
   async getAllDocuments() {
     const companyId = await this.getCompanyContext();
-    return await prisma.document.findMany({
-      where: { companyId },
-      include: { category: true },
-      orderBy: { createdAt: 'desc' }
-    });
+    const sql = `
+      SELECT d.*, c.id as cat_id, c.name as cat_name, c.description as cat_desc, c.icon as cat_icon
+      FROM Document d
+      LEFT JOIN DocumentCategory c ON d.categoryId = c.id
+      WHERE d.companyId = ?
+      ORDER BY d.createdAt DESC
+    `;
+    const rows = await query<any[]>(sql, [companyId]);
+    return this.mapDocuments(rows);
   }
 
   async searchDocuments(q: string) {
     const companyId = await this.getCompanyContext();
-    return await prisma.document.findMany({
-      where: { 
-        companyId, 
-        status: 'ACTIVE',
-        title: { contains: q }
-      },
-      include: { category: true },
-      take: 50
-    });
+    const sql = `
+      SELECT d.*, c.id as cat_id, c.name as cat_name, c.description as cat_desc, c.icon as cat_icon
+      FROM Document d
+      LEFT JOIN DocumentCategory c ON d.categoryId = c.id
+      WHERE d.companyId = ? AND d.status = 'ACTIVE' AND d.title LIKE ?
+      LIMIT 50
+    `;
+    const rows = await query<any[]>(sql, [companyId, `%${q}%`]);
+    return this.mapDocuments(rows);
   }
 }
 

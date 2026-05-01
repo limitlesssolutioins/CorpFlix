@@ -1,5 +1,6 @@
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { getCompanyId } from '@/lib/companyContext';
+import { v4 as uuidv4 } from 'uuid';
 
 export class AbsencesService {
     constructor() {}
@@ -12,34 +13,51 @@ export class AbsencesService {
 
     async getAbsences() {
         const companyId = await this.getCompanyContext();
-        return await prisma.absence.findMany({
-            where: { companyId },
-            include: { employee: true, type: true },
-            orderBy: { startDate: 'desc' }
+        const sql = `
+            SELECT a.*, 
+                   e.id as emp_id, e.firstName, e.lastName, e.identification,
+                   t.id as type_id, t.name as typeName, t.isPaid
+            FROM Absence a
+            LEFT JOIN Employee e ON a.employeeId = e.id
+            LEFT JOIN AbsenceType t ON a.typeId = t.id
+            WHERE a.companyId = ?
+            ORDER BY a.startDate DESC
+        `;
+        const rows = await query<any[]>(sql, [companyId]);
+        return rows.map(r => {
+            const { emp_id, firstName, lastName, identification, type_id, typeName, isPaid, ...absenceData } = r;
+            return {
+                ...absenceData,
+                employee: emp_id ? { id: emp_id, firstName, lastName, identification } : null,
+                type: type_id ? { id: type_id, name: typeName, isPaid: !!isPaid } : null
+            };
         });
     }
 
     async createAbsence(data: any) {
         const companyId = await this.getCompanyContext();
-        return await prisma.absence.create({
-            data: {
+        const id = uuidv4();
+        await query(
+            'INSERT INTO Absence (id, companyId, employeeId, typeId, startDate, endDate, status, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                id,
                 companyId,
-                employeeId: data.employeeId,
-                typeId: data.typeId,
-                startDate: new Date(data.startDate),
-                endDate: new Date(data.endDate),
-                status: data.status || 'PENDING_APPROVAL',
-                notes: data.notes
-            }
-        });
+                data.employeeId,
+                data.typeId,
+                new Date(data.startDate),
+                new Date(data.endDate),
+                data.status || 'PENDING_APPROVAL',
+                data.notes || null
+            ]
+        );
+        const rows = await query<any[]>('SELECT * FROM Absence WHERE id = ?', [id]);
+        return rows[0];
     }
 
     async updateStatus(id: string, status: string) {
         const companyId = await this.getCompanyContext();
-        return await prisma.absence.updateMany({
-            where: { id, companyId },
-            data: { status }
-        });
+        await query('UPDATE Absence SET status = ? WHERE id = ? AND companyId = ?', [status, id, companyId]);
+        return { count: 1 };
     }
 }
 

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { query } from '@/lib/db';
 import { getCompanyId } from '@/lib/companyContext';
 
 export class MejoraContinuaService {
@@ -12,36 +12,40 @@ export class MejoraContinuaService {
 
   async getDashboardStats() {
     const companyId = await this.getCompanyContext();
-    const [suggestions, projects, lessons] = await Promise.all([
-      prisma.improvementSuggestion.count({ where: { companyId } }),
-      prisma.improvementProject.count({ where: { companyId } }),
-      prisma.lessonLearned.count({ where: { companyId } })
+    const [suggestionsResult, projectsResult, lessonsResult] = await Promise.all([
+      query<any[]>('SELECT COUNT(*) as count FROM ImprovementSuggestion WHERE companyId = ?', [companyId]),
+      query<any[]>('SELECT COUNT(*) as count FROM ImprovementProject WHERE companyId = ?', [companyId]),
+      query<any[]>('SELECT COUNT(*) as count FROM LessonLearned WHERE companyId = ?', [companyId])
     ]);
-    return { suggestions, projects, lessons };
+    return {
+      suggestions: suggestionsResult[0]?.count || 0,
+      projects: projectsResult[0]?.count || 0,
+      lessons: lessonsResult[0]?.count || 0
+    };
   }
 
   async getAllSuggestions() {
     const companyId = await this.getCompanyContext();
-    return await prisma.improvementSuggestion.findMany({
-      where: { companyId },
-      orderBy: { createdAt: 'desc' }
-    });
+    return await query<any[]>(
+      'SELECT * FROM ImprovementSuggestion WHERE companyId = ? ORDER BY createdAt DESC',
+      [companyId]
+    );
   }
 
   async getAllProjects() {
     const companyId = await this.getCompanyContext();
-    return await prisma.improvementProject.findMany({
-      where: { companyId },
-      orderBy: { createdAt: 'desc' }
-    });
+    return await query<any[]>(
+      'SELECT * FROM ImprovementProject WHERE companyId = ? ORDER BY createdAt DESC',
+      [companyId]
+    );
   }
 
   async getAllLessonsLearned() {
     const companyId = await this.getCompanyContext();
-    return await prisma.lessonLearned.findMany({
-      where: { companyId },
-      orderBy: { createdAt: 'desc' }
-    });
+    return await query<any[]>(
+      'SELECT * FROM LessonLearned WHERE companyId = ? ORDER BY createdAt DESC',
+      [companyId]
+    );
   }
 }
 

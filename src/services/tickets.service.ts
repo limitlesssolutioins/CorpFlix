@@ -1,4 +1,5 @@
-import prisma from '@/lib/prisma';
+import { v4 as uuidv4 } from 'uuid';
+import { query } from '@/lib/db';
 import { getCompanyId } from '@/lib/companyContext';
 
 export class TicketsService {
@@ -12,46 +13,68 @@ export class TicketsService {
 
   async getDashboardStats() {
     const companyId = await this.getCompanyContext();
-    const openTickets = await prisma.supportTicket.count({ where: { companyId, status: 'OPEN' } });
-    return { openTickets };
+    const result = await query<any[]>(
+      'SELECT COUNT(*) as count FROM SupportTicket WHERE companyId = ? AND status = "OPEN"', 
+      [companyId]
+    );
+    return { openTickets: result[0]?.count || 0 };
   }
 
   async getAllTickets() {
     const companyId = await this.getCompanyContext();
-    return await prisma.supportTicket.findMany({
-      where: { companyId },
-      orderBy: { createdAt: 'desc' }
-    });
+    return await query<any[]>(
+      'SELECT * FROM SupportTicket WHERE companyId = ? ORDER BY createdAt DESC',
+      [companyId]
+    );
   }
 
   async getTicketById(id: string) {
     const companyId = await this.getCompanyContext();
-    return await prisma.supportTicket.findFirst({
-      where: { id, companyId }
-    });
+    const tickets = await query<any[]>(
+      'SELECT * FROM SupportTicket WHERE id = ? AND companyId = ?',
+      [id, companyId]
+    );
+    return tickets.length > 0 ? tickets[0] : null;
   }
 
   async createTicket(data: any) {
     const companyId = await this.getCompanyContext();
-    return await prisma.supportTicket.create({
-      data: {
-        companyId,
-        subject: data.subject,
-        description: data.description,
-        priority: data.priority || 'MEDIUM'
-      }
-    });
+    const id = uuidv4();
+    
+    await query(
+      `INSERT INTO SupportTicket (id, companyId, subject, description, priority, status, createdAt, updatedAt) 
+       VALUES (?, ?, ?, ?, ?, 'OPEN', NOW(), NOW())`,
+      [id, companyId, data.subject, data.description, data.priority || 'MEDIUM']
+    );
+    
+    return await this.getTicketById(id);
   }
 
   async updateTicket(id: string, data: any) {
     const companyId = await this.getCompanyContext();
-    return await prisma.supportTicket.updateMany({
-      where: { id, companyId },
-      data: {
-        status: data.status,
-        priority: data.priority
-      }
-    });
+    
+    const updates: string[] = [];
+    const params: any[] = [];
+
+    if (data.status) {
+      updates.push('status = ?');
+      params.push(data.status);
+    }
+    if (data.priority) {
+      updates.push('priority = ?');
+      params.push(data.priority);
+    }
+
+    if (updates.length === 0) return { count: 0 };
+
+    params.push(id, companyId);
+    
+    await query(
+      `UPDATE SupportTicket SET ${updates.join(', ')}, updatedAt = NOW() WHERE id = ? AND companyId = ?`,
+      params
+    );
+    
+    return { count: 1 };
   }
 }
 

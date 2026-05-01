@@ -1,4 +1,6 @@
 import { query } from '@/lib/db';
+import { v4 as uuidv4 } from 'uuid';
+import { getCompanyId } from '@/lib/companyContext';
 
 export interface AuditAuditor {
     id?: number;
@@ -10,12 +12,25 @@ export interface AuditAuditor {
     status?: string;
 }
 
+export interface Audit {
+    id?: string;
+    companyId?: string;
+    title: string;
+    date?: string | Date;
+    status?: string;
+    description?: string;
+}
+
 export class ISOAuditService {
   constructor(private dataDir: string) {}
+
+  private async getCompanyContext() {
+      const companyId = await getCompanyId();
+      if (!companyId) throw new Error("Unauthorized");
+      return companyId;
+  }
   
   getDashboardKPIs() { return {}; }
-  getAllAudits() { return []; }
-  getAuditById() { return null; }
   getPrograms() { return []; }
   getAuditTeam() { return []; }
   getAuditPlan() { return { plan: null, activities: [] }; }
@@ -25,6 +40,80 @@ export class ISOAuditService {
   getBulkVariableAnswers() { return []; }
   saveVariableAnswer() { return true; }
   saveBulkFindings() { return { saved: 0, actionsCreated: 0 }; }
+
+  // ==========================================
+  // AUDITS
+  // ==========================================
+
+  async getAllAudits(filters: any = {}): Promise<Audit[]> {
+    const companyId = await this.getCompanyContext();
+    let sql = 'SELECT * FROM Audit WHERE companyId = ?';
+    const params: any[] = [companyId];
+
+    if (filters.status) {
+        sql += ' AND status = ?';
+        params.push(filters.status);
+    }
+    
+    sql += ' ORDER BY date DESC';
+    return await query<Audit[]>(sql, params);
+  }
+
+  async getAuditById(id: string): Promise<Audit | null> {
+    const companyId = await this.getCompanyContext();
+    const [audit] = await query<Audit[]>('SELECT * FROM Audit WHERE id = ? AND companyId = ?', [id, companyId]);
+    return audit || null;
+  }
+
+  async createAudit(data: Audit): Promise<Audit> {
+    const companyId = await this.getCompanyContext();
+    const id = uuidv4();
+    
+    await query(`
+        INSERT INTO Audit (id, companyId, title, date, status, description)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `, [
+        id,
+        companyId,
+        data.title,
+        data.date ? new Date(data.date) : new Date(),
+        data.status || 'PLANNED',
+        data.description || null
+    ]);
+
+    const newAudit = await this.getAuditById(id);
+    if (!newAudit) throw new Error("Failed to create audit");
+    return newAudit;
+  }
+
+  async updateAudit(id: string, data: Partial<Audit>): Promise<Audit | null> {
+    const companyId = await this.getCompanyContext();
+    const existing = await this.getAuditById(id);
+    if (!existing) return null;
+
+    await query(`
+        UPDATE Audit SET title=?, date=?, status=?, description=? WHERE id=? AND companyId=?
+    `, [
+        data.title ?? existing.title,
+        data.date ? new Date(data.date) : existing.date,
+        data.status ?? existing.status,
+        data.description ?? existing.description,
+        id,
+        companyId
+    ]);
+
+    return await this.getAuditById(id);
+  }
+
+  async deleteAudit(id: string): Promise<boolean> {
+    const companyId = await this.getCompanyContext();
+    await query('DELETE FROM Audit WHERE id = ? AND companyId = ?', [id, companyId]);
+    return true; // We assume success or rely on DB exceptions
+  }
+
+  // ==========================================
+  // AUDITORS
+  // ==========================================
 
   async getAuditors(): Promise<AuditAuditor[]> {
     return await query<AuditAuditor[]>('SELECT * FROM AuditAuditor ORDER BY name ASC');

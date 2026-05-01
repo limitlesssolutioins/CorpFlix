@@ -17,7 +17,7 @@ export async function GET(request: Request) {
         if (year) filters.year = parseInt(year);
         if (standardId) filters.standard_id = parseInt(standardId);
 
-        const audits = isoAuditService.getAllAudits(filters);
+        const audits = await isoAuditService.getAllAudits(filters);
         return NextResponse.json(audits);
     } catch (error) {
         console.error('Error fetching audits:', error);
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         const dataDir = await getCompanyDataDir();
         const isoAuditService = getIsoAuditService(dataDir);
         const body = await request.json();
-        const newAudit = isoAuditService.createAudit(body);
+        const newAudit = await isoAuditService.createAudit(body);
         return NextResponse.json(newAudit, { status: 201 });
     } catch (error) {
         console.error('Error creating audit:', error);
@@ -49,7 +49,7 @@ export async function PUT(request: Request) {
             return NextResponse.json({ error: 'Audit ID is required' }, { status: 400 });
         }
 
-        const updatedAudit = isoAuditService.updateAudit(id, updateData);
+        const updatedAudit = await isoAuditService.updateAudit(id, updateData);
         if (!updatedAudit) {
             return NextResponse.json({ error: 'Audit not found' }, { status: 404 });
         }
@@ -72,7 +72,7 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Audit ID is required' }, { status: 400 });
         }
 
-        const success = isoAuditService.deleteAudit(parseInt(id));
+        const success = await isoAuditService.deleteAudit(id); // Usually string id for uuids, let's pass id
         if (!success) {
             return NextResponse.json({ error: 'Audit not found or could not be deleted' }, { status: 404 });
         }

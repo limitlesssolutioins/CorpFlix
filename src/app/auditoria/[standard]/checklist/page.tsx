@@ -787,6 +787,7 @@ export default function ChecklistPage() {
                                                             <span className="text-[10px] text-slate-400 shrink-0 ml-2">({evalCount}/{childCount})</span>
                                                         </button>
                                                         
+                                                        {/* Parent items only show criteria expansion, not compliance buttons */}
                                                         <button onClick={() => toggleExpand(item.id)}
                                                             className={`p-1.5 rounded-lg border transition-all ${isExpanded ? 'bg-slate-100 border-slate-300' : 'border-transparent hover:bg-slate-100'}`}>
                                                             {isExpanded ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-400" />}

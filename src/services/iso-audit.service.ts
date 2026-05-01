@@ -13,6 +13,7 @@ export interface AuditAuditor {
 }
 
 export interface Audit {
+    
     id?: string;
     companyId?: string;
     title: string;
@@ -59,7 +60,7 @@ export class ISOAuditService {
   // FINDINGS AND CHECKLIST
   // ==========================================
 
-  async getBulkFindings(auditId: string): Promise<any[]> {
+  async getBulkFindings(auditId: string, standardCode?: string): Promise<any[]> {
     const audit = await this.getAuditById(auditId);
     if (!audit) return [];
 
@@ -78,9 +79,10 @@ export class ISOAuditService {
         FROM AuditRequirement req
         INNER JOIN AuditChapter ch ON req.chapterId = ch.id
         LEFT JOIN AuditFinding af ON af.requirementId = req.id AND af.auditId = ?
+        WHERE (? IS NULL OR ch.standardId = (SELECT id FROM AuditStandard WHERE code = ?))
         ORDER BY req.code
     `;
-    return await query<any[]>(sql, [auditId]);
+    return await query<any[]>(sql, [auditId, standardCode, standardCode]);
   }
 
   async saveBulkFindings(auditId: string, findings: any[]): Promise<{ saved: number; actionsCreated: number }> {

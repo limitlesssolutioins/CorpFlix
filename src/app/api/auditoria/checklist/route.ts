@@ -13,7 +13,8 @@ export async function GET(request: Request) {
 
         const dataDir = await getCompanyDataDir();
         const service = getIsoAuditService(dataDir);
-        const findings = await service.getBulkFindings(auditId);
+        const standardCode = searchParams.get('standard');
+        const findings = await service.getBulkFindings(auditId, standardCode || undefined);
         return NextResponse.json(findings);
     } catch (error) {
         console.error('Error fetching checklist:', error);

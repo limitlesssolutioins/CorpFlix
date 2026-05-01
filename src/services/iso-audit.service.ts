@@ -75,10 +75,10 @@ export class ISOAuditService {
     `, [
         id,
         companyId,
-        data.title,
+        data.title || 'Auditoría sin título',
         data.date ? new Date(data.date) : new Date(),
         data.status || 'PLANNED',
-        data.description || null
+        data.description ?? null // Ensure undefined becomes null
     ]);
 
     const newAudit = await this.getAuditById(id);

@@ -9,7 +9,10 @@ const pool = mysql.createPool({
 });
 
 export async function query<T>(sql: string, params?: any[]): Promise<T> {
-  const [results] = await pool.execute(sql, params);
+  // Saniitize params globally: mysql2 throws an error if a parameter is explicitly `undefined`.
+  // This maps any `undefined` to `null` to ensure smooth inserts/updates across the app.
+  const safeParams = params ? params.map(p => p === undefined ? null : p) : undefined;
+  const [results] = await pool.execute(sql, safeParams);
   return results as T;
 }
 

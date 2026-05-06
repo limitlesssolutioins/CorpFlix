@@ -49,6 +49,13 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
     }
   };
 
+  const formatDateForInput = (dateString: string | null | undefined) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toISOString().substring(0, 10);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-100px)] animate-in fade-in duration-500">
@@ -114,7 +121,7 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Nacimiento</label>
-                <input type="date" name="birthDate" defaultValue={employee.birthDate ? new Date(employee.birthDate).toISOString().split('T')[0] : ''} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                <input type="date" name="birthDate" defaultValue={formatDateForInput(employee.birthDate)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Género</label>
@@ -228,12 +235,13 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Inicio</label>
-                <input type="date" name="startDate" required defaultValue={employee.startDate?.split('T')[0]} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                <input type="date" name="startDate" required defaultValue={formatDateForInput(employee.startDate)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Fin</label>
-                <input type="date" name="contractEndDate" defaultValue={employee.contractEndDate?.split('T')[0]} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                <input type="date" name="contractEndDate" defaultValue={formatDateForInput(employee.contractEndDate)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
               </div>
+
               <div className="flex items-center gap-2 pt-6">
                 <input type="checkbox" name="isIntegralSalary" id="isIntegralSalary" value="true" defaultChecked={employee.isIntegralSalary === 1 || employee.isIntegralSalary === true} className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
                 <label htmlFor="isIntegralSalary" className="text-sm font-bold text-slate-700">¿Sueldo Integral?</label>

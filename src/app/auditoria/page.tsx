@@ -92,6 +92,10 @@ export default function AuditoriaPage() {
                         {standards.filter(s => s.category === category).map(std => {
                             const Icon = ICONS[std.code] || ClipboardList;
                             const color = std.color || '#3b82f6';
+                            
+                            // Safe parsing of full name to prevent split crash
+                            const displayName = std.full_name ? (std.full_name.includes(' - ') ? std.full_name.split(' - ')[1] : std.full_name) : std.name;
+
                             return (
                                 <Link key={std.id} href={`/auditoria/${std.code.toLowerCase()}`}
                                     className="group bg-white rounded-2xl p-5 border-2 border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
@@ -107,7 +111,7 @@ export default function AuditoriaPage() {
                                     </div>
                                     <div className="text-xs font-black uppercase tracking-wide mb-0.5" style={{ color }}>{std.name}</div>
                                     <h3 className="text-sm font-bold text-slate-900 leading-snug mb-1">
-                                        {std.full_name.split(' - ')[1] || std.full_name}
+                                        {displayName}
                                     </h3>
                                     <p className="text-xs text-slate-400 line-clamp-2 mb-4">{std.description}</p>
                                     <div className="flex items-center justify-between text-xs">

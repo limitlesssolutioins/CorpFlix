@@ -11,23 +11,29 @@ export async function generatePayrollReportAction(month: number, year: number, p
 
   const periodName = `${year}-${month.toString().padStart(2, '0')}-${period}`;
 
+  // Since PayrollService was migrated to MySQL, getAllPayrolls/generateMassivePayroll are currently returning `null as any`.
+  // We need to bypass the filter crash and return a mocked empty array for now until the calculation engine is fully rewritten for MySQL.
+  
+  const allPayrolls = payrollService.getAllPayrolls() || [];
+  
   if (forceRecalculate) {
-    const existing = payrollService.getAllPayrolls().filter((p: any) => p.period === periodName);
-    // @ts-ignore - Acceso directo a DB para limpieza manual de re-generación
-    existing.forEach((p: any) => payrollService.db.payroll.delete(p.id));
+    const existing = allPayrolls.filter((p: any) => p.period === periodName);
+    // @ts-ignore
+    if (payrollService.db) existing.forEach((p: any) => payrollService.db.payroll.delete(p.id));
   }
 
-  let payrolls = payrollService.getAllPayrolls().filter((p: any) => p.period === periodName);
+  let payrolls = allPayrolls.filter((p: any) => p.period === periodName);
 
   if (payrolls.length === 0) {
-    payrolls = await payrollService.generateMassivePayroll(periodName, excludeSS);
+    const generated = await payrollService.generateMassivePayroll(periodName, excludeSS);
+    payrolls = generated || [];
   }
 
   const report = await Promise.all(payrolls.map(async (p: any) => {
     const emp = await employeesService.findOne(p.employeeId);
 
-    const earnings = p.details.filter((d: any) => d.type === 'EARNING');
-    const deductions = p.details.filter((d: any) => d.type === 'DEDUCTION');
+    const earnings = (p.details || []).filter((d: any) => d.type === 'EARNING');
+    const deductions = (p.details || []).filter((d: any) => d.type === 'DEDUCTION');
 
     const basePayDetail = earnings.find((d: any) => d.concept === 'Salario Básico');
     const basePay = basePayDetail?.amount || 0;
@@ -39,7 +45,6 @@ export async function generatePayrollReportAction(month: number, year: number, p
       .reduce((sum: number, d: any) => sum + d.amount, 0);
 
     const totalDeductions = deductions.reduce((sum: number, d: any) => sum + d.amount, 0);
-    // Provisiones estimadas (simplificado para el reporte) calculadas sobre salarios base + recargos constitutivos
     const wageFormingEarnings = earnings
       .filter((d: any) => d.isWageForming)
       .reduce((sum: number, d: any) => sum + d.amount, 0);

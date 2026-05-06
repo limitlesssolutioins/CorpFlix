@@ -72,8 +72,12 @@ const EmployeeEdit: React.FC = () => {
         setValue('standardEndTime', emp.standardEndTime);
         setValue('standardStartTime2', emp.standardStartTime2);
         setValue('standardEndTime2', emp.standardEndTime2);
-        if(emp.workDays) {
+        if(emp.workDays && typeof emp.workDays === 'string') {
             setValue('workDays', emp.workDays.split(','));
+        } else if (Array.isArray(emp.workDays)) {
+            setValue('workDays', emp.workDays);
+        } else {
+            setValue('workDays', []);
         }
       });
     }

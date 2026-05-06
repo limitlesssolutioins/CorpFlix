@@ -14,14 +14,15 @@ interface Props {
 export const SwotBlock: React.FC<Props> = ({
   data, setData, isEditing, onEdit, onSave, saving, startWizard
 }) => {
-  const renderList = (text: string, type: 'strengths' | 'weaknesses' | 'opportunities' | 'threats') => {
+  const renderList = (text: string | any, type: 'strengths' | 'weaknesses' | 'opportunities' | 'threats') => {
     if (!text) return <span className="text-slate-400 italic">No definido</span>;
 
-    const items = text.split('\n').filter(i => i.trim());
+    const safeText = typeof text === 'string' ? text : Array.isArray(text) ? text.join('\n') : String(text);
+    const items = safeText.split('\n').filter((i: string) => i.trim());
 
     return (
       <div className="space-y-2">
-        {items.map((item, idx) => {
+        {items.map((item: string, idx: number) => {
           // Strip the [Plan: ...] pattern entirely (no longer displayed)
           let mainText = item.replace(/^•\s*/, '').replace(/\[Plan:[^\]]*\]/g, '').trim();
           if (!mainText) return null;

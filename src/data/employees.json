@@ -1,0 +1,24 @@
+[
+  {
+    "id": "EMP001",
+    "firstName": "Juan",
+    "lastName": "Perez",
+    "salaryAmount": 1500000,
+    "contractType": "INDEFINIDO",
+    "identification": "1234567890",
+    "defaultPosition": "",
+    "defaultSite": "",
+    "isActive": false
+  },
+  {
+    "id": "EMP002",
+    "firstName": "Maria",
+    "lastName": "Gomez",
+    "salaryAmount": 1800000,
+    "contractType": "FIJO",
+    "identification": "987456321",
+    "defaultPosition": "",
+    "defaultSite": "",
+    "isActive": false
+  }
+]

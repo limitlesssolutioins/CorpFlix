@@ -1,0 +1,207 @@
+{
+    "category": "AMBIENTAL",
+    "description": "Catálogo de Riesgos Ambientales extraídos del archivo Riesgos.xlsx",
+    "consequence_criteria": [
+        {
+            "level": 1,
+            "name": "INSIGNIFICANTE",
+            "description": "Efectos menores en área mínima, de poca importancia."
+        },
+        {
+            "level": 2,
+            "name": "BAJA",
+            "description": "Efectos moderados, de corto plazo (menor a 1 año) pero que no afectan la función del ecosistema."
+        },
+        {
+            "level": 3,
+            "name": "MEDIA",
+            "description": "Efectos moderados o graves, en mediano plazo (entre 1 y 5 años) que afectan la función del ecosistema."
+        },
+        {
+            "level": 4,
+            "name": "ALTA",
+            "description": "Efectos graves, en el largo plazo (más de 5 años) que afectan la función del ecosistema."
+        },
+        {
+            "level": 5,
+            "name": "SIGNIFICATIVA",
+            "description": "Efectos con impacto significativo (irreversibles) sobre especies de alto valor, hábitat o ecosistemas."
+        }
+    ],
+    "risks": [
+        {
+            "type": "ACTIVIDADES ECONÓMICAS",
+            "description": "Desarrollo de proyectos en nuevas áreas",
+            "caused_by": "Actividades de construcción. Actividades de minería",
+            "impact": "Cambio en las actividades económicas tradicionales"
+        },
+        {
+            "type": "ACTIVIDADES ECONÓMICAS",
+            "description": "Desarrollo de proyectos en nuevas áreas (Generación empleo)",
+            "caused_by": "Actividades de construcción. Actividades de minería",
+            "impact": "Generación de empleo e ingresos"
+        },
+        {
+            "type": "ACTIVIDADES ECONÓMICAS",
+            "description": "Desarrollo de proyectos en nuevas áreas (Demanda bienes)",
+            "caused_by": "Actividades de construcción. Actividades de minería. Actividades de recreación",
+            "impact": "Cambio en la demanda y oferta de bienes y servicios"
+        },
+        {
+            "type": "ACTIVIDADES ECONÓMICAS",
+            "description": "Inversión social en áreas de influencia del proyecto",
+            "caused_by": "Actividades de construcción. Actividades de minería. Actividades de recreación",
+            "impact": "Cambio en la calidad de vida de la población (infraestructura de salud, educación, recreación, deportiva, entre otros)"
+        },
+        {
+            "type": "AGUA",
+            "description": "Consumo de agua",
+            "caused_by": "Uso de baños. Hidratación del personal. Aseo de instalaciones. Uso de la cafetería",
+            "impact": "Disminución de los recursos naturales"
+        },
+        {
+            "type": "AGUA",
+            "description": "Derrame de sustancias químicas durante transporte, manejo y/o almacenamiento",
+            "caused_by": "Derrame accidental de aceites, combustibles. Derrame accidental de sustancias químicas",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "AGUA",
+            "description": "Fuga de agua",
+            "caused_by": "Ruptura de tubería. Grifería o baños en mal estado",
+            "impact": "Disminución de los recursos naturales. Daño de instalaciones o equipos"
+        },
+        {
+            "type": "AGUA",
+            "description": "Generación de aguas residuales domésticas",
+            "caused_by": "Uso de baños. Hidratación del personal. Aseo de instalaciones. Uso de la cafetería",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "AGUA",
+            "description": "Generación de aguas residuales no domésticas (hidrocarburos, aceite usado, residuos químicos)",
+            "caused_by": "Uso de sustancias químicas. Uso de combustibles y aceites",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "RESIDUOS",
+            "description": "Generación de residuos sólidos aprovechables",
+            "caused_by": "Desechar papel después de imprimir o escribir. Desechar cajas de cartón, bolsas y botellas plásticas. Actividades de construcción o limpieza (Metales y chatarra)",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "RESIDUOS",
+            "description": "Generación de residuos sólidos especiales",
+            "caused_by": "Actividades de construcción y demolición (Escombros). Instalación de tuberías. Desechar chatarra, llantas. Tala o poda de árboles",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "RESIDUOS",
+            "description": "Generación de residuos sólidos ordinarios",
+            "caused_by": "Alimentación del personal. Uso de baños. Actividades en general en oficinas. Aseo y limpieza de instalaciones",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "RESIDUOS",
+            "description": "Generación de residuos sólidos peligrosos (Incluyendo hospitalarios)",
+            "caused_by": "Uso de lubricantes e hidrocarburos. Uso de sustancias químicas. Tonners vacíos. Equipos electrónicos dañados. Lámparas en mal estado. Pilas usadas. EPP contaminados. Filtros de aires acondicionados. Atención médica (gasas, guantes, medicamentos vencidos, agujas)",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "AGUA",
+            "description": "Tendido de tuberías en cuerpos de agua (Lámina de agua)",
+            "caused_by": "Actividades de planeación de proyectos. Actividades de diseño de proyectos. Actividades de construcción de proyectos",
+            "impact": "Cambios en las características de calidad del agua"
+        },
+        {
+            "type": "AGUA",
+            "description": "Uso de cauce",
+            "caused_by": "Actividades de planeación de proyectos. Actividades de diseño de proyectos. Actividades de construcción de proyectos",
+            "impact": "Modificación geomorfológica del cauce"
+        },
+        {
+            "type": "AIRE",
+            "description": "Emisión de fuentes fijas",
+            "caused_by": "Uso de máquinas y equipos para realizar las actividades. Uso de planta eléctrica",
+            "impact": "Cambios en la calidad del aire"
+        },
+        {
+            "type": "AIRE",
+            "description": "Emisión de fuentes móviles",
+            "caused_by": "Uso de vehículos, equipos y motos",
+            "impact": "Cambios en la calidad del aire"
+        },
+        {
+            "type": "AIRE",
+            "description": "Emisión de gases efecto invernadero",
+            "caused_by": "Fábricas industriales. Ganadería intensiva. Uso de sprays. Mal reciclaje. Uso de combustibles fósiles y poco uso de energías renovables. Consumo excesivo de electricidad",
+            "impact": "Agotamiento de la capa de Ozono"
+        },
+        {
+            "type": "AIRE",
+            "description": "Emisión de material particulado",
+            "caused_by": "Actividades de construcción, trabajos varios",
+            "impact": "Cambio en la calidad de aire (material particulado)"
+        },
+        {
+            "type": "AIRE",
+            "description": "Fugas de gases / Sustancias presurizadas",
+            "caused_by": "Calibración de equipos detectores en campo (H2S, CO, CH4, VOC). Transporte, llenado y trasvase de odorante. Proceso de atención de emergencias",
+            "impact": "Cambios en la calidad del aire"
+        },
+        {
+            "type": "AIRE",
+            "description": "Generación de emisiones de olores ofensivos",
+            "caused_by": "Procesos productivos industriales. Lagunas de oxidación. Plantas de tratamiento de agua",
+            "impact": "Cambios en la calidad del aire"
+        },
+        {
+            "type": "AIRE",
+            "description": "Generación de ruido ambiental",
+            "caused_by": "Uso de equipo de sonido para realizar publicidad",
+            "impact": "Cambios en la calidad del aire"
+        },
+        {
+            "type": "ASPECTOS ARQUEOLÓGICOS",
+            "description": "Desarrollo de proyectos en nuevas áreas",
+            "caused_by": "Actividades de construcción. Actividades de minería",
+            "impact": "Alteración del patrimonio arqueológico"
+        },
+        {
+            "type": "CALIDAD DE VIDA",
+            "description": "Consumo de gas natural",
+            "caused_by": "Actividades de construcción. Actividades de minería. Actividades de recreación",
+            "impact": "Cambio en la presión sobre los recursos naturales"
+        },
+        {
+            "type": "CALIDAD DE VIDA",
+            "description": "Consumo materiales e insumos",
+            "caused_by": "Actividades de construcción. Actividades de minería. Actividades de recreación. Uso de material publicitario",
+            "impact": "Cambio en la presión sobre los recursos naturales"
+        },
+        {
+            "type": "CALIDAD DE VIDA",
+            "description": "Inversión social en áreas de influencia del proyecto (infraestructura vial)",
+            "caused_by": "Realizar actividades de publicidad en localidades. Realizar actividades de campo. Realizar visitas comerciales",
+            "impact": "Cambio en la calidad de la infraestructura vial (Vías, andenes, entre otros)"
+        },
+        {
+            "type": "CALIDAD DE VIDA",
+            "description": "Movilización de equipos y personal",
+            "caused_by": "Realizar actividades de publicidad en localidades. Realizar actividades de campo. Realizar visitas comerciales",
+            "impact": "Variación de la probabilidad de accidentes viales"
+        },
+        {
+            "type": "CULTURA",
+            "description": "Desarrollo de proyectos en nuevas áreas",
+            "caused_by": "Actividades de construcción. Actividades de minería. Actividades de recreación",
+            "impact": "Generación de conflictos por el proyecto"
+        },
+        {
+            "type": "ENERGÍA",
+            "description": "Consumo de energía",
+            "caused_by": "Uso de equipos de oficina, aires acondicionados",
+            "impact": "Agotamiento de recursos naturales"
+        }
+    ]
+}

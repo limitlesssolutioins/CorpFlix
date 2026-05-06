@@ -1,0 +1,213 @@
+{
+    "category": "SST",
+    "description": "Catálogo de Riesgos de Salud y Seguridad en el Trabajo (SST) extraídos del archivo Riesgos.xlsx",
+    "consequence_criteria": [
+        {
+            "level": 1,
+            "name": "INSIGNIFICANTE",
+            "description": "Ninguna lesión y/o enfermedad laboral."
+        },
+        {
+            "level": 2,
+            "name": "BAJA",
+            "description": "Lesiones leves o con primeros auxilios o con tratamiento médico, sin incapacidad o con incapacidad de 1 día."
+        },
+        {
+            "level": 3,
+            "name": "MEDIA",
+            "description": "Accidentes de Trabajo y/o Enfermedades Laborales con Incapacidad temporal mayor a 1 día."
+        },
+        {
+            "level": 4,
+            "name": "ALTA",
+            "description": "Accidentes de Trabajo y/o Enfermedades Laborales con Incapacidad permanente - parcial o total."
+        },
+        {
+            "level": 5,
+            "name": "SIGNIFICATIVA",
+            "description": "Una o más fatalidades por accidentes de trabajo y/o enfermedades laborales."
+        }
+    ],
+    "risks": [
+        {
+            "type": "BIOLÓGICO",
+            "description": "Contacto con plantas urticantes",
+            "caused_by": "Actividades realizadas en campo donde hay maleza",
+            "impact": "Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas"
+        },
+        {
+            "type": "BIOLÓGICO",
+            "description": "Fluidos o excrementos",
+            "caused_by": "Contacto con fluidos corporales y secreciones",
+            "impact": "Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas"
+        },
+        {
+            "type": "BIOLÓGICO",
+            "description": "Microorganismos (Virus y bacterias)",
+            "caused_by": "Contacto con fluidos corporales y secreciones. Ingestión de alimentos/agua contaminados. Retención de orina o heces por desempeño laboral fuera de la sede. Realizar labores de campo en lugares de riesgo de enfermedades de salud pública",
+            "impact": "Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas, muerte"
+        },
+        {
+            "type": "BIOLÓGICO",
+            "description": "Microorganismos (Virus - COVID-19)",
+            "caused_by": "Contacto directo entre personas portadoras del virus COVID-19 u objetos contaminados. Contacto con fluidos corporales y secreciones",
+            "impact": "IRA - Infección Respiratoria Aguda de leve a grave, neumonía, alteraciones en los diferentes sistemas, muerte"
+        },
+        {
+            "type": "BIOLÓGICO",
+            "description": "Picaduras y mordeduras de animales",
+            "caused_by": "Contacto con insectos, roedores, serpientes, cuando se realizan actividades de campo",
+            "impact": "Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas, muerte"
+        },
+        {
+            "type": "BIOLÓGICO",
+            "description": "Hongos",
+            "caused_by": "Contacto con fluidos corporales y secreciones",
+            "impact": "Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas, muerte"
+        },
+        {
+            "type": "BIOMECÁNICO",
+            "description": "Esfuerzos",
+            "caused_by": "Levantamiento y/o traslado manual de cargas por encima del peso permisible",
+            "impact": "Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular"
+        },
+        {
+            "type": "BIOMECÁNICO",
+            "description": "Manipulación manual de cargas",
+            "caused_by": "Levantamiento y/o traslado manual de cargas por encima del peso permisible",
+            "impact": "Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular"
+        },
+        {
+            "type": "BIOMECÁNICO",
+            "description": "Movimiento repetitivo",
+            "caused_by": "Digitación. Quitar grapas. Escanear. Inclinación del cuello al contestar el teléfono y atención al cliente. Conducción de motocicletas y automóviles",
+            "impact": "Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular"
+        },
+        {
+            "type": "BIOMECÁNICO",
+            "description": "Postura forzada",
+            "caused_by": "Alcanzar objetivos que están ubicados fuera del alcance",
+            "impact": "Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular, golpes"
+        },
+        {
+            "type": "BIOMECÁNICO",
+            "description": "Postura inadecuada",
+            "caused_by": "Alcanzar objetivos que están ubicados fuera del alcance. Labores en oficina en general. Actos inseguros",
+            "impact": "Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular"
+        },
+        {
+            "type": "BIOMECÁNICO",
+            "description": "Postura prolongada mantenida",
+            "caused_by": "Labores en oficina en general. Actividades de vigilancia. Conducción de vehículos y motos. Traslados terrestres como pasajeros",
+            "impact": "Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Arroyos",
+            "caused_by": "Lluvias, vendavales, tormentas eléctricas, arroyos",
+            "impact": "Contusiones, asfixia, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Derrumbe",
+            "caused_by": "Lluvias, vendavales, tormentas eléctricas. Movimientos de tierra. Excavaciones",
+            "impact": "Contusiones, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Inundación",
+            "caused_by": "Lluvias, vendavales, tormentas eléctricas, arroyos",
+            "impact": "Contusiones, asfixia, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Mar de leva o marea alta",
+            "caused_by": "Lluvias, vendavales, tormentas eléctricas, fuertes vientos. Ubicación de las instalaciones cerca del mar. Traslado vía marítima",
+            "impact": "Contusiones, asfixia, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Maremotos",
+            "caused_by": "Lluvias, vendavales, tormentas eléctricas, fuertes vientos. Terremotos, sismos. Ubicación de las instalaciones cerca del mar. Traslado vía marítima",
+            "impact": "Contusiones, asfixia, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Sismo",
+            "caused_by": "Movimientos de tierra. Excavaciones. Caída de objetos, derrumbes",
+            "impact": "Contusiones, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Terremoto",
+            "caused_by": "Movimientos de tierra. Excavaciones",
+            "impact": "Contusiones, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Tormenta eléctrica",
+            "caused_by": "Lluvias, tormentas, cambios atmosféricos. Caída de objetivos, accidentes de tránsito, pérdida de visibilidad",
+            "impact": "Contusiones, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FENÓMENOS NATURALES",
+            "description": "Vendaval",
+            "caused_by": "Lluvias, tormentas, cambios atmosféricos. Caída de objetivos, accidentes de tránsito, pérdida de visibilidad",
+            "impact": "Contusiones, fracturas, amputaciones, muerte"
+        },
+        {
+            "type": "FÍSICO",
+            "description": "Iluminación excesiva o deficiente",
+            "caused_by": "Luminarias. Luz natural",
+            "impact": "Fatiga visual, cefalea, disminución de la destreza y precisión, estrés, pérdida de la capacidad de visión"
+        },
+        {
+            "type": "FÍSICO",
+            "description": "Presión atmosférica anormal o ajustada",
+            "caused_by": "Actividades de mantenimiento a gasoductos. Actividades de mantenimiento locativo. Levantamiento de planos instrumentales. Buceo. Trabajos en espacios confinados",
+            "impact": "Afectaciones del sistema nervioso, trastornos o problemas pulmonares, muerte"
+        },
+        {
+            "type": "FÍSICO",
+            "description": "Radiaciones ionizantes (rayos X, alfa, gama y beta)",
+            "caused_by": "Actividades de soldadura",
+            "impact": "Alteraciones de la piel, deshidratación, alteración en tejidos blandos (ojos). Heridas, golpes, contusiones, laceraciones, electrocución, lumbagos, pérdida de audición, intoxicaciones, muerte"
+        },
+        {
+            "type": "FÍSICO",
+            "description": "Radiaciones no ionizantes (láser, ultravioleta, infrarroja)",
+            "caused_by": "Trabajos al aire libre, sol. Pantallas de computador. Lámparas. Sistemas de radiocomunicaciones. Microondas",
+            "impact": "Alteraciones de la piel, deshidratación, alteración en tejidos blandos (ojos)"
+        },
+        {
+            "type": "FÍSICO",
+            "description": "Ruido intermitente o continuo",
+            "caused_by": "Uso de equipos de oficina. Planta eléctrica. Autogeneración. Cuarto de máquinas. Torre de enfriamiento. Uso de máquinas, equipos o herramientas. Calibración de medidores industriales",
+            "impact": "Fatiga auditiva, pérdida de la audición (Hipoacusia), estrés laboral"
+        },
+        {
+            "type": "FÍSICO",
+            "description": "Temperaturas extremas (frío, calor)",
+            "caused_by": "Aires acondicionados. Altas temperaturas por exposición al sol. Cambios de temperatura al entrar o salir de la oficina. Fallas en el aire acondicionado",
+            "impact": "Disconfort térmico. Afecciones respiratorias, alergias. Fatiga, disminución de la destreza manual, mareos, desmayos, agravamiento de trastornos cardiovasculares. Deshidratación"
+        },
+        {
+            "type": "FÍSICO",
+            "description": "Vibración (cuerpo entero o segmentado)",
+            "caused_by": "Uso de vehículos o motocicletas. Uso de máquinas, equipos o herramientas",
+            "impact": "Vibraciones de cuerpo entero: Trastornos respiratorios, músculo-esqueléticos, sensoriales, cardiovasculares, efectos sobre el sistema nervioso. Vibraciones mano-brazo: Trastornos vasculares, nerviosos, musculares, de los huesos y articulaciones"
+        },
+        {
+            "type": "PSICOSOCIAL",
+            "description": "Demanda de las jornadas de trabajo (trabajo nocturno, horas extras, turnos de trabajo)",
+            "caused_by": "Acumulación de trabajo. Perfiles de cargo mal diseñados. No reemplazo de personas ausentes. Supresión de cargos",
+            "impact": "Problemas familiares. Estrés, enfermedades psicosomáticas, ansiedad y depresión"
+        },
+        {
+            "type": "CONDICIÓN DE SEGURIDAD",
+            "description": "Accidente de tránsito",
+            "caused_by": "Rapidez en el desplazamiento por el no control en el tiempo",
+            "impact": "Golpes, fracturas, heridas"
+        }
+    ]
+}

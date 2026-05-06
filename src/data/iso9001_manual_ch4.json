@@ -1,0 +1,33 @@
+{
+  "4.1": [
+    "La organización debe determinar: Las cuestiones externas e internas que son pertinentes para su propósito y que afectan a su capacidad para lograr los resultados previstos de su sistema de gestión de Calidad."
+  ],
+  "4.2": [
+    "La organización debe determinar: a. Las partes interesadas que son pertinentes al sistema de gestión de calidad;",
+    "La organización debe determinar: b. Los requisitos de estas partes interesadas que son pertinentes para el sistema de gestión de la calidad.",
+    "La organización debe realizar el seguimiento y la revisión de la información sobre estas partes interesadas y sus requisitos pertinentes."
+  ],
+  "4.3": [
+    "Determinar los limites y la aplicabilidad del SGC para establecer su alcance.",
+    "Cuando se determina este alcance, la organización debe considerar: a. Las cuestiones externas e internas referidas en 4.1;",
+    "Cuando se determina este alcance, la organización debe considerar: b. Los requisitos de las partes interesadas pertinentes referidos en el apartado 4.2;",
+    "Cuando se determina este alcance, la organización debe considerar: c. Los productos y servicios de la organización;",
+    "El alcance debe estar disponible y mantenerse como información documentada estableciendo: Los tipos de productos y servicios cubiertos por el sistema de gestión de la calidad;",
+    "El alcance debe estar disponible y mantenerse como información documentada estableciendo: La justificación para cualquier requisito de esta norma internacional que la organización determine que no es aplicable para el alcance de su SGC."
+  ],
+  "4.4.1": [
+    "La organización debe establecer, implementar, mantener y mejorar continuamente un sistema de gestión de la calidad, incluidos los procesos necesarios y sus interacciones, de acuerdo con los requisitos de esta Norma Internacional.",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: a) determinar las entradas requeridas y las salidas esperados de estos procesos;",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: b) determinar la secuencia e interacción de estos procesos;",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: c) determinar y aplicar los criterios y los métodos (incluyendo el seguimiento, la medición y los indicadores del desempeño relacionados) necesarios para asegurarse la operación eficaz y el control de estos procesos;",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: d) determinar los recursos necesarios para estos procesos y asegurarse de su disponibilidad;",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: e) asignar las responsabilidades y autoridades para estos procesos;",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: f) abordar los riesgos y oportunidades determinados de acuerdo con los requisitos del apartado 6.1;",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: g) valorar estos procesos e implementar cualquier cambio necesario para asegurarse de que estos procesos logran los resultados previstos;",
+    "La organización debe determinar los procesos necesarios para el sistema de gestión de la calidad y su aplicación a través de la organización, y debe: h) mejorar los procesos y el sistema de gestión de la calidad."
+  ],
+  "4.4.2": [
+    "En la medida en que sea necesario, la organización debe: a) mantener información documentada para apoyar la operación de sus procesos;",
+    "En la medida en que sea necesario, la organización debe: b) conservar la información documentada para tener la confianza de que los procesos se realizan según lo planificado."
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "8.1": [
+    "La organización debe planificar, implementar y controlar los procesos (véase 4.4) necesarios para cumplir los requisitos para la producción de productos y prestación de servicios, y para implementar las acciones determinadas en el capítulo 6, mediante: a) la determinación de los requisitos para los productos y servicios;",
+    "La organización debe planificar, implementar y controlar los procesos necesarios mediante: b) el establecimiento de criterios para: 1) los procesos;",
+    "La organización debe planificar, implementar y controlar los procesos necesarios mediante: b) el establecimiento de criterios para: 2) la aceptación de los productos y servicios;",
+    "La organización debe planificar, implementar y controlar los procesos necesarios mediante: c) la determinación de los recursos necesarios para lograr la conformidad para los requisitos de los productos y servicios;",
+    "La organización debe planificar, implementar y controlar los procesos necesarios mediante: d) la implementación del control de los procesos de acuerdo con los criterios;",
+    "La organización debe planificar, implementar y controlar los procesos necesarios mediante: e) la determinación y almacenaje de la información documentada en la medida necesaria: 1) para confiar en que los procesos se han llevado a cabo según lo planificado;",
+    "La organización debe planificar, implementar y controlar los procesos necesarios mediante: e) la determinación y almacenaje de la información documentada en la medida necesaria: 2) para demostrar la conformidad de los productos y servicios con sus requisitos.",
+    "El elemento de salida de esta planificación debe ser adecuado para las operaciones de la organización.",
+    "La organización debe controlar los cambios planificados y revisar las consecuencias de los cambios no previstos, tomando acciones para mitigar cualquier efecto adverso, cuando sea necesario.",
+    "La organización debe asegurarse de que los procesos contratados externamente estén controlados (véase 8.4)."
+  ],
+  "8.2.1": [
+    "La comunicación con los clientes debe: a) proporcionar la información relativa a los productos y servicios;",
+    "La comunicación con los clientes debe: b) la atención de las consultas, los contratos o los pedidos, incluyendo los cambios;",
+    "La comunicación con los clientes debe: c) obtener la retroalimentación de los clientes relativa a los productos y servicios, incluyendo las quejas de los clientes;",
+    "La comunicación con los clientes debe: d) manipular o controlar las propiedades del cliente;",
+    "La comunicación con los clientes debe: e) establecer los requisitos específicos para las acciones de contingencia, cuando sea pertinente."
+  ],
+  "8.2.2": [
+    "Cuando determina los requisitos para los productos y servicios que se van a ofrecer a los clientes, la organización debe asegurarse de que: a) los requisitos para los productos y servicios se definen, incluyendo: 1) cualquier requisito legal y reglamentario aplicable;",
+    "Cuando determina los requisitos para los productos y servicios que se van a ofrecer a los clientes, la organización debe asegurarse de que: a) los requisitos para los productos y servicios se definen, incluyendo: 2) aquellos considerados necesarios por la organización;",
+    "Cuando determina los requisitos para los productos y servicios que se van a ofrecer a los clientes, la organización debe asegurarse de que: b) la organización puede cumplir las reclamaciones de los productos y servicios que ofrece."
+  ],
+  "8.2.3.1": [
+    "La organización debe asegurarse de que tiene la capacidad de cumplir los requisitos para los productos y servicios que se van a ofrecer a los clientes.",
+    "La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir: a) los requisitos especificados por el cliente, incluyendo los requisitos para las actividades de entrega y las posteriores a la misma;",
+    "La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir: b) los requisitos no establecidos por el cliente, pero necesarios para el uso especificado o para el uso previsto, cuando sea conocido;",
+    "La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir: c) los requisitos especificados por la organización;",
+    "La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir: d) los requisitos legales y reglamentarios adicionales aplicables a los productos y servicios;",
+    "La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir: e) las diferencias existentes entre los requisitos de contrato o pedido y los expresados previamente.",
+    "La organización debe asegurarse de que se resuelven las diferencias existentes entre los requisitos del contrato o pedido y los expresados previamente.",
+    "La organización debe confirmar los requisitos del cliente antes de la aceptación, cuando el cliente no proporcione una declaración documentada de sus requisitos."
+  ],
+  "8.2.3.2": [
+    "La organización debe conservar la información documentada, cuando sea aplicable: a) sobre los resultados de la revisión;",
+    "La organización debe conservar la información documentada, cuando sea aplicable: b) sobre cualquier requisito nuevo para los productos y servicios."
+  ],
+  "8.2.4": [
+    "La organización debe asegurarse de que la información documentada pertinente sea modificada, y de que las personas correspondientes sean conscientes de los requisitos modificados, cuando se cambien los requisitos para los productos y servicios."
+  ],
+  "8.3.1": [
+    "La organización debe establecer, implementar y mantener un proceso de diseño y desarrollo que sea adecuado para asegurarse de la posterior producción de productos y prestación de servicios."
+  ],
+  "8.3.2": [
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: a) la naturaleza, duración y complejidad de las actividades de diseño y desarrollo;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: b) las etapas del proceso requeridas, incluyendo las revisiones del diseño y desarrollo aplicables;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: c) las actividades requeridas de verificación y validación del diseño y desarrollo;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: d) las responsabilidades y autoridades involucradas en el proceso de diseño y desarrollo;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: e) las necesidades de recursos internos y externos para el diseño y desarrollo de los productos y servicios;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: f) la necesidad de controlar las interfaces entre las personas implicadas en el proceso de diseño y desarrollo;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: g) la necesidad de la participación activa de los clientes y usuarios en el proceso de diseño y desarrollo;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: h) los requisitos para la posterior producción de productos y prestación de servicios;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: i) el nivel de control del proceso de diseño y desarrollo esperado por los clientes y otras partes interesadas pertinentes;",
+    "Al determinar las etapas y controles para el diseño y desarrollo, la organización debe considerar: j) la información documentada necesaria para demostrar que se han cumplido los requisitos del diseño y desarrollo."
+  ],
+  "8.3.3": [
+    "La organización debe determinar los requisitos esenciales para los tipos específicos de productos y servicios que se van a diseñar y desarrollar. La organización debe considerar: a) los requisitos funcionales y de desempeño;",
+    "La organización debe considerar: b) la información proveniente de actividades de diseño y desarrollo previas similares;",
+    "La organización debe considerar: c) los requisitos legales y reglamentarios;",
+    "La organización debe considerar: d) normas o códigos de prácticas que la organización se ha comprometido a implementar;",
+    "La organización debe considerar: e) las consecuencias potenciales del fracaso debido a la naturaleza de los productos y servicios;",
+    "Los elementos de entrada deben ser adecuados para los fines de diseño y desarrollo, estar completos y sin ambigüedades. Los conflictos entre elementos de entrada deben resolverse.",
+    "Las entradas deben ser adecuadas para los fines de diseño y desarrollo, estar completos y sin ambigüedades.",
+    "Deben resolverse las entradas del diseño y desarrollo contradictorios.",
+    "La organización debe conservar la información documentada sobre las entradas del diseño y desarrollo."
+  ],
+  "8.3.4": [
+    "La organización debe aplicar controles al proceso de diseño y desarrollo para asegurarse de que: a) los resultados a lograr están definidos;",
+    "La organización debe aplicar controles al proceso de diseño y desarrollo para asegurarse de que: b) las revisiones se realizan para evaluar la capacidad de los resultados del diseño y desarrollo de cumplir los requisitos;",
+    "La organización debe aplicar controles al proceso de diseño y desarrollo para asegurarse de que: c) se realizan actividades de verificación para asegurarse de que las salidas del diseño y desarrollo cumplen los requisitos de las entradas;",
+    "La organización debe aplicar controles al proceso de diseño y desarrollo para asegurarse de que: d) se realizan actividades de validación para asegurarse de que los productos y servicios resultantes satisfacen los requisitos para su aplicación especificada o uso previsto;",
+    "La organización debe aplicar controles al proceso de diseño y desarrollo para asegurarse de que: e) se toma cualquier acción necesaria sobre los problemas determinados durante las revisiones, o las actividades de verificación y validación;",
+    "La organización debe aplicar controles al proceso de diseño y desarrollo para asegurarse de que: f) se conserva la información documentada de estas actividades."
+  ],
+  "8.3.5": [
+    "La organización debe asegurarse de que las salidas del diseño y desarrollo: a) cumplen los requisitos de las entradas;",
+    "La organización debe asegurarse de que las salidas del diseño y desarrollo: b) son adecuados para los procesos posteriores para la provisión de productos y servicios;",
+    "La organización debe asegurarse de que las salidas del diseño y desarrollo: c) incluyen o hacen referencia a los requisitos de seguimiento y medición, cuando sea adecuado, y a los criterios de aceptación;",
+    "La organización debe asegurarse de que las salidas del diseño y desarrollo: d) especifican las características de los productos y servicios que son esenciales para su propósito previsto y su uso seguro y correcto."
+  ],
+  "8.3.6": [
+    "La organización debe identificar, revisar y controlar los cambios hechos durante el diseño y desarrollo de los productos y servicios o posteriormente, en la medida necesaria para asegurarse de que no haya un impacto adverso en la conformidad con los requisitos.",
+    "La organización debe conservar la información documentada sobre: a) los cambios del diseño y desarrollo;",
+    "La organización debe conservar la información documentada sobre: b) los resultados de las revisiones;",
+    "La organización debe conservar la información documentada sobre: c) la autorización de los cambios;",
+    "La organización debe conservar la información documentada sobre: d) las acciones tomadas para prevenir los impactos adversos."
+  ],
+  "8.4.1": [
+    "La organización debe asegurarse de que los procesos, productos y servicios suministrados externamente son conformes a los requisitos.",
+    "La organización debe determinar los controles a aplicar a los procesos, productos y servicios suministrados externamente cuando: a) los productos y servicios de proveedores externos están destinados a incorporarse dentro de los propios productos y servicios de la organización;",
+    "La organización debe determinar los controles a aplicar a los procesos, productos y servicios suministrados externamente cuando: b) los productos y servicios son proporcionados directamente a los clientes por proveedores externos en nombre de la organización;",
+    "La organización debe determinar los controles a aplicar a los procesos, productos y servicios suministrados externamente cuando: c) un proceso, o una parte de un proceso, es proporcionado por un proveedor externo como resultado de una decisión de la organización.",
+    "La organización debe determinar y aplicar criterios para la evaluación, la selección, el seguimiento del desempeño y la reevaluación de los proveedores externos, basándose en su capacidad para proporcionar procesos o productos y servicios de acuerdo con los requisitos.",
+    "La organización debe conservar la información documentada adecuada de estas actividades y de cualquier acción necesaria que surja de las evaluaciones."
+  ],
+  "8.4.2": [
+    "La organización debe asegurarse de que los procesos, productos y servicios suministrados externamente no afectan de manera adversa a la capacidad de la organización de entregar productos y servicios conformes de manera coherente a sus clientes.",
+    "La organización debe: a) asegurarse de que los procesos suministrados externamente permanecen dentro del control de su sistema de gestión de la calidad;",
+    "La organización debe: b) definir los controles que pretende aplicar a un proveedor externo y los que pretende aplicar a las salidas resultantes;",
+    "La organización debe: c) tener en consideración: 1) el impacto potencial de los procesos, productos y servicios suministrados externamente en la capacidad de la organización de cumplir regularmente los requisitos del cliente y los legales y reglamentarios aplicables;",
+    "La organización debe: c) tener en consideración: 2) la eficacia de los controles aplicados por el proveedor externo;",
+    "La organización debe: d) determinar la verificación, u otras actividades, necesarias para asegurarse de que los procesos, productos y servicios suministrados externamente cumplen los requisitos."
+  ],
+  "8.4.3": [
+    "La organización debe asegurarse de la adecuación de los requisitos antes de su comunicación al proveedor externo.",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: a) los procesos, productos y servicios a proporcionar;",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: b) la aprobación de: 1) productos y servicios;",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: b) la aprobación de: 2) métodos, procesos y equipo;",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: b) la aprobación de: 3) la liberación de productos y servicios;",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: c) la competencia, incluyendo cualquier calificación de las personas requerida;",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: d) las interacciones del proveedor externo con la organización;",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: e) el control y el seguimiento del desempeño del proveedor externo a aplicar por la organización;",
+    "La organización debe comunicar a los proveedores externos sus requisitos para: f) las actividades de verificación o validación que la organización, o su cliente, pretenden llevar a cabo en las instalaciones del proveedor externo."
+  ],
+  "8.5.1": [
+    "La organización debe implementar la producción y prestación del servicio bajo condiciones controladas.",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: a) la disponibilidad de información documentada que defina: 1) las características de los productos a producir, los servicios a prestar, o las actividades a desempeñar;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: a) la disponibilidad de información documentada que defina: 2) los resultados a alcanzar;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: b) la disponibilidad y el uso de los recursos de seguimiento y medición adecuados;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: c) la implementación de actividades de seguimiento y medición en las etapas apropiadas para verificar que se cumplen los criterios para el control de los procesos o las salidas, y los criterios de aceptación para los productos y servicios;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: d) el uso de la infraestructura y el ambiente adecuados para la operación de los procesos;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: e) la designación de personas competentes, incluyendo cualquier calificación requerida;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: f) la validación y revalidación periódica de la capacidad para alcanzar los resultados planificados de los procesos de producción y de prestación del servicio, donde el elemento de salida resultante no pueda verificarse mediante actividades de seguimiento o medición posteriores;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: g) la implementación de acciones para prevenir los errores humanos;",
+    "Las condiciones controladas deben incluir, cuando sea aplicable: h) la implementación de actividades de liberación, entrega y posteriores a la entrega."
+  ],
+  "8.5.2": [
+    "La organización debe utilizar los medios adecuados para identificar las salidas cuando sea necesario para asegurar la conformidad de los productos y servicios.",
+    "La organización debe identificar el estado de las salidas con respecto a los requisitos de seguimiento y medición a través de la producción y prestación del servicio.",
+    "La organización debe controlar la identificación única de las salidas cuando la trazabilidad sea un requisito.",
+    "Se debe conservar la información documentada necesaria para permitir la trazabilidad."
+  ],
+  "8.5.3": [
+    "La organización debe cuidar la propiedad perteneciente a los clientes o a proveedores externos mientras esté bajo el control de la organización o esté siendo utilizado por la misma.",
+    "La organización debe identificar, verificar, proteger y salvaguardar la propiedad de los clientes o de los proveedores externos suministrada para su utilización o incorporación dentro de los productos y servicios.",
+    "Cuando la propiedad de un cliente o de un proveedor externo se pierda, deteriore o que de algún otro modo se considere inadecuada para su uso, la organización debe informar de esto al cliente o proveedor externo y conservar la información documentada sobre lo que ha ocurrido."
+  ],
+  "8.5.4": [
+    "La organización debe preservar las salidas durante la producción y prestación del servicio, en la medida necesaria para asegurarse de la conformidad con los requisitos."
+  ],
+  "8.5.5": [
+    "La organización debe cumplir los requisitos para las actividades posteriores a la entrega asociadas con los productos y servicios.",
+    "Al determinar el alcance de las actividades posteriores a la entrega que se requieren, la organización debe considerar: a) los requisitos legales y reglamentarios;",
+    "Al determinar el alcance de las actividades posteriores a la entrega que se requieren, la organización debe considerar: b) las potenciales consecuencias no deseadas asociadas con sus productos y servicios;",
+    "Al determinar el alcance de las actividades posteriores a la entrega que se requieren, la organización debe considerar: c) la naturaleza, el uso y la vida prevista de sus productos y servicios;",
+    "Al determinar el alcance de las actividades posteriores a la entrega que se requieren, la organización debe considerar: d) los requisitos del cliente;",
+    "Al determinar el alcance de las actividades posteriores a la entrega que se requieren, la organización debe considerar: e) retroalimentación del cliente."
+  ],
+  "8.5.6": [
+    "La organización debe revisar y controlar los cambios para la producción o la prestación del servicio, en la medida necesaria para asegurarse de la conformidad continua con los requisitos especificados.",
+    "La organización debe conservar información documentada que describa los resultados de la revisión de los cambios, las personas que autorizan el cambio y de cualquier acción necesaria que surja de la revisión."
+  ],
+  "8.6": [
+    "La organización debe implementar las disposiciones planificadas, en las etapas adecuadas, para verificar que se cumplen los requisitos de los productos y servicios.",
+    "La liberación de los productos y servicios al cliente no debe llevarse a cabo hasta que se hayan completado satisfactoriamente las disposiciones planificadas, a menos que sea aprobado de otra manera por una autoridad pertinente y, cuando sea aplicable, por el cliente.",
+    "La organización debe conservar la información documentada sobre la liberación de los productos y servicios.",
+    "La información documentada debe incluir: a) evidencia de la conformidad con los criterios de aceptación;",
+    "La información documentada debe incluir: b) trazabilidad a las personas que han autorizado la liberación."
+  ],
+  "8.7.1": [
+    "La organización debe asegurarse de que las salidas que no sean conformes con sus requisitos se identifican y se controlan para prevenir su uso o entrega no intencional.",
+    "La organización debe tomar las acciones adecuadas basándose en la naturaleza de la no conformidad y en su efecto sobre la conformidad de los productos y servicios. Esto se debe aplicar también a los productos y servicios no conformes detectados después de la entrega de los productos, durante o después de la provisión de los servicios.",
+    "La organización debe tratar las salidas no conformes de una o más de las siguientes maneras: a) corrección;",
+    "La organización debe tratar las salidas no conformes de una o más de las siguientes maneras: b) separación, contención, devolución o suspensión de la provisión de los productos y servicios;",
+    "La organización debe tratar las salidas no conformes de una o más de las siguientes maneras: c) informar al cliente;",
+    "La organización debe tratar las salidas no conformes de una o más de las siguientes maneras: d) obtener autorización para su aceptación bajo concesión.",
+    "Debe verificarse la conformidad con los requisitos cuando las salidas no conformes se corrigen."
+  ],
+  "8.7.2": [
+    "La organización debe mantener la información documentada que: a) describa la no conformidad;",
+    "La organización debe mantener la información documentada que: b) describa las acciones tomadas;",
+    "La organización debe mantener la información documentada que: c) describa las concesiones obtenidas;",
+    "La organización debe mantener la información documentada que: d) identifique la autoridad que ha decidido la acción con respecto a la no conformidad."
+  ]
+}

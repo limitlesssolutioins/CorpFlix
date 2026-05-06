@@ -1,0 +1,43 @@
+{
+  "configuracion": {
+    "moneda": "COP",
+    "impuestos": {
+      "iva": 19,
+      "retefuente": 4
+    },
+    "prestaciones_sociales": {
+      "salud_patronal": 8.5,
+      "pension_patronal": 12,
+      "arl_base": 0.522,
+      "caja_compensacion": 4,
+      "cesantias": 8.33,
+      "intereses_cesantias": 1,
+      "prima_servicios": 8.33,
+      "vacaciones": 4.17
+    },
+    "overheads": {
+      "gastos_administrativos_fijos": 15,
+      "margen_seguridad": 5
+    }
+  },
+  "servicios": [],
+  "cotizaciones": [],
+  "pagos": [
+    {
+      "id": "5b55170d-8e9b-42e8-b0e4-eb52f2b0f247",
+      "amount": 99900,
+      "currency": "COP",
+      "status": "COMPLETED",
+      "type": "SUBSCRIPTION",
+      "method": "PSE",
+      "reference": "REF-1769186379313-533",
+      "description": "Suscripción Mensual CorpFlix Pro",
+      "createdAt": "2026-01-23T16:39:39.314Z"
+    }
+  ],
+  "suscripciones": {
+    "plan": "Suscripción Mensual CorpFlix Pro",
+    "estado": "INACTIVO",
+    "fechaFin": null
+  }
+}

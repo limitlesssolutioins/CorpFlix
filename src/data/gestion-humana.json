@@ -1,0 +1,19 @@
+{
+  "extras": [
+    { "id": "extra1", "name": "Hora Extra Diurna", "factor": 1.25 },
+    { "id": "extra2", "name": "Hora Extra Nocturna", "factor": 1.75 },
+    { "id": "extra3", "name": "Recargo Nocturno", "factor": 0.35 },
+    { "id": "extra4", "name": "Dominical/Festivo", "factor": 1.75 }
+  ],
+  "domesticas": {
+    "jornadaNormal": {"salarioBase": 1300000, "auxilioTransporte": 162000, "prestaciones": "LEY" },
+    "jornadaParcial": {"salarioBase": 650000, "auxilioTransporte": 81000, "prestaciones": "PROPORCIONAL" }
+  },
+  "seguridadSocial": {
+    "operadorDefault": "Asopagos",
+    "opcionesArchivosPlanos": [
+      { "id": "asopagos", "name": "Asopagos", "format": "FORMATO_ASOPAGOS" },
+      { "id": "aportesEnLinea", "name": "Aportes en Línea", "format": "FORMATO_APORTES_EN_LINEA" }
+    ]
+  }
+}

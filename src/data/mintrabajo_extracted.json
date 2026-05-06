@@ -1,0 +1,359 @@
+{
+  "1.1": [
+    "Nombre o razón social de la persona (natural o jurídica visitada)",
+    "Tipo de Persona (natural/jurídica) JURIDICA",
+    "Estado de la empresa visitada (si es persona jurídica)",
+    "Forma de Identificación de la Persona Visitada Número de Identificación Tributaria (NIT)",
+    "Número documento de identificación",
+    "Denominación de la persona (natural/jurídica) visitada Sociedad por Acciones Simplificada",
+    "Tamaño de la empresa",
+    "Zona geográfica",
+    "Departamento",
+    "Municipio",
+    "Es un municipio PDET?",
+    "Nombre municipio PDET"
+  ],
+  "1.2": [
+    "Dirección de la visitada",
+    "Teléfono o celular de contacto",
+    "Correo electrónico",
+    "Nombre/s y apellido/s representante",
+    "Número documento de identificación"
+  ],
+  "1.3": [
+    "Código CIIU (Actividad económica principal)",
+    "Código CIIU (Actividad económica división) Lista desplegable",
+    "Código CIIU (Actividad económica grupo) Lista desplegable",
+    "Código CIIU (Actividad económica clase) Lista desplegable",
+    "Tiene sucursales a nivel nacional",
+    "Sectores críticos TLC Lista desplegable",
+    "2 DATOS DE QUIENES PARTICIPAN DE LA DILIGENCIA",
+    "Representante de la o las organizaciones sindicales (si la hubiere)",
+    "Representante del comité de convivencia",
+    "Representante del COPASST",
+    "Responsable del sistema de gestión en seguridad y salud en el trabajo (SG-SST)",
+    "Apoderado de la persona visitada",
+    "Representante legal de la persona jurídica visitada",
+    "PARTE SEGUNDA: CARACTERIZACIÓN DEL PERSONAL VINCULADO CON LA PERSONA NATURAL O JURIDICA VISITADA",
+    "3 COMPOSICION DE PLANTA"
+  ],
+  "3.1": [],
+  "3.2": [
+    "Número de mujeres trabajan en la empresa",
+    "Número de hombres trabajan en la empresa",
+    "Número de personas que se identifican con otro genero (no obligatorio -habeas data) 0"
+  ],
+  "3.3": [
+    "Número de personas de nacionalidad colombiana que trabajan allí",
+    "Número de personas de otras nacionalidades que trabajan allí 0",
+    "Desagregue el número de personas de otras nacionalidades que trabajan allí 0",
+    "3.4 TRABAJADORES/AS DESAGREGADOS POR RANGO DE EDAD",
+    "Número de Menores de 15 años",
+    "Número de trabajadores/as de 15 a 17 años",
+    "Número de trabajadores/as de 18 a 29 años",
+    "Número de trabajadores/as de 30 a 56 años",
+    "Número de trabajadores/as de mas de 57 años"
+  ],
+  "3.5": [
+    "Indígena",
+    "Raizal",
+    "Palanquero",
+    "Comunidades Negras",
+    "Mulato",
+    "Afrocolombiano"
+  ],
+  "3.6": [
+    "Número de Adulto/s Mayor/es en situación prepensional (personas mayores a :54 años mujeres / 59 años hombres)",
+    "Números de personas en situación de Desplazado/a por violencia",
+    "Número de personas en situación de discapacidad o condición de salud sustancial con incidencia laboral",
+    "Número de madres cabeza de familia",
+    "Número de mujer/es víctima/s de violencia de género",
+    "Número de niñas, niños y adolescentes vinculados a los centros de trabajo"
+  ],
+  "3.7": [
+    "3.7.1. SITUACION MENORES DE 18 AÑOS VINCULADOS A LOS CENTROS DE TRABAJO",
+    "Numero de trabajadores/as menores de 18 años que trabajan en el centro de trabajo",
+    "Por excepción: Laboran niños menores de 14 años en los centros de trabajó",
+    "Los niños, niñas o adolescentes ejecutan trabajos autorizados por el Ministerio de Trabajo?",
+    "Numero de horas laboradas por los menores de 18 años",
+    "3.7.2. EN SITUACION DE MATERNIDAD O PATERNIDAD",
+    "Número de personas Gestantes",
+    "Número de personas en licencia de maternidad",
+    "Número de personas en licencia de paternidad",
+    "Número de personas en estado de lactancia (Artículo 238 del CST -Ley 2306 de 2023)",
+    "3.7.3. EN SITUACION DE DISCAPACIDAD O CONDICION DE SALUD SUSTANCIAL CON INCIDENCIA LABORAL",
+    "Número de personas en condición de discapacidad o con porcentaje de pérdida de capacidad laboral",
+    "Número de personas con condiciones de salud que tienen comorbilidades relevantes",
+    "Número de personas con restricciones laborales por recomendaciones medicas del tratante",
+    "Número de personas con reubicación, reincorporados/as, en reconversión, o en readiestramiento del puesto de trabajo",
+    "3.7.4. EN SITUACION PENSIONAL",
+    "Número de personas en condición de prepensión (menos de tres años para pensionarse (RPM) o con 7 2 0",
+    "Número de personas que están pensionados/as 0 2 0",
+    "4 CARACTERIZACION SOBRE LA FORMA DE VINCULACION PARA TRABAJAR"
+  ],
+  "4.1": [
+    "Número de trabajadores/as con contratos laborales",
+    "Número de contratistas vinculados por orden (OPS) o contrato de prestación de servicios",
+    "Número de trabajadores en misión vinculados por una Empresa de Servicios Temporales",
+    "Número de personas en condición de que trabajan en los centros de trabajo y que se encuentran vinculadas por empresas tercerizadas",
+    "Número de aprendices SENA?",
+    "Número de personal en pasantías o practicante"
+  ],
+  "4.2": [
+    "Número de contratos a término indefinido?",
+    "Número de contratos a término Fijo?",
+    "Número de contratos a término fijo inferior a un Año?",
+    "Número de contratos a término fijo superior a un Año?",
+    "Número de contratos a por obra o labor? 0",
+    "Número de contratos a contratos temporal, ocasional o accidental ?",
+    "Número de contratos de aprendizaje?",
+    "Número de contratos verbales ?",
+    "Número de contratos escritos?"
+  ],
+  "4.3": [
+    "Número de cargos gerenciales?",
+    "Número de cargos Directivos?",
+    "Número de cargos Administrativos?",
+    "Número de cargos Operativos",
+    "Número por otros cargos",
+    "PARTE TERCERA: CUMPLIMIENTO DE NORMAS LABORALES DE NATURALEZA INDIVIDUAL Y DEL SISTEMA DE SEGURIDAD SOCIAL INTEGRAL",
+    "5 REMUNERACIONES DEL TRABAJADOR"
+  ],
+  "5.1": [
+    "Fecha del ultimo pago de nómina",
+    "En que forma realiza los pagos",
+    "Reconoce pago de salario en especie?",
+    "Se paga salario integral?",
+    "Tiene trabajadores/as con salario integral",
+    "Realizan en la empresa descuentos de nomina",
+    "La remuneración de las mujeres trabajadoras es igual al de los hombres trabajadores que ejercen la misma labor",
+    "¿Tienen escala o bandas salariales?",
+    "¿Qué factores se tienen en cuenta para fijar los salarios para los distintos rangos salariales?"
+  ],
+  "5.2": [
+    "En la nomina se reconoce el pago del auxilio de Transporte conforme a la Ley?",
+    "El Auxilio de Transporte se incluye para liquidar prestaciones sociales?",
+    "¿Presta el establecimiento servicio de ruta?",
+    "Los trabajadores/as que están en teletrabajo se les reconoce el auxilio de transporte?"
+  ],
+  "5.3": [
+    "5.3.1. PRIMA DE SERVICIOS",
+    "Liquida correctamente la Prima de Servicios?",
+    "Paga oportunamente la prima de servicios?",
+    "Fecha último pago",
+    "5.3.2. CESANTÍAS E INTERESES A LAS CESANTIAS",
+    "Consignó las cesantías a los Fondos autorizados por el trabajador?",
+    "Fecha de Consignación a los fondos",
+    "Pagó oportunamente los intereses de cesantías al trabajador ?",
+    "5.3.3. CALZADO Y VESTIDO DE LABOR",
+    "Fecha de la última entrega de calzado y vestido de labor?",
+    "El empleador hace entregas completas del calzado y vestido de labor?",
+    "Cual es la periodicidad en meses en que el empleador entrega el calzado y vestido de labor"
+  ],
+  "5.4": [
+    "Concede vacaciones en los términos de art. 187 del C.S.T.?",
+    "Incluye el sábado la Jornada Laboral?",
+    "Lleva registro de vacaciones?",
+    "Compensa vacaciones durante la vigencia de los contratos?",
+    "Compensa o indemniza vacaciones a la terminación de los contratos?",
+    "En la empresa se acumulan vacaciones para algunos/as trabajadores/as. (Deben respetarse los mínimos dias que se debe otorgar (6))",
+    "Existe recurrencia en la acumulación de más de dos periodos de vacaciones?",
+    "Número de personas presentan vacaciones acumuladas"
+  ],
+  "5.5": [
+    "5.5.1. EN RELACIÓN CON LOS APORTES AL SISTEMA DE SEGURIDAD SOCIAL INTEGRAL",
+    "El empleador efectúa aportes son destinos a los sistemas de salud, pensión y riesgos laborales?",
+    "El empleador efectúa aportes parafiscales (con destino al Sena, ICBF y Caja de Compensación Familiar?",
+    "El empleador realiza el pago oportuno de los aportes al sistema de seguridad social integral?",
+    "Cuál es el valor de la nómina sobre la cual aporta?",
+    "La nómina sobre la cual se aporta corresponde a la real?",
+    "Fecha de la última nómina sobre la cual se efectuaron los aportes al Sistema",
+    "5.5.2. Afiliación y aporte Empresa Prestadora de Salud (EPS)- SISTEMA GENERAL DE SEGURIDAD SOCIAL EN SALUD",
+    "Afilia al trabajador/a desde su vinculación?",
+    "El aporte se cotiza sobre el salario real devengado?",
+    "5.5.3. Afiliación y aporte fondo de pensiones (EPS)- SISTEMA GENERAL DE PENSIONES",
+    "Afilia al trabajador/a desde su vinculación? Si",
+    "5.5.4. Afiliación y aporte a Administradora de Riesgos Laborales- SISTEMA GENERAL DE RIESGOS LABORALES",
+    "Nombre A.R.L. que está afiliada la Empresa",
+    "Fecha de Afiliación a la ARL",
+    "Ultima fecha de consignación de Aportes para la ARL",
+    "Número de meses consignados",
+    "La nómina sobre la cual se aporta corresponde al pago real por concepto de salarios",
+    "5.5.5. Afiliación y aporte a CAJA DE COMPENSACION FAMILIAR",
+    "Tiene afiliados sus trabajadores/as a una Caja de Compensación familiar",
+    "Nombre de la Caja de Compensación",
+    "6 CONDICIONES LABORALES DE LOS TRABAJADORES A LA LUZ DE LAS NORMAS INDIVIDUALES"
+  ],
+  "6.1": [
+    "Trabajadores que asisten a los centros de trabajo del empleador",
+    "Trabajadores que se encuentran en la modalidad de teletrabajo autónomo",
+    "Trabajadores que se encuentran en la modalidad de teletrabajo suplementario",
+    "Trabajadores que se encuentran en la modalidad de trabajo remoto"
+  ],
+  "6.2": [
+    "Primer tipo de horario o único que se encuentra adoptado",
+    "Segundo tipo de horario (que se encuentra adoptado)",
+    "Tercer tipo de horario (que se encuentra adoptado)",
+    "Implementa horarios y jornadas de trabajo flexible para trabajadores/as con cargas de cuidado?",
+    "6.2.1. TRABAJO SUPLEMENTARIO",
+    "Número de trabajadores/ras que laboran horas extras",
+    "Número de horas extras semanales laboradas:",
+    "Tienen autorización para laborar Horas Extras por parte del Ministerio del Trabajo?",
+    "Numero y fecha de la resolución",
+    "se encuentra vigente?",
+    "¿Lleva registro diario de trabajo suplementario?",
+    "¿Entrega el empleador al trabajador una relación de las horas extras laboradas con las especificaciones legales",
+    "Se reconoce pago por recargo nocturno conforme a la Ley ?",
+    "Implementó reducción horaria según ley 2101 de 2021?",
+    "¿Explique Implementó reducción horaria según ley 2101 de 2021?",
+    "¿Aplica Ley de desconexión laboral? (Ley 2191 de 2022)",
+    "6.2.2. DESCANSOS REMUNERADOS",
+    "Se trabaja en dominical y/o festivo?",
+    "El trabajo dominical es Ocasional o permanente?",
+    "Concede descanso dominical y/o festivos remunerados?",
+    "Los liquida y paga con los recargos legales?"
+  ],
+  "6.3": [
+    "De acuerdo con la Ley, la Empresa está obligada a adoptar Reglamento Interno de Trabajo",
+    "Fecha de expedición",
+    "El reglamento incluye un procedimiento para sancionar que garantiza el debido proceso?",
+    "Contiene la adenda de la Ley 1010 de 2006",
+    "El reglamento de trabajo está publicado esta publicado en todas las sedes de trabajo?",
+    "Se dio término para observaciones",
+    "El reglamento incluye lo establecido por la Ley 2365 de 2024 (acoso sexual)",
+    "PARTE CUARTA: CUMPLIMIENTO DE NORMAS SOBRE ENFOQUE DE GENERO",
+    "7 INSPECCIÓN CON ENFOQUE DIFERENCIAL DE GENERO"
+  ],
+  "7.1": [
+    "Tiene trabajadores/as mayores de 57 años mujeres y/o mayores de 62 años hombres?",
+    "¿Cuenta con el Certificado de Sello Amigable Adulto Mayor? (artículo 7 de la Ley 2040 del 2020)",
+    "¿Cuenta con el sello EQUIPARES?",
+    "¿Cuenta con sello “segundas oportunidades”? (Ley 2208 de 2022)",
+    "¿Laboran mujeres víctimas de violencias de género?",
+    "¿Se encuentra inscrito/a para recibir la deducción tributaria respectivo? (Ley 1257 de 2008 y Decreto 2733 de 2012)",
+    "Cuenta con el sello de igualdad de género?",
+    "existe documento por escrito del compromiso de igualdad de genero?",
+    "existe comité de igualdad de genero?",
+    "desarrolla capacidades de genero de alta gerencia y del personal?",
+    "Desarrolla un diagnostico organizar de genero?",
+    "Adopta una política y un plan de acción para la igualdad de genero?",
+    "toma acciones para la mejora continua y mantener el sello de igualdad de genero?"
+  ],
+  "7.2": [
+    "¿Con base en la normatividad legal vigente, el sexo o el género constituyen un requisito para acceder a ciertos cargos de la empresa (establecimiento, organización, Institución)?",
+    "¿Solicitan a las personas oferentes llenar algún formulario de solicitud de empleo o similar?",
+    "¿Los requisitos para acceder a ciertos cargos se aplican de manera igualitaria a la totalidad de las personas aspirantes?",
+    "¿Tienen un formato de preguntas para las entrevistas? Verificar formato",
+    "¿La empresa (establecimiento, organización, Institución), indaga sobre la orientación sexual o identidad de género de la persona postulante? (Si la respuesta es afirmativa ¿con qué fin?)",
+    "¿En la entrevista se realizan preguntas en relación con la composición familiar, planificación familiar, la maternidad, hijos/as/es y en general sobre los planes de vida reproductivos?",
+    "¿La empresa ordena la práctica de prueba de embarazo o pruebas serológicas como requisito para ingresar a laborar?"
+  ],
+  "7.3": [
+    "¿Cuenta con mecanismos como protocolos para identificar, prevenir y atender conductas de acoso laboral en el lugar de trabajo?",
+    "¿Cuáles son los mecanismos para identificar, prevenir y atender conductas de acoso sexual laboral en el lugar de trabajo?",
+    "¿Ha desarrollado campañas para erradicar todo acto de discriminación y violencia contra las mujeres o personas LGBTI en el establecimiento? ¿Cuáles?",
+    "¿Cuenta con una política institucional contra las violencias de género en el trabajo incluidas el acoso sexual? ¿Cuál?",
+    "¿En cuanto a los procesos disciplinarios por casos de acoso laboral o sexual, cuenta con los protocolos para su atención, su respectiva divulgación y se garantiza la confidencialidad de los casos reportados e \r\nincluyen el seguimiento por parte de ARL, EPS y/o la entidad que corresponda? ¿Cuáles son los\r\nprotocolos?",
+    "¿Se hacen exigencias de uso de vestimenta, uniformes u otras características de presentación personal diferenciada para las mujeres?",
+    "¿Cuántos procesos disciplinarios tiene o ha tenido en los últimos 5 años relacionados con acoso laboral donde la víctima sea una mujer o persona LGBTIQ+?",
+    "¿Cuántos procesos disciplinarios tiene o ha tenido en los últimos 5 años relacionados con acoso sexual o violencia de género donde la víctima sea una mujer o persona LGBTIQ+?"
+  ],
+  "7.4": [
+    "¿La empresa promueve estrategias para que las mujeres accedan a cargos altamente masculinizados y viceversa? ¿Cuáles?",
+    "¿Existen mujeres en puestos de supervisión o puestos de toma de decisiones? ¿Cuáles puestos?",
+    "Número de mujeres en estos puestos",
+    "Número de hombres en estos puestos"
+  ],
+  "7.5": [
+    "¿El área de Recursos Humanos incorpora en sus procesos de capacitación la perspectiva de género? Explicar",
+    "¿Existe participación paritaria en los espacios de capacitación?",
+    "¿En qué horario/jornadas se realizan los procesos de capacitación?",
+    "Adelanta programas de recreación y/o capacitación de acuerdo con el Art. 21 Ley 50 de 1990 ¿Cuáles?",
+    "Horarios de realización",
+    "Adelanta programas integrales de bienestar ¿Cuáles?",
+    "Adelanta programas de formación ¿Cuáles?"
+  ],
+  "7.6": [
+    "¿El empleador/a respeta el fuero de maternidad y el fuero de paternidad? (esto se puede verificar con las personas trabajadoras de la empresa)",
+    "¿Se otorgan a las trabajadoras que lo requieran los descansos remunerados para amamantar a su hijo/a, durante los primeros 2 años de edad?",
+    "¿Cuentan las instalaciones con espacios físicos acondicionados y dignos para las mujeres trabajadoras en estado de embarazo y período de lactancia? (Verificar la sala de lactancia y demás instalaciones)",
+    "¿El establecimiento permite y aprueba que la madre tome la licencia de maternidad flexible de medio tiempo (licencia parental compartida)? seleccionado y/o que comparte las últimas 6 semanas de su licencia con el padre del menor)(Ley 2114 DE MATERNIDAD COMPLETA de 2021)",
+    "¿La empresa (establecimiento, organización, Institución) permite y aprueba licencias de paternidad de acuerdo con la norma? (Aportar solicitudes presentadas el último año)",
+    "Cuanto Tiempo (Diferenciar sí se aplican términos de una convención colectiva o los términos legales)",
+    "El empleador/a permite horarios flexibles para las madres cabeza de familia o cuidadoras de personas en situación de discapacidad"
+  ],
+  "7.7": [
+    "¿Incorpora en los manuales, procedimientos, formatos, instructivos y guías, lenguaje incluyente y no sexista, así como en todo tipo de comunicaciones?",
+    "Las convocatorias para la selección de personal contienen lenguaje claro con descripción del cargo, sin distinción del sexo, en el que se visibilice el género femenino, masculino, no binario, personas con \r\norientación sexual diversa e identidades de género por igual.",
+    "¿En las comunicaciones de la empresa (establecimiento, organización, institución) se utiliza un lenguaje neutral en cuanto al género, evitando el uso de términos que impliquen una referencia específica a un género, como, por ejemplo: \"personal\", \"la auditoría\", \"la ciudadanía\", \"la persona\"?",
+    "Hay uso de imágenes publicitarias libres de connotaciones o estereotipos sexistas",
+    "Se tiene practicas al interior de la organización, dirigidas a evitar comentarios o bromas sexistas",
+    "PARTE QUINTA: CUMPLIMIENTO DE NORMAS LABORALES DE NATURALEZA COLECTIVA",
+    "8 INSPECCIÓN EN NORMAS DE DERECHO COLECTIVO"
+  ],
+  "8.1": [
+    "¿Existen organizaciones sindicales ?",
+    "Número de trabajadores/as afiliados a las organizaciones sindicales",
+    "Numero de trabajadores/ras NO sindicalizados"
+  ],
+  "8.2": [
+    "¿Existe Convención Colectiva? (revisar soportes) No",
+    "Fecha de depósito de la última convención",
+    "Número de trabajadores/as beneficiarios de convención colectiva:"
+  ],
+  "8.3": [
+    "¿Existe Pacto Colectivo?",
+    "Fecha de depósito del pacto colectivo",
+    "Fecha de inicio de la negociación del pacto colectivo",
+    "Fecha de culminación de la negociación del pacto colectivo",
+    "¿Los pactos colectivos o planes de beneficios son superiores a la convención colectiva? (Realizar verificación)",
+    "Número de trabajadores/as beneficiarios de pacto colectivo:"
+  ],
+  "8.4": [
+    "¿Existe Laudo Arbitral ?",
+    "Fecha de Vigencia:",
+    "Número de trabajadores/as beneficiarios de Laudo arbitral"
+  ],
+  "8.5": [
+    "¿Existe contrato sindical?",
+    "Objeto del contrato sindical",
+    "Número de trabajadores vinculados por contrato sindical",
+    "PARTE SEXTA: CUMPLIMIENTO DE NORMAS SOBRE RIESGOS LABORALES",
+    "9 RIESGOS LABORALES"
+  ],
+  "9.1": [
+    "El empleador realizó y registró la autoevaluación de los estándares mínimos, así como el plan de mejora del SG-SST en la página web del Ministerio del Trabajo. Especifique la fecha de reporte 27/03/2025(Verifique los resultados del reporte emitido). Resolución 0312 Art. 28 Parágrafo 2)",
+    "¿Se cuenta con recursos financieros, (presupuesto), asignados para el desarrollo de actividades y entrega de elementos en lo relacionado con el SG-SST (el diseño, implementación, revisión evaluación y mejora de las medidas de prevención y control, para la gestión eficaz de los peligros). Decreto 1072 de 2015 Art. 2.2,4,6,8 numeral 4",
+    "Cuenta con informe (s) anual (es), sobre el avance del plan de mejoramiento conforme a la autoevaluación de los estándares mínimos, teniendo en cuenta las recomendaciones de la Administradora de Riesgos Laborales. Especifique la fecha del informe. (Verifique, recomendaciones dela ARL y el cronograma de implementación). Resolución 0312 de 2019 Art.28",
+    "Se encuentra conformado, vigente, capacitado y operativo el COPASST o vigía de SST. (Ver actas de conformación, compromisos y ejecución en actas de reunión del último año). Fecha de conformación \r\nResolución 2013 de 1986 Art. 2, 11",
+    "Fecha de última reunión",
+    "Se encuentra conformado, vigente, capacitado y operativo el Comité de Convivencia Laboral. (Ver actas de conformación, de reuniones del último año e informes de gestión en el marco de sus funciones). Resolución 652 de 2012 Art. 2,5 al 8,10,11 y Resolución 1356 de 2012",
+    "Fecha de conformación",
+    "Elabora y ejecuta el programa de capacitación en promoción y prevención, que incluye los peligros/riesgos prioritarios y las medidas de prevención y control, extensivo a todos los niveles de la organización (Verificar que el programa de capacitación esté dirigido a los peligros identificados en la matriz de Identificación de peligros, evaluación y valoración de riesgos). Decreto 1072 de 2015 Art. 2,2,4,6,8 numeral 9 párrafo 3; Art. 2,2,4,6,11",
+    "Elabora y ejecuta un plan de prevención, preparación y respuesta ante emergencias que identifique las amenazas, evalúe y analice la vulnerabilidad. (Verificar el plan, divulgación, planos, señalización, asignación de recursos) Decreto 1072 de 2015 Art. 2,2,4,6,25",
+    "Se encuentra conformada, vigente, capacitada y operativa la brigada de emergencias. (ver evidencias de conformación, capacitación e informes del último año). Decreto 1072 de 2015 Art. 2,2,4,6,25 numeral 2,6,9, 11 al 13 Ley 1562 de 2012 Art. 11 numeral 1 literal d)",
+    "Se encuentra el registro, la estadística, las investigaciones y lecciones aprendidas de los incidentes, accidentes de trabajo y enfermedades laborales diagnosticadas en el último año? (Verificar equipo investigador, tiempo inicio investigación, acciones definidas para evitar accidentes y enfermedades)\r\nResolución 1401 de 2007,",
+    "Se encuentra el registro de los exámenes medico ocupacionales y seguimiento a los estados de salud de las personas trabajadoras del último año. (Verificar aleatoriamente protocolos de evaluación, concepto \r\nde aptitud médica y comunicación de los resultados al trabajador) Resolución 2346 de 2007",
+    "Se cuenta con la Identificación de Peligros, Evaluación y Valoración del Riesgo y definición de controles. (Verifique la matriz de IPEVR por lo menos 2 actividades de control del riesgo). Decreto 1072 de 2015 SI\r\nArt. 2,2,4,6,15; Art. 2,2,4,6,23; Art. 2,2,4,6,24",
+    "En las instalaciones del centro de trabajo se cuenta con el número de servicios sanitarios diferenciados (separados por sexos) según la población y vestidores debidamente habilitados, suficientes (1 por cada \r\n15 trabajadores) , limpios y con insumos para la higiene. Resolución 2400 de 1979 Art. 17",
+    "Cuenta las instalaciones con puestos de trabajo apropiados para las personas trabajadoras (administrativo, operativo), incluidas las mujeres trabajadoras en estado de embarazo. (Se debe revisar el estudio de puesto de trabajo avalado por la ARL).Decreto 1072 de 2015 Art. 2,2,1,5,9 numeral 3",
+    "Cuentan las instalaciones con espacios físicos acondicionados con las medidas adecuadas de higiene y elementos de preservación de la leche materna para las mujeres trabajadoras en período de \r\nlactancia.Resolución 2400 de 1979 Art. 17 al 45. Ley 2306 de 2023",
+    "¿Se tienen en cuenta las recomendaciones y/o restricciones médicas de las personas trabajadoras durante sus actividades, incluyendo restricciones medicas o los casos de mujeres en estado de embarazo? Verificar casos. Resolución 2346 de 2007 Art.4",
+    "Está incluido el programa de prevención y protección contra caída en alturas de conformidad con la Resolución 4272 de 2021, así como las medidas necesarias para la identificación, evaluación y control.",
+    "En caso de ocurrencia de accidente mortal se adelantó investigación por parte del empleador y del Comité de Seguridad y Salud en el Trabajo o el Vigía Ocupacional, según sea el caso, dentro de los  quince (15) días calendario siguientes a la ocurrencia de la muerte. Resolución 1401 de 2007",
+    "Se realizan evaluaciones médicas de las que trata el Art. 5 Resolución 2346 de 2007, de acuerdo con el tipo, magnitud y frecuencia de exposición a cada factor de riesgo, así como al estado de salud del SI\r\ntrabajador?"
+  ],
+  "9.2": [
+    "Se entregan los EPP a las personas trabajadoras de acuerdo con los peligros identificados, evaluación y valoración de los riesgos, para protegerlos contra posibles daños a su salud o su integridad física derivados de la exposición en el lugar de trabajo. Decreto 1072 de 2015 Art. 2,2,4,6,24 numeral 5; Art.2,2,4,6,12 numeral 8",
+    "Se realiza capacitación sobre el uso adecuado de los EPP (dispositivos, accesorios y vestimentas) Decreto 1072 de 2015 Art. 2,2,4,6,24 numeral 5 parágrafo 1",
+    "Se realiza reposición de los EPP oportunamente, conforme al desgaste y condiciones de uso de los mismos",
+    "La empresa (establecimiento, organización, Institución), ha evaluado si los elementos de protección personal se ajustan a las características de sexo y capacidades diversas de las personas trabajadoras personal se ajustan a las características de sexo y capacidades diversas de las personas trabajadoras"
+  ],
+  "9.3": [
+    "¿La empresa ha incluido dentro de la matriz de identificación de peligros, evaluación y valoración de riesgos, el riesgo psicosocial, además de los que se presentan al interior de la organización, también los\r\nque se generan en casa, implementando las medidas de prevención, actuación e intervención \r\nnecesarias dentro del plan anual del SGSST? Decreto 1072 de 2015 Art. 2,2,4,6,15, Resolución 2646 de\r\n2008",
+    "Se implementan las guías, protocolos de intervención, prevención y actuación de los riesgos psicosociales conforme los resultados de la aplicación de la Batería de Riesgo Psicosocial? Resolución SI\r\n2764 de 2022 Art.1; Resolución 2646 de 2008 Art. 13",
+    "¿Se ha realizado la evaluación con la Batería de Riesgo Psicosocial con la periodicidad establecida de acuerdo al nivel de riesgo de la empresa? Resolución 2764 de 2022 Art. 3",
+    "¿El empleador tiene establecidas y desarrolla acciones para atender la prestación de los primeros auxilios psicológicos? Resolución 2764 de 2022 Art. 7 numeral 2",
+    "Se encuentra el registro de la identificación del riesgo psicosocial y de las acciones realizadas para la promoción, prevención, intervención y control, así como medidas preventivas del acoso laboral del último año. Resolución 2646 de 2008 Art. 12, 14, 16 y 17"
+  ]
+}

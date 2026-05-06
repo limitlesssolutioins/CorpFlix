@@ -114,10 +114,11 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Nacimiento</label>
-                <input type="date" name="birthDate" defaultValue={employee.birthDate?.split('T')[0]} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                <input type="date" name="birthDate" defaultValue={employee.birthDate ? new Date(employee.birthDate).toISOString().split('T')[0] : ''} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Género</label>
+
                 <select name="gender" defaultValue={employee.gender} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium">
                   <option value="">Seleccione...</option>
                   <option value="M">Masculino</option>

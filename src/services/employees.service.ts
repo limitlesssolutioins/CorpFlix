@@ -78,6 +78,17 @@ export class EmployeesService {
         );
     }
 
+    private safeDate(d: any) {
+        if (!d) return null;
+        const parsed = new Date(d);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    private safeStr(s: any) {
+        if (s === undefined || s === null || s === '') return null;
+        return s;
+    }
+
     async create(data: any) {
         const companyId = await this.getCompanyContext();
         const id = uuidv4();
@@ -99,17 +110,17 @@ export class EmployeesService {
 
         const rawParams = [
             id, companyId, data.firstName, data.lastName, data.identification, data.documentType || 'CC',
-            data.documentExpeditionCity, data.birthDate ? new Date(data.birthDate) : null, data.gender, data.bloodType, data.email, data.phone,
-            data.address, data.city, data.bankName, data.bankAccountType, data.bankAccountNumber,
-            data.emergencyContactName, data.emergencyContactPhone, data.contractType, data.contractNumber,
-            data.startDate ? new Date(data.startDate) : null, data.contractEndDate ? new Date(data.contractEndDate) : null,
+            this.safeStr(data.documentExpeditionCity), this.safeDate(data.birthDate), this.safeStr(data.gender), this.safeStr(data.bloodType), this.safeStr(data.email), this.safeStr(data.phone),
+            this.safeStr(data.address), this.safeStr(data.city), this.safeStr(data.bankName), this.safeStr(data.bankAccountType), this.safeStr(data.bankAccountNumber),
+            this.safeStr(data.emergencyContactName), this.safeStr(data.emergencyContactPhone), this.safeStr(data.contractType), this.safeStr(data.contractNumber),
+            this.safeDate(data.startDate), this.safeDate(data.contractEndDate),
             data.isIntegralSalary ? 1 : 0, data.salaryAmount ? Number(data.salaryAmount) : 0, data.salaryScheme || 'FIJO',
-            data.payrollGroup, data.costCenter, data.contributorType || '01', data.contributorSubtype || '00', data.healthFund,
-            data.healthFundPercentage ? Number(data.healthFundPercentage) : 4, data.pensionFund,
-            data.pensionFundPercentage ? Number(data.pensionFundPercentage) : 4, data.severanceFund,
-            data.compensationFund, data.arl, data.riskClass || 'I', data.ciiuCode, data.standardStartTime,
-            data.standardEndTime, data.standardStartTime2, data.standardEndTime2, data.workDays,
-            data.defaultSiteId, data.defaultPositionId, data.teamId, 1
+            this.safeStr(data.payrollGroup), this.safeStr(data.costCenter), data.contributorType || '01', data.contributorSubtype || '00', this.safeStr(data.healthFund),
+            data.healthFundPercentage ? Number(data.healthFundPercentage) : 4, this.safeStr(data.pensionFund),
+            data.pensionFundPercentage ? Number(data.pensionFundPercentage) : 4, this.safeStr(data.severanceFund),
+            this.safeStr(data.compensationFund), this.safeStr(data.arl), data.riskClass || 'I', this.safeStr(data.ciiuCode), this.safeStr(data.standardStartTime),
+            this.safeStr(data.standardEndTime), this.safeStr(data.standardStartTime2), this.safeStr(data.standardEndTime2), this.safeStr(data.workDays),
+            this.safeStr(data.defaultSiteId), this.safeStr(data.defaultPositionId), this.safeStr(data.teamId), 1
         ];
 
         const params = rawParams.map(p => p === undefined ? null : p);
@@ -130,8 +141,8 @@ export class EmployeesService {
         const setClause = fields.map(field => `${field} = ?`).join(', ');
         const rawParams = fields.map(field => {
             let value = updateData[field];
-            if (['birthDate', 'startDate', 'contractEndDate'].includes(field) && value) {
-                return new Date(value);
+            if (['birthDate', 'startDate', 'contractEndDate'].includes(field)) {
+                return this.safeDate(value);
             }
             if (field === 'salaryAmount' && value !== undefined && value !== null) {
                 return Number(value);
@@ -139,6 +150,7 @@ export class EmployeesService {
             if (field === 'isIntegralSalary' && value !== undefined && value !== null) {
                 return value ? 1 : 0;
             }
+            if (value === '') return null;
             return value;
         });
 
@@ -174,7 +186,7 @@ export class EmployeesService {
         `;
         const params = [
             id, employeeId, data.title, data.category, data.fileUrl,
-            data.expiryDate ? new Date(data.expiryDate) : null
+            this.safeDate(data.expiryDate)
         ];
         await query(sql, params);
         const docs = await query<any[]>('SELECT * FROM EmployeeDocument WHERE id = ?', [id]);

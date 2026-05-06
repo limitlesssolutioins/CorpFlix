@@ -15,7 +15,7 @@ interface GlobalKPIs {
 
 const ICONS: Record<string, any> = {
     ISO9001: ShieldCheck, ISO14001: Leaf, ISO45001: HardHat,
-    RES0312: HardHat, ISO27001: Lock, ISO39001: Car,
+    RES0312: HardHat, ISO27001: Lock, ISO39001: Car, PESV: Car,
 };
 
 export default function AuditoriaPage() {

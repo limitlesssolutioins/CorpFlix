@@ -1,0 +1,34 @@
+Estado Actual:
+   1. Núcleo Sólido: Tienes una buena base para Recursos Humanos y Turnos. El esquema de base de datos cubre empleados, turnos, ausencias, asistencia y configuración básica de
+      nómina.
+   2. Tecnología Moderna: Usas Next.js 15, React 19, Tailwind, MySQL y librerías potentes como react-big-calendar y reactflow. Tienes integración con Gemini AI (@google/generative-ai).
+   3. Faltantes Críticos para una App "Real" (SaaS):
+       * Gestión/BPM (Procesos): No existe en la base de datos. Probablemente es solo frontend (reactflow) sin persistencia.
+       * Multi-tenant (SaaS): El sistema actual está diseñado para una sola empresa (tabla SystemConfiguration única). Para venderlo a Pymes y Corps, necesitamos aislar los datos por Organization o
+         Tenant.
+       * Autenticación: No veo un sistema de login robusto (NextAuth/Auth.js) ni tablas de User con roles y contraseñas (solo Employee).
+
+  Propuesta de Plan de Trabajo (Roadmap):
+
+  Vamos a transformar esto de un "Gestor de Turnos Local" a un "Sistema Operativo Corporativo (SaaS)".
+
+  🚀 Fase 1: Arquitectura SaaS y Seguridad (Cimientos)
+  Objetivo: Que múltiples empresas puedan usar la app de forma segura y aislada.
+   1. Autenticación: Implementar Auth.js (NextAuth). Separar el concepto de User (login) del de Employee (datos de RRHH).
+   2. Multi-tenancy: Crear el modelo Organization en la base de datos y vincular todos los datos (Empleados, Turnos, Procesos) a una organización.
+   3. Roles y Permisos: Definir roles (Admin, Gestor, Empleado) para controlar el acceso a módulos.
+
+  🧠 Fase 2: Módulo de Gestión Inteligente (BPM & Calidad)
+  Objetivo: El valor diferencial. No solo dibujar procesos, sino generarlos y gestionarlos.
+   1. Persistencia BPM: Crear modelos Process, Step, Risk, Indicator en la base de datos.
+   2. Motor de Procesos (AI): Conectar ProcessAIWizard con Gemini para que el usuario diga "Proceso de ventas" y la AI genere el diagrama BPMN + Matriz de Riesgos + Indicadores automáticamente.
+   3. Gestor Documental: Vincular documentos reales a los pasos del proceso.
+
+  👥 Fase 3: RRHH y Nómina Avanzada
+  Objetivo: Automatización real para Pymes.
+   1. Motor de Nómina: Crear el servicio que tome los Turnos + Ausencias + Configuración y calcule la nómina real (Devengado, Deducido, Neto).
+   2. Centro de Comandos: Un dashboard donde el gerente vea: "¿Quién falta hoy?", "¿Cuánto me cuesta la operación este mes?", "¿Qué riesgos están activos?".
+
+  💰 Fase 4: Financiero y Estrategia
+   1. Presupuestos: Módulo simple para asignar presupuestos a áreas.
+   2. Estrategia: Matriz DOFA y BSC (Balanced Scorecard) conectada a los indicadores de los procesos.

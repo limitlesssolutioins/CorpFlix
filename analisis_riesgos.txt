@@ -1,0 +1,388 @@
+====================================================================================================
+HOJA: CRITERIOS
+====================================================================================================
+
+Dimensiones: 47 filas x 12 columnas
+
+Fila 2: Col1: PROBABILIDAD
+Fila 3: Col1: 1. REMOTA | Col2: El evento no ha ocurrido, pero puede suceder únicamente en casos extremos.
+Fila 4: Col1: 2. BAJA | Col2: El evento puede suceder y ha ocurrido en organizaciones similares, por lo menos 1 vez al año.
+Fila 5: Col1: 3. MEDIA | Col2: El evento puede suceder y ha ocurrido en la organización, por lo menos 1 vez al año.
+Fila 6: Col1: 4. ALTA | Col2: El evento puede suceder con facilidad, por lo menos 1 vez al mes.
+Fila 7: Col1: 5. MUY ALTA | Col2: El evento sucede frecuentemente, al menos 1 vez a la semana.
+Fila 9: Col2: CONSECUENCIA - CALIDAD | Col4: CONSECUENCIA - SST | Col6: CONSECUENCIA - AMBIENTAL
+Fila 10: Col1: 1. INSIGNIFICANTE | Col2: Efecto mínimo sobre el producto o servicio; se pueden generar no conformidades internas, sugerencia manifestada por el cliente para la mejora. | Col4: Ninguna lesión y/o enfermedad laboral. | Col6: Efectos menores en área mínima, de poca importancia.
+Fila 11: Col1: 2. BAJA | Col2: Efecto bajo sobre el producto o servicio; se pueden generar solicitudes de informes por parte de autoridades de inspección y vigilancia, observación del cliente para alertar sobre una futura queja.  | Col4: Lesiones leves o con primeros auxilios o con tratamiento médico, sin incapacidad o con incapacidad de 1 día. | Col6: Efectos moderados, de corto plazo (menor a 1 año) pero que no afectan la función del ecosistema.
+Fila 12: Col1: 3. MEDIA | Col2: Efecto moderado sobre el producto o servicio; se pueden generar demandas o tutelas, insatisfacción manifestada como queja del cliente. | Col4: Accidentes de Trabajo y/o Enfermedades Laborales con Incapacidad temporal mayor a 1 día. | Col6: Efectos moderados o graves, en mediano plazo (entre 1 y 5 años) que afectan la función del ecosistema.
+Fila 13: Col1: 4. ALTA | Col2: Efecto alto sobre el producto o servicio, interrupción de operaciones del negocio; insatisfacción manifestada como queja del cliente. | Col4: Accidentes de Trabajo y/o Enfermedades Laborales con Incapacidad permanente- parcial o total. | Col6: Efectos graves, en el largo plazo (más de 5 años) que afectan la función del ecosistema.
+Fila 14: Col1: 5. SIGNIFICATIVA | Col2: Efecto catastrófico sobre el producto o servicio, inhabilidad para continuar las operaciones normales de la organización; insatisfacción total y pérdida del cliente. | Col4: Una o más fatalidades por  accidentes de trabajo y/o enfermedades laborales. | Col6: Efectos con impacto significativo (irreversibles) sobre especies de alto valor, hábitat o ecosistemas.
+Fila 15: Col9: FACTOR DE CONVERSIÓN DEL RIESGO INHERENTE
+Fila 16: Col1: VALORACIÓN DEL NIVEL DEL RIESGO INHERENTE | Col9: NIVEL DE RIESGO INHERENTE | Col10: CONVERSIÓN
+Fila 17: Col1: CONSECUENCIA | Col2: 5. SIGNIFICATIVA | Col3: 5. BAJO | Col4: 10. MEDIO | Col5: 15. MEDIO | Col6: 20. ALTO | Col7: 25. MUY ALTO | Col9: MUY BAJO 
+(Entre 1 y 4) | Col10: 1
+Fila 18: Col2: 4. ALTA | Col3: 4. MUY BAJO | Col4: 8. BAJO | Col5: 12. MEDIO | Col6: 16. ALTO | Col7: 20. ALTO | Col9: BAJO 
+(Entre 5 y 8) | Col10: 2
+Fila 19: Col2: 3. MEDIA | Col3: 3. MUY BAJO | Col4: 6. BAJO | Col5: 9. MEDIO | Col6: 12. MEDIO | Col7: 15. MEDIO | Col9: MEDIO
+(Entre 9 y 15) | Col10: 3
+Fila 20: Col2: 2. BAJA | Col3: 2. MUY BAJO | Col4: 4. MUY BAJO | Col5: 6. BAJO | Col6: 8. BAJO | Col7: 10. MEDIO | Col9: ALTO 
+(Entre 16 y 20) | Col10: 4
+Fila 21: Col2: 1. INSIGNIFICANTE | Col3: 1. MUY BAJO | Col4: 2. MUY BAJO | Col5: 3. MUY BAJO | Col6: 4. MUY BAJO | Col7: 5. BAJO | Col9: MUY ALTO 
+(Igual a 25) | Col10: 5
+Fila 22: Col1: NIVEL DE RIESGO INHERENTE | Col3: 1. REMOTA | Col4: 2. BAJA | Col5: 3. MEDIA | Col6: 4. ALTA | Col7: 5. MUY ALTA | Col9: Nota: Este factor de conversión quedara como casilla oculta en la matriz de riesgos para facilitar el entendimiento de la misma.
+Fila 23: Col3: PROBABILIDAD
+Fila 25: Col1: EFICACIA DEL(OS) CONTROL(ES)
+Fila 26: Col1: 1. MUY ALTA | Col2: Hay pleno entendimiento del riesgo, existen y mantienen actualizados procedimientos y programas que se divulgan de manera permanente, no se registra materialización del riesgo, debido a la eficacia de los controles actuales.
+Fila 27: Col1: 2. ALTA | Col2: Hay alto entendimiento del riesgo, existen y se mantienen actualizados procedimientos y programas que se divulgan al personal de manera regular, se ha materializado el riesgo por lo menos una (1) vez en el año.
+Fila 28: Col1: 3. MEDIA | Col2: Hay conciencia del riesgo, existen procedimientos y programas, pero no se actualizan, ni se divulgan, se ha materializado el riesgo por lo menos una vez (1) en el año.
+Fila 29: Col1: 4. BAJA | Col2: Hay algo de conciencia del riesgo, no hay procedimientos, ni programas formales, se ha materializado el riesgo por lo menos una (1) vez en el año.
+Fila 30: Col1: 5. MUY BAJA | Col2: No hay ninguna conciencia del riesgo, no existen procedimientos, ni programas, se ha materializado el riesgo muchas veces en el año.
+
+
+====================================================================================================
+HOJA: Riesgos de Calidad
+====================================================================================================
+
+Dimensiones: 17 filas x 3 columnas
+
+Fila 1: Col1: TIPO Y DESCRIPCIÓN DEL RIESGO | Col2: GENERADO POR/  
+CAUSADO POR  | Col3: POSIBLE IMPACTO/ CONSECUENCIA/ 
+EFECTO NO DESEADO
+Fila 2: Col1: IMAGEN: Tratamiento inadecuado de quejas, reclamos, solicitudes y sugerencias de los clientes. | Col2: Falta de formación o compromiso del personal involucrado en el servicio al cliente. | Col3: Pérdida del cliente, imagen o credibilidad de la organización.
+Fila 3: Col1: IMAGEN: Desconocimiento de la percepción de los clientes actuales. | Col2: Falta de gestión en la realización de encuestas para la evaluación de la satisfacción de los cleintes. | Col3: Disminución de las ventas y no identificación de oportunidades de mejor.
+Fila 4: Col1: IMAGEN: Extemporaneidad o inexactitud en la presentacion de los informes financieros (Internos y externos). | Col2: Falta de planificación del tiempo. | Col3: Sanciones legales por los entes de control y pérdida de imagen de la organización.
+Fila 5: Col1: IMAGEN: Incumplimiento en el tiempo de cotización establecido. | Col2: Talento humano incompetente o no comprometido. | Col3: Insatisfacción de los clientes y pérdida de oportunidades de negocio.
+Fila 6: Col1: LEGALIDAD: Incumplimiento de los requisitos legales y otros aplicables.  | Col2: No identificación oportuna de todos los requisitos legales y otros aplicables a la organización. | Col3: Sanciones economicas, disciplinarias, legales y judiciales, pérdida de la imagen de la organización y detrimento patrimonial.
+Fila 7: Col1: LEGALIDAD: Pérdida de procesos de contratación. | Col2: Mala interpretación de los pliegos de condiciones, documentación desactualizada (RUT, RUP, Certificado de junta de contadores, entre otros). | Col3: Disminución de los ingresos de la organización.
+Fila 8: Col1: FINANCIERO: Apropiación indebida de fondos. | Col2: Falta de controles apropiados, personas con conducta ética indeseable. | Col3: Detrimento patrimonial y/ o pérdida de imagen.
+Fila 9: Col1: FINANCIERO: Deterioro de los documentos legales. | Col2: Almacenamiento inadecuado, mala administración y manejo del archivo. | Col3: Pérdida de información y detrimento patrimonial.
+Fila 10: Col1: FINANCIERO: Falta de recursos.  | Col3: Sanciones economicas, disciplinarias, legales y judiciales, pérdida de proveedores importantes.
+Fila 11: Col1: CALIDAD: Inadecuada planeación del uso de los recursos. | Col2: Desconocimiento de la capacidad disponible de la maquinaria y/ o inadecudad planificación  de los procesos requeridos externamente. | Col3: Aumento del desperdicio de materiales, reprocesos e incumplimiento en los tiempos de entrega pactados con los clientes.
+Fila 12: Col1: CALIDAD: Direccionamiento estratégico sin implementar.  | Col2: Fallas en la comunicación al personal sobre los objetivos estrategicos de la organización o en la asignación de los recursos. | Col3: Portafolio de productos obsoleto, pérdida de participación en el mercado e insatisfacción de los clientes.
+Fila 13: Col1: CALIDAD: Pérdida de participación en el mercado. | Col2: Portafolio de productos no acorde a las necesidades del mercado, personal de ventas sin la competencia requerida, incumplimiento de los compromisos pactados con los clientes. | Col3: Disminución de los ingresos por ventas de la organización, capacidad instalada subutilizada, reducción de personal y/ o aumento en los costos fijos.
+Fila 14: Col1: CALIDAD: Documentación incompleta, desactualizada y/ u obsoleta. | Col2: Falta de conocimiento en la implementación de los requisitos y/ o falta de control de la documentación.  | Col3: Desmejoramiento del SG y errores en los procesos.
+Fila 15: Col1: CALIDAD: Incumplimiento de las especificaciones dadas por el cliente. | Col2: El software desarrollado no cumple los requisitos acordados porque no se ajusta a la capacidad del hardware del cliente. | Col3: Servicio no aceptado a conformidad, sanciones económicas y pérdida de clientes.
+Fila 16: Col1: TECNOLOGÍA: Obsolecencia de las instalaciones, maquinaria, equipos y dispositivos de sistemas. | Col2: Falta de controles apropiados o personas con conducta ética indeseable. | Col3: Atraso en entrega de productos, reprocesos, pérdidas económicas.
+Fila 17: Col1: CALIDAD: Vinculación del personal que no cumple las competencias y/o requisitos exigidos para el cargo. | Col2: Presiones indebidas en la contratación, fallas en la realización de pruebas de conocimiento y psicométricas para determinar la aptitud de los candidatos. | Col3: Errores en los procesos, pérdidas economicas, incumplimiento con la normatividad.
+
+
+====================================================================================================
+HOJA: Riesgos SST
+====================================================================================================
+
+Dimensiones: 61 filas x 3 columnas
+
+Fila 1: Col1: PELIGRO/ FACTOR DE RIESGO | Col2: GENERADO POR/ CAUSADO POR | Col3: POSIBLE EFECTO/ CONSECUENCIA
+Fila 2: Col1: BIOLÓGICO:
+Contacto con plantas urticantes | Col2: *Actividades realizadas en campo donde hay maleza. | Col3: *Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas.
+Fila 3: Col1: BIOLÓGICO:
+Fluidos o excrementos | Col2: *Contacto con fluídos corporales y secreciones. | Col3: *Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas.
+Fila 4: Col1: BIOLÓGICO:
+Microorganismos (Virus y bacterias) | Col2: *Contacto con fluídos corporales y secreciones.
+*Ingestión de alimentos/agua contaminados.
+*Retención de orina o heces por desempeño laboral fuera de la sede de la empresa.
+*Realizar labores de campo de lugares de riesgo de enfermedades de salud pública. | Col3: *Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas, muerte.
+Fila 5: Col1: BIOLÓGICO:
+Microorganismos (Virus-COVID-19) | Col2: *Contacto directo entre personas portadoras del virus CODIV-19 u objetos contaminados.
+*Contacto con fluídos corporales y secreciones. | Col3: *IRA-Infección Respiratoria Aguda de leve a grave, neumonia, alteraciones en los diferentes sistemas, muerte.
+Fila 6: Col1: BIOLÓGICO:
+Picaduras y mordeduras de animales | Col2: *Contacto con insectos, roedores, serpientes.
+*Contacto con insectos, roedores, serpientes, cuando se realizan actividades de campo. | Col3: *Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas, muerte.
+Fila 7: Col1: BIOLÓGICO: 
+Hongos | Col2: CONTRATISTAS:
+*Contacto con fluídos corporales y secreciones. | Col3: *Dermatosis, reacciones alérgicas, enfermedades infecto contagiosas, alteraciones en los diferentes sistemas, muerte.
+Fila 8: Col1: BIOMECÁNICO:
+Esfuerzos | Col2: *Levantamiento y/o traslado manual de cargas por encima del peso permisible. | Col3: *Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular.
+Fila 9: Col1: BIOMECÁNICO:
+Manipulación manual de cargas | Col2: *Levantamiento y/o traslado manual de cargas por encima del peso permisible. | Col3: *Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular.
+Fila 10: Col1: BIOMECÁNICO:
+Movimiento repetitivo | Col2: *Digitación.
+*CAD: Quitar grapas.
+*Escanear.
+*Inclinación del cuello al contestar el telefóno y atención al cliente.
+*Conducción de motocicletas y automóviles. | Col3: *Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular.
+Fila 11: Col1: BIOMECÁNICO:
+Postura forzada | Col2: *Alcazar objetivos que están ubicados fuera del alcance. | Col3: *Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular, golpes.
+Fila 12: Col1: BIOMECÁNICO:
+Postura inadecuada | Col2: *Alcazar objetivos que están ubicados fuera del alcance.
+*Labores en oficina en general.
+*Actos inseguros. | Col3: *Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular.
+Fila 13: Col1: BIOMECÁNICO:
+Postura prolongada mantenida | Col2: *Labores en oficina en general.
+*Actividades de vigilancia.
+*Conducción de vehículos y motos.
+*Traslados terretres como pasajeros. | Col3: *Desórdenes de trauma acumulativo; lesiones del sistema músculo esquelético; fatiga; alteraciones lumbares, dorsales, cervicales y sacras; alteraciones del sistema vascular.
+Fila 14: Col1: FENÓMENOS NATURALES:
+Arroyos | Col2: *Lluvias, vendavales, tormentas eléctricas, arroyos. | Col3: *Contusiones, asfixia, fracturas, amputaciones, muerte.
+Fila 15: Col1: FENÓMENOS NATURALES:
+Derrumbe | Col2: *Lluvias, vendavales, tormentas eléctricas.
+*Movimientos de tierra.
+*Excavaciones. | Col3: *Contusiones, fracturas, amputaciones, muerte.
+Fila 16: Col1: FENÓMENOS NATURALES:
+Inundación | Col2: *Lluvias, vendavales, tormentas eléctricas, arroyos. | Col3: *Contusiones, asfixia, fracturas, amputaciones, muerte.
+Fila 17: Col1: FENÓMENOS NATURALES:
+Mar de leva o marea alta | Col2: *Lluvias, vendavales, tormentas eléctricas, fuertes vientos.
+*Ubicación de las instalaciones cerca del mar.
+*Traslado vía marítima. | Col3: *Contusiones, asfixia, fracturas, amputaciones, muerte.
+Fila 18: Col1: FENÓMENOS NATURALES:
+Maremotos | Col2: *Lluvias, vendavales, tormentas eléctricas, fuertes vientos.
+*Terremotos, sismos.
+*Ubicación de las instalaciones cerca del mar.
+*Traslado vía marítima. | Col3: *Contusiones, asfixia, fracturas, amputaciones, muerte.
+Fila 19: Col1: FENÓMENOS NATURALES:
+Sismo | Col2: *Movimientos de tierra.
+*Excavaciones. | Col3: *Contusiones, fracturas, amputaciones, muerte.
+*Caída de objetos, derrumbes.
+Fila 20: Col1: FENÓMENOS NATURALES:
+Terremoto | Col2: *Movimientos de tierra.
+*Excavaciones. | Col3: *Contusiones, fracturas, amputaciones, muerte.
+Fila 21: Col1: FENÓMENOS NATURALES:
+Tormenta eléctrica | Col2: *Lluvias, tormentas, cambios atmósféricos. | Col3: *Contusiones, fracturas, amputaciones, muerte.
+*Caída de objetivos, accidentes de tránsito, perdida de visibilidad.
+Fila 22: Col1: FENÓMENOS NATURALES:
+Vendaval | Col2: *Lluvias, tormentas, cambios atmósféricos. | Col3: *Contusiones, fracturas, amputaciones, muerte.
+*Caída de objetivos, accidentes de tránsito, perdida de visibilidad.
+Fila 23: Col1: FÍSICO:
+Iluminación excesiva o deficiente | Col2: *Luminarias.
+*Luz natural. | Col3: *Fatiga visual, cefalea, disminución de la destreza y precisión, estrés, pérdida de la capacidad de visión
+Fila 24: Col1: FÍSICO:
+Presión atmosférica anormal o ajustada | Col2: *Actividades de mantenimiento a gasoductos.
+*Actividades de mantenimiento locativo (Pintura, lavado, etc.)
+*Levantamiento de planos instrumentales.
+
+CONTRATISTA:
+*Buceo en actividades de construcción o mantenimiento de líneas construidas en el lecho marino o sobre el río.
+*Trabajos en espacios confinados. | Col3: *Anormales: Afectaciones del sistema nervioso, trastornos o problemas pulmonares, muerte.
+Fila 25: Col1: FÍSICO:
+Radiaciones ionizantes, rayos X, alfa, gama y beta | Col2: CONTRATISTA:
+*Actividades de soldadura. | Col3: *Alteraciones de la piel, deshidratación, alteración en algunos tejidos blandos (ojos).
+*Heridas, golpes, contusiones, laceraciones, electrocución, lumbagos, pérdida de audición, intoxicaciones, muerte. 
+Fila 26: Col1: FÍSICO:
+Radiaciones No ionizantes láser, ultravioleta, infrarroja | Col2: *Realizar trabajos al aire libre, sol.
+*Pantallas de computador.
+*Lámparas.
+*Sistemas de radiocomunicaciones.
+*Microondas. | Col3: *Alteraciones de la piel, deshidratación, alteración en algunos tejidos blandos (ojos).
+Fila 27: Col1: FÍSICO:
+Ruido intermitente o continuo | Col2: *Uso de equipos de oficina, como impresoras y teléfonos.
+*Planta eléctrica.
+*Autogeneración.
+*Cuarto de máquinas.
+*Torre de enfriamiento.
+*Chiller.
+*Digiturno.
+*Uso de máquinas, equipos o herramientas.
+*Durante la calibración de medidores industriales con boquillas sónicas en campo. *Utilización de pistola neumática. 
+*Utilización de marcador vibrador electrónico, calibracion de equipos en laboratorio y taladro | Col3: *Fatiga auditiva, pérdida de la audición (Hipoacusia), estrés laboral.
+Fila 28: Col1: FÍSICO: 
+Temperaturas extremas frío, calor | Col2: *Aires acondicionados.
+*Altas temperaturas por exposición al sol.
+*Cambios de temperatura al entrar o salir de la oficina.
+*Fallas en el aire acondicionado. | Col3: *Disconfort térmico.
+*Afecciones respiratorias, alergias.
+*Fatiga que puede producir disminución la destreza manual y la rapidez, mareos, desmayos agravamiento de trastornos cardiovasculares.
+*Deshidratación.
+Fila 29: Col1: FÍSICO: 
+Vibración cuerpo entero o segmentado | Col2: *Uso de vehículos o motocicletas.
+*Uso de máquinas, equipos o herramientas. | Col3: *Vibraciones de cuerpo entero: Trastornos respiratorios, músculo-esqueléticos, sensoriales, cardiovasculares, efectos sobre el sistema nervioso, sobre el sistema circulatorio o sobre el sistema digestivo.
+*Vibraciones mano-brazo: Trastornos vasculares, nerviosos, musculares, de los huesos y de las articulaciones de las extremidades superiores.
+Fila 30: Col1: PSICOSOCIAL:
+Demanda de las jornadas de trabajo: Trabajo noturno, horas  extras, turnos de trabajo. | Col2: *Acumulación de trabajo.
+*Perfiles de cargo mal diseñados.
+*No remplazo de personas ausentes.
+*Supresión de cargos. | Col3: *Problemas familiares.
+*Estrés, enfermedades psicosomáticas, ansiedad y depresión.
+
+
+====================================================================================================
+HOJA: Riesgos Ambientales
+====================================================================================================
+
+Dimensiones: 58 filas x 3 columnas
+
+Fila 1: Col1: RECURSO/ ASPECTO | Col2: GENERADO POR/ CAUSADO POR | Col3: POSIBLE IMPACTO / CONSECUENCIA
+Fila 2: Col1: ACTIVIDADES ECONÓMICAS:
+Desarrollo de proyectos en nuevas áreas. | Col2: Actividades de construcción.
+Actividades de minería. | Col3: Cambio en las actividades económicas tradicionales.
+Fila 3: Col1: ACTIVIDADES ECONÓMICAS:
+Desarrollo de proyectos en nuevas áreas | Col2: Actividades de construcción.
+Actividades de minería. | Col3: Generación de empleo e ingresos.
+Fila 4: Col1: ACTIVIDADES ECONÓMICAS:
+Desarrollo de proyectos en nuevas áreas. | Col2: Actividades de construcción.
+Actividades de minería.
+Actividades de recreación. | Col3: Cambio en la demanda y oferta de bienes y servicios.
+Fila 5: Col1: ACTIVIDADES ECONÓMICAS:
+Inversión social en áreas de influencia del proyecto. | Col2: Actividades de construcción.
+Actividades de minería.
+Actividades de recreación. | Col3: Cambio en la calidad de vida de la población (infraestructura de salud, educación, recreación, deportiva, entre otros).
+Fila 6: Col1: AGUA:
+Consumo de agua. | Col2: *Uso de baños.
+*Hidratación del personal.
+*Aseo de instalaciones.
+*Uso de la cafetería. | Col3: Disminución de los recursos naturales.
+Fila 7: Col1: AGUA:
+Derrame de sustancias químicas durante el transporte, manejo y/ o almacenamiento. | Col2: *Derrame accidental de  aceites, combustibles.
+*Derrame accidental de sustancias químicas. | Col3: Cambios en las características de calidad del agua.
+Fila 8: Col1: AGUA:
+Fuga de agua. | Col2: *Ruptura de tubería.
+*Griferia o baños en mal estado. | Col3: *Disminución de los recursos naturales
+*Daño de instalacione o equipos.
+Fila 9: Col1: AGUA:
+Generación de aguas residuales domésticas. | Col2: *Uso de baños.
+*Hidratación del personal.
+*Aseo de instalaciones.
+*Uso de la cafetería. | Col3: Cambios en las características de calidad del agua.
+Fila 10: Col1: AGUA:
+Generación de aguas residuales no domésticas (hidrocarburos condensados, aceite usado, aguas aceitosas, residuos de sustancias químicas, etc.). | Col2: *Uso de sustancias químicas.
+*Uso de combustibles y aceites. | Col3: Cambios en las características de calidad del agua.
+Fila 11: Col1: AGUA:
+Generación de residuos sólidos aprovechables. | Col2: *Desechar papel después de imprimir o escribir.
+*Desechar después de su uso cajas de cartón, bolsas y botellas plásticas.
+*Actividades de contrucción o limpieza (Metales y chatarra). | Col3: Cambios en las características de calidad del agua.
+Fila 12: Col1: AGUA:
+Generación de residuos sólidos especiales. | Col2: *Actividades de construcción y demolición (Escombros).
+*Instalación de tuberías (Restos de tuberías).
+*Desechar chatarra, llantas.
+*Tala o poda de árboles. | Col3: Cambios en las características de calidad del agua.
+Fila 13: Col1: AGUA:
+Generación de residuos sólidos ordinarios. | Col2: *Alimentación del personal.
+*Uso de baños.
+*Actividades en general en oficinas.
+*Aseo y limpieza de instalaciones. | Col3: Cambios en las características de calidad del agua.
+Fila 14: Col1: AGUA:
+Generación de residuos sólidos peligrosos (Incluyendo hospitalarios). | Col2: *Uso de lubricantes e hidrocarburos en general.
+*Uso de sustancias químicas.
+*Uso de impresoras (Tonner vacíos).
+*Uso de computadores (Equipos electrónicos dañados).
+*Iluminación de áreas (Lámparas en mal estado).
+*Energía con baterias para equipos (pilas usadas).
+*Uso de EPP para manipular sustancias químicas (EPP contaminados).
+*Mantenimiento de aires acondicionados (Filtros).
+*Atención médica del personal en la enfermería o uso del botiquín de primeros auxilios (Gasas usadas, algodón, guantes, medicamentos vencidos, agujas, etc.).
+*Limpieza de instrumentos y herramientas antes o después de calibración o mantenimiento. | Col3: Cambios en las características de calidad del agua.
+Fila 15: Col1: AGUA:
+Tendido de tuberías en cuerpos de agua (Lámina de agua). | Col2: *Actividades de planeación de proyectos.
+*Actividades de diseño de proyectos.
+*Actividades de construcción de proyectos. | Col3: Cambios en las características de calidad del agua.
+Fila 16: Col1: AGUA:
+Uso de cauce. | Col2: *Actividades de planeación de proyectos.
+*Actividades de diseño de proyectos.
+*Actividades de construcción de proyectos. | Col3: Modificación geomorfológica del cauce.
+Fila 17: Col1: AIRE:
+Emisión de fuentes fijas. | Col2: *Uso de máquinas y equipos para realizar las actividades.
+*Uso de planta eléctrica. | Col3: Cambios en la calidad del aire.
+Fila 18: Col1: AIRE:
+Emisión de fuentes móviles. | Col2: *Uso de vehículos, equipos y motos. | Col3: Cambios en la calidad del aire.
+Fila 19: Col1: AIRE:
+Emisión de gases efecto invernadero. | Col2: Fábricas industriales.
+Ganadería intensiva.
+Uso de sprays.
+Mal reciclaje y reaprovechamiento de materiales.
+Uso de combustibles fósiles y poco uso de las energías renovables.
+Consumo excesivo de electricidad que no proviene de energías renovables. | Col3: Agotamiento de la capa de Ozono.
+Fila 20: Col1: AIRE:
+Emisión de material particulado. | Col2: CONTRATISTA:
+*Actividades de construcción, tabajos varios. | Col3: Cambio en la calidad de aire (material particulado).
+Fila 21: Col1: AIRE:
+Fugas de gases / Sustancias presurizadas. | Col2: *Durante la calibración de equipos detectores en campo (H2S-Ácido sulfúrico, CO-Monóxido de carbono, CH4-Metano, VOC-compuestos orgánicos volátiles).
+*Transporte, llenado y trasvase de odorante (H2S-Ácido sulfúrico, CO-Monóxido de carbono, VOC-compuestos orgánicos volátiles).
+*Proceso de atención de emergencias (H2S-Ácido sulfúrico, CO-Monóxido de carbono, VOC-compuestos orgánicos volátiles). | Col3: Cambios en la calidad del aire.
+Fila 22: Col1: AIRE:
+Generación de emisiones de olores ofensivos. | Col2: Procesos productivos industriales.
+Lagunas de oxidación.
+Plantas de tratamiento de agua. | Col3: Cambios en la calidad del aire.
+Fila 23: Col1: AIRE:
+Generación de ruido ambiental. | Col2: *Uso de equipo de sonido para realizar publicidad. | Col3: Cambios en la calidad del aire.
+Fila 24: Col1: ASPECTOS ARQUEOLÓGICOS:
+Desarrollo de proyectos en nuevas áreas. | Col2: Actividades de construcción.
+Actividades de minería. | Col3: Alteración del patrimonio arqueológico.
+Fila 25: Col1: CALIDAD DE VIDA:
+Consumo de gas natural. | Col2: Actividades de construcción.
+Actividades de minería.
+Actividades de recreación. | Col3: Cambio en la presión sobre los recursos naturales.
+Fila 26: Col1: CALIDAD DE VIDA:
+Consumo materiales e insumos. | Col2: Actividades de construcción.
+Actividades de minería.
+Actividades de recreación. | Col3: Cambio en la presión sobre los recursos naturales.
+Fila 27: Col1: CALIDAD DE VIDA:
+Consumo materiales e insumos. | Col2: *Uso de material publicitario; Pendones, volantes, folletos, tarjetas de presentación. | Col3: Cambio en la presión sobre los recursos naturales.
+Fila 28: Col1: CALIDAD DE VIDA:
+Inversión social en áreas de influencia del proyecto. | Col2: *Realizar actividades de publicidad en localidades.
+*Realizar actividades de campo.
+*Realizar visitas comerciales. | Col3: Cambio en la calidad de la infraestructura vial (Vías, andenes, entre otros).
+Fila 29: Col1: CALIDAD DE VIDA:
+Movilización de equipos y personal. | Col2: *Realizar actividades de publicidad en localidades.
+*Realizar actividades de campo.
+*Realizar visitas comerciales. | Col3: Variación de la probabilidad de accidentes viales.
+Fila 30: Col1: CULTURA:
+Desarrollo de proyectos en nuevas áreas. | Col2: Actividades de construcción.
+Actividades de minería.
+Actividades de recreación. | Col3: Generación de conflictos por el proyecto.
+
+
+====================================================================================================
+HOJA: MATRIZ de Calidad
+====================================================================================================
+
+Dimensiones: 8 filas x 12 columnas
+
+Fila 1: Col1: XYZ | Col2: MATRIZ DE RIESGOS DEL SGC | Col12: ……./ V1
+Fila 2: Col1: PROCESO:
+Fila 3: Col1: FECHA DE 
+ACTUALIZACIÓN:
+Fila 4: Col1: ACTIVIDAD | Col2: TIPO/DESCRIPCIÓN DEL RIESGO | Col3: GENERADO POR/  CAUSADO POR | Col4: POSIBLE IMPACTO/ CONSECUENCIA | Col5: ANÁLISIS DE LOS RIESGOS | Col7: NIVEL DEL RIESGO INHERENTE
+(Probabilidad x Consecuencia) | Col8: CONVERSION  | Col9: CONTROLES ACTUALES  | Col10: EFICACIA DE(LOS) CONTRO(LES) (De 1 a 5) | Col11: NIVEL DE RIESGO RESIDUAL | Col12: PLAN DE ACCIÓN
+Fila 5: Col5: PROBABILIDAD
+(De 1 a 5) | Col6: CONSECUENCIA
+(De 1 a 5)
+Fila 6: Col1: Actividades administrativas | Col2: CALIDAD: Documentación incompleta, desactualizada y/ u obsoleta. | Col3: Falta de conocimiento en la implementación de los requisitos y/ o falta de control de la documentación.  | Col4: Desmejoramiento del SG y errores en los procesos. | Col5: 4 | Col6: 4 | Col7: ALTO | Col8: 4 | Col10: 3 | Col11: ALERTA/NO PRIORITARIO/NO SIGNIFICATIVO
+Fila 7: Col1: Desplazamiento hacia los clientes de la empresa | Col2: CALIDAD: Incumplimiento en los tiempos de llega al cliente  | Col3: Falta de planificación en el tiempo de desplazamiento | Col4: Insatisfacción del cliente y perdida y perdida de oportunidades de negocio | Col5: 4 | Col6: 2 | Col7: BAJO | Col8: 2 | Col9: Politicas de servicios a tiempo (Salidas anticipadas de 1 hora en local barranquilla), programa de capacitaion (servicio al cliente) | Col10: 2 | Col11: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO | Col12: Continuar con los controles existentes
+Fila 8: Col5: 1 | Col6: 5 | Col7: BAJO | Col8: 2 | Col10: 2 | Col11: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO
+
+
+====================================================================================================
+HOJA: MATRIZ de SST
+====================================================================================================
+
+Dimensiones: 12 filas x 19 columnas
+
+Fila 1: Col1: XYZ | Col2: MATRIZ DE RIESGOS SST
+Fila 2: Col1: PROCESO:
+Fila 3: Col1: FECHA DE ELABORACIÓN: 
+Fila 4: Col1: ACTIVIDAD | Col2: TIPO DE ACTIVIDAD:   | Col4: EXPUESTOS | Col8: CARGO EXPUESTO | Col9: PELIGRO/ FACTOR DE RIESGO/ | Col10: GENERADO POR/ CAUSADO POR | Col11: POSIBLE EFECTO/ CONSECUENCIA | Col12: ANÁLISIS DE LOS RIESGOS | Col14: NIVEL DEL RIESGO INHERENTE
+(Probabilidad x Consecuencia) | Col15: CONVERSION  | Col16: CONTROLES ACTUALES  | Col17: EFICACIA DE(LOS) CONTRO(LES) (De 1 a 5) | Col18: NIVEL DE RIESGO RESIDUAL | Col19: PLAN DE ACCIÓN
+Fila 5: Col2: RUTINARIA  | Col3: NO RUTINARIA | Col4: Fijo | Col5: Temporal | Col6: Contratista | Col7: Visitante | Col12: PROBABILIDAD
+(De 1 a 5) | Col13: CONSECUENCIA
+(De 1 a 5)
+Fila 6: Col1: Actividades administrativas | Col2: X | Col9: PSICOSOCIAL:
+Demanda de las jornadas de trabajo: Trabajo noturno, horas  extras, turnos de trabajo. | Col10: *Acumulación de trabajo.
+*No remplazo de personas ausentes. | Col11: Estrés, enfermedades psicosomáticas, ansiedad y depresión. | Col12: 3 | Col13: 3 | Col14: MEDIO | Col15: 3 | Col16: Aplicación de la batería del riesgo psicosocial y pausas activas | Col17: 4 | Col18: ALERTA/NO PRIORITARIO/NO SIGNIFICATIVO | Col19: Implementar el PVE del riesgo psicosocial
+Fila 7: Col1: Desplazamiento hacia los clientes de la empresa | Col9: CONDICION DE SEGURIDAD: accidente de transito | Col10: Rapidez en el desplazamiento por el no control en el tiempo | Col11: Golpes, facturas, heridas | Col12: 2 | Col13: 4 | Col14: BAJO | Col15: 2 | Col16: Sensibilizaciones al personal en el control del tiempo, programas de seguridad vial | Col17: 2 | Col18: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO | Col19: Mantenimiento de los controles existentes. 
+Fila 8: Col12: 1 | Col13: 5 | Col14: BAJO | Col15: 2 | Col17: 1 | Col18: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO
+Fila 9: Col12: 4 | Col13: 2 | Col14: BAJO | Col15: 2 | Col17: 4 | Col18: ALERTA/NO PRIORITARIO/NO SIGNIFICATIVO
+Fila 10: Col12: 5 | Col13: 2 | Col14: MEDIO | Col15: 5 | Col17: 4 | Col18: NO ACEPTABLE/PRIORITARIO/SIGNIFICATIVO
+Fila 11: Col12: 5 | Col13: 2 | Col14: MEDIO | Col15: 5 | Col17: 4 | Col18: NO ACEPTABLE/PRIORITARIO/SIGNIFICATIVO
+Fila 12: Col12: 4 | Col13: 1 | Col14: MUY BAJO | Col15: 1 | Col17: 4 | Col18: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO
+
+
+====================================================================================================
+HOJA: MATRIZ de Ambiente
+====================================================================================================
+
+Dimensiones: 12 filas x 16 columnas
+
+Fila 1: Col1: XYZ | Col2: MATRIZ DE EIA
+Fila 2: Col1: PROCESO:
+Fila 3: Col1: FECHA DE ELABORACIÓN: 
+Fila 4: Col1: ACTIVIDAD | Col2: CONDICIÓN DE OPERACIÓN | Col5: CARGO RELACIONADO | Col6: RECURSO/ ASPECTO | Col7: GENERADO POR/ CAUSADO POR | Col8: POSIBLE IMPACTO / CONSECUENCIA | Col9: ANÁLISIS DE LOS RIESGOS | Col11: NIVEL DEL RIESGO INHERENTE
+(Probabilidad x Consecuencia) | Col12: CONVERSION  | Col13: CONTROLES ACTUALES  | Col14: EFICACIA DE(LOS) CONTRO(LES) (De 1 a 5) | Col15: NIVEL DE RIESGO RESIDUAL | Col16: PLAN DE ACCIÓN
+Fila 5: Col2: NORMAL | Col3: ANORMAL | Col4: DE EMERGENCIA | Col9: PROBABILIDAD
+(De 1 a 5) | Col10: CONSECUENCIA
+(De 1 a 5)
+Fila 6: Col1: Actividades administrativas | Col6: Consumo de energía | Col7: Uso de equipos de oficina/ aire… | Col8: Agotamiento de recursos naturales | Col9: 5 | Col10: 1 | Col11: BAJO | Col12: 2 | Col13: Programa de uso racional y eficiente de la energía | Col14: 2 | Col15: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO
+Fila 7: Col1: Desplazamiento hacia los clientes de la empresa | Col6: Emision de fuentes moviles | Col7: Uso de vehiculos para transportarse a donde los clientes | Col8: Cambios en la calidad del aire, contaminacion del aire | Col9: 4 | Col10: 3 | Col11: MEDIO | Col12: 3 | Col13: Programas de mantenimiento de vehiculos a disposición de la empresa, | Col14: 3 | Col15: ALERTA/NO PRIORITARIO/NO SIGNIFICATIVO | Col16: Seguimiento al cumplimiento y mejora al programa de mantenimiento preventivo de vehiculos, Medición de la huella de carbono anual para la actividad de desplazamamiento a clientes
+Fila 8: Col9: 1 | Col10: 5 | Col11: BAJO | Col12: 2 | Col14: 1 | Col15: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO
+Fila 9: Col9: 4 | Col10: 2 | Col11: BAJO | Col12: 2 | Col14: 4 | Col15: ALERTA/NO PRIORITARIO/NO SIGNIFICATIVO
+Fila 10: Col9: 5 | Col10: 2 | Col11: MEDIO | Col12: 5 | Col14: 4 | Col15: NO ACEPTABLE/PRIORITARIO/SIGNIFICATIVO
+Fila 11: Col9: 5 | Col10: 2 | Col11: MEDIO | Col12: 5 | Col14: 4 | Col15: NO ACEPTABLE/PRIORITARIO/SIGNIFICATIVO
+Fila 12: Col9: 4 | Col10: 1 | Col11: MUY BAJO | Col12: 1 | Col14: 4 | Col15: ACEPTABLE/NO PRIORITARIO/NO SIGNIFICATIVO
+

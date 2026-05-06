@@ -1,0 +1,1 @@
+export class AuditService { constructor(d: string) {} async getLogs() { return []; } async logAction() { return null; } } export function getAuditService(d: string) { return new AuditService(d); }

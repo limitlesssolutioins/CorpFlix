@@ -1,0 +1,364 @@
+{
+  "planeacion": {
+    "mision": "Limitless Solutions es una empresa especializada en proveer soluciones digitales innovadoras y estratégicas, desde el desarrollo web y móvil hasta la implementación de ciberseguridad avanzada, para clientes en Cartagena, Colombia y el mercado internacional. Nuestro propósito es garantizar la excelencia operativa y la satisfacción del cliente a través de la celeridad en la entrega, la adaptabilidad a sus necesidades específicas y una propuesta de valor competitiva, manteniendo un compromiso inquebrantable con los más altos estándares de calidad.",
+    "vision": "En 2030, seremos el referente de excelencia y liderazgo en Colombia, elevando el estándar de soluciones estratégicas e innovadoras, y proyectando nuestra capacidad transformadora a escala global.",
+    "politica": "Compromiso con la excelencia, la seguridad de la información y la mejora continua de nuestros procesos.",
+    "objetivos": [
+      {
+        "id": "17689540086310.2202835851579198",
+        "texto": "Aumentar el índice de satisfacción del cliente al 90% para el cierre del año fiscal actual, medido a través de encuestas post-servicio.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689540086310.969122999198797",
+        "texto": "Reducir en un 15% el número de incidentes de seguridad laboral reportables en comparación con el año anterior, antes del 31 de diciembre del año en curso.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689540086310.40572364983576314",
+        "texto": "Aumentar en un 20% la participación de los colaboradores en programas de desarrollo profesional y formación especializada para el Q3 del año en curso.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689540086310.6686033256922402",
+        "texto": "Asegurar la disponibilidad del 100% de los recursos tecnológicos y humanos críticos requeridos para la operación y mejora del Sistema de Gestión, verificado trimestralmente durante el año fiscal.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689540086310.6879219398539899",
+        "texto": "Garantizar el cumplimiento del 100% de los requisitos legales y reglamentarios aplicables al sector, verificado a través de auditorías internas semestrales durante el año en curso.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689540086310.1151770382675974",
+        "texto": "Fomentar la participación activa de al menos el 80% de los colaboradores en la identificación y propuesta de mejoras al Sistema de Gestión anualmente.",
+        "meta": 100,
+        "progreso": 0
+      }
+    ],
+    "politicas": [
+      {
+        "id": "17689522466560.2138055842453409",
+        "texto": "Satisfacer las necesidades y expectativas de nuestros clientes, entregando productos y servicios de creación de software, páginas web, aplicaciones móviles y ciberseguridad con los más altos estándares de calidad en el sector de la Tecnología, IA y Soluciones Digitales.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.6692656404990273",
+        "texto": "Proporcionar y mantener un entorno de trabajo seguro y saludable para todos nuestros colaboradores.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.30117736056618005",
+        "texto": "Establecer, implementar, mantener y mejorar continuamente nuestro Sistema de Gestión.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.2568634336579828",
+        "texto": "Asignar y gestionar eficientemente los recursos necesarios para el funcionamiento y mejora de nuestro Sistema de Gestión.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.6789077078371677",
+        "texto": "Asegurar la competencia de nuestro equipo humano, fomentando su desarrollo profesional y el mantenimiento de un ambiente de trabajo colaborativo.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.6688635680911451",
+        "texto": "Comprometerse con la protección del medio ambiente, incluyendo la prevención de la contaminación y el uso sostenible de recursos.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.042603498379907845",
+        "texto": "Proteger la seguridad y salud de todos los trabajadores, eliminando peligros y reduciendo los riesgos laborales.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.22062404158388416",
+        "texto": "Fomentar la consulta y participación activa de todos los trabajadores en el Sistema de Gestión.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.4445571020999559",
+        "texto": "Garantizar el cumplimiento de todos los requisitos legales y reglamentarios aplicables, así como otros requisitos que la organización suscriba.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.6949241125585139",
+        "texto": "Proteger la confidencialidad, integridad y disponibilidad de la información, tanto propia como de las partes interesadas relevantes.",
+        "meta": 100,
+        "progreso": 0
+      },
+      {
+        "id": "17689522466560.1604453219231673",
+        "texto": "Promover la mejora continua de la eficacia y el desempeño de nuestro Sistema de Gestión.",
+        "meta": 100,
+        "progreso": 0
+      }
+    ],
+    "strengths": "• Fuerte capacidad tecnológica y conocimiento técnico especializado en desarrollo de software a medida, web, móvil, soluciones digitales y ciberseguridad.\n• Potencial de innovación y adaptabilidad a nuevas tecnologías, esencial para el sector.\n• Equipo técnico altamente cualificado y experimentado, la base para la entrega de proyectos complejos.\n• Visión directiva orientada a la transformación digital y al valor añadido para el cliente.\n• Reputación favorable (Good Will) por proyectos exitosos previos, generando confianza y referencias.\n• Capacidad para la gestión de proyectos complejos y de gran envergadura.\n• Agilidad en la respuesta a los requerimientos del mercado gracias a una estructura flexible.",
+    "weaknesses": "• Dependencia de un número limitado de clientes clave, generando riesgo financiero Plan: Diversificar la cartera de clientes y establecer métricas de riesgo.\n• Falta de una estrategia comercial y de marketing robusta para la expansión a nuevos mercados [Mejora: Desarrollar e implementar un plan estratégico de marketing y ventas digital].\n• Ausencia de un proceso formal y estandarizado de gestión del riesgo del negocio y de los proyectos [Mejora: Implementar un marco de gestión de riesgos bajo los principios de ISO 9001:2015].\n• Deficiencias en la documentación de procesos internos y procedimientos operativos estándar (SOPs) [Mejora: Establecer un sistema de gestión documental conforme a los requisitos ISO 9001:2015].\n• Posible alta rotación de personal técnico clave debido a la intensa competencia por el talento [Mejora: Desarrollar un programa de retención de talento y plan de carrera profesional].\n• Infraestructura logística y tecnológica no optimizada para un rápido escalamiento y despliegue global [Mejora: Invertir en automatización y optimización de la infraestructura IT y de procesos].\n• Gestión financiera reactiva, con necesidad de optimizar el flujo de caja y la inversión en I+D [Mejora: Establecer una planificación financiera proactiva y fondos dedicados a I+D].",
+    "opportunities": "• Creciente demanda global de soluciones de transformación digital y servicios de ciberseguridad en diversos sectores.\n• Expansión de tecnologías emergentes (IA, IoT, Blockchain) que abren nuevas líneas de negocio y servicios especializados.\n• Posibilidad de acceder a nuevos mercados geográficos o nichos específicos con alta necesidad de digitalización.\n• Fomentar alianzas estratégicas con proveedores de tecnología o empresas complementarias para ampliar el portafolio de servicios.\n• Programas de financiación e incentivos gubernamentales para la innovación y el desarrollo tecnológico (nacionales e internacionales).\n• Adopción masiva del trabajo remoto y modelos híbridos, abriendo el acceso a talento global y reduciendo costes operativos.\n• Necesidad de optimización de procesos y automatización en empresas tradicionales, un mercado objetivo clave.",
+    "threats": "• Intensa competencia en el sector tecnológico, incluyendo startups ágiles y grandes corporaciones consolidadas.\n• Rápida obsolescencia tecnológica que exige inversión constante en investigación, desarrollo y capacitación.\n• Escasez de talento cualificado en áreas especializadas, lo que incrementa los costes de contratación y retención.\n• Evolución constante de las amenazas cibernéticas, requiriendo inversiones continuas en seguridad y cumplimiento normativo.\n• Cambios regulatorios en protección de datos y privacidad (ej. GDPR, CCPA) que pueden requerir adaptaciones costosas.\n• Fluctuaciones económicas globales que podrían reducir los presupuestos de inversión en TI de los clientes.\n• Riesgo de ataques cibernéticos a la propia infraestructura o a los sistemas de los clientes, afectando la reputación y continuidad.",
+    "political": "Creciente marco normativo en protección de datos y ciberresiliencia: A pesar de la incertidumbre política, la tendencia global y local hacia una mayor regulación en protección de datos (ej. leyes de privacidad tipo GDPR) y requisitos de ciberseguridad representa una 'oportunidad' significativa para LIMITLESS SOLUTIONS S.A.S., posicionándola como proveedor estratégico de soluciones de cumplimiento y seguridad digital.",
+    "economic": "• Incremento de la intensidad competitiva impulsado por la democratización de herramientas de desarrollo basadas en Inteligencia Artificial, lo que ejerce presión sobre los precios de mercado y la diferenciación de servicios.\n• Márgenes de utilidad históricamente elevados en el sector de desarrollo de software y ciberseguridad, lo que, si bien es favorable, atrae nuevos competidores y exige estrategias de eficiencia operativa y valor añadido para su sostenibilidad.",
+    "social": "La creciente dependencia de la sociedad en la tecnología y la digitalización impulsa la demanda de software, apps y soluciones web. Los cambios demográficos y las expectativas de los usuarios, que buscan experiencias digitales más fluidas y seguras, son vitales. La cultura del trabajo remoto y colaborativo genera nuevas necesidades de herramientas. La conciencia social sobre la privacidad de los datos y la ciberseguridad es cada vez mayor, influenciando la confianza del consumidor y las decisiones de compra.",
+    "technological": "La rápida evolución de tecnologías como la inteligencia artificial, machine learning, blockchain, cloud computing, IoT y 5G presenta tanto oportunidades como desafíos. La constante aparición de nuevas herramientas, lenguajes de programación y frameworks requiere adaptación. El aumento y la sofisticación de las amenazas cibernéticas impulsan la demanda de soluciones de ciberseguridad avanzadas. La automatización de procesos de desarrollo y la evolución de los estándares de seguridad son continuas.",
+    "environmental": "La creciente conciencia ambiental lleva a los clientes a buscar proveedores con prácticas sostenibles y soluciones que minimicen la huella de carbono. Esto puede incluir la eficiencia energética de las infraestructuras de nube o servidores utilizados para alojar soluciones, y la optimización del código para reducir el consumo de recursos. La implementación de políticas de trabajo remoto, facilitadas por el software, también contribuye a la reducción de emisiones.",
+    "legal": "El marco legal es fundamental, especialmente las leyes de protección de datos como GDPR, CCPA, LGPD o similares, que regulan cómo se manejan y protegen los datos de usuarios y clientes. Las leyes de propiedad intelectual y patentes de software protegen las innovaciones. Las regulaciones sobre accesibilidad web y móvil (WCAG) son obligatorias en muchos mercados. Las leyes laborales, los contratos de servicio con clientes y las licencias de software también son aspectos legales críticos.",
+    "ecological": "La creciente conciencia ambiental lleva a los clientes a buscar proveedores con prácticas sostenibles y soluciones que minimicen la huella de carbono. Esto puede incluir la eficiencia energética de las infraestructuras de nube o servidores utilizados para alojar soluciones, y la optimización del código para reducir el consumo de recursos. La implementación de políticas de trabajo remoto, facilitadas por el software, también contribuye a la reducción de emisiones."
+  },
+  "procesos": [
+    {
+      "nombre": "Gestion Gerencial",
+      "descripcion": "Proceso esencial para la Alta Dirección de esta empresa en crecimiento, enfocado en la revisión periódica y sistemática del desempeño del Sistema de Gestión de Calidad. Facilita la toma de decisiones estratégicas y la evaluación de resultados clave para asegurar la adecuación continua, la mejora y el cumplimiento de los objetivos organizacionales.",
+      "tipo": "ESTRATÉGICO",
+      "id": "IA-1769129588542-1otmk"
+    },
+    {
+      "nombre": "Planificación Estratégica",
+      "descripcion": "Define la dirección futura de la empresa, estableciendo el propósito fundamental (misión), la aspiración a largo plazo (visión) y los objetivos estratégicos clave que guiarán su crecimiento y desarrollo sostenido, asegurando la alineación de todos los esfuerzos hacia un rumbo claro y aprovechando las oportunidades del mercado.",
+      "tipo": "ESTRATÉGICO",
+      "id": "IA-1769129815150-v4jbe"
+    },
+    {
+      "nombre": "Comercial",
+      "descripcion": "Este proceso es fundamental para la identificación y captación proactiva de oportunidades en el mercado, la optimización del ciclo de ventas y el cultivo de relaciones estratégicas con los clientes. Se enfoca en la prospección a través de la red de contactos y el desarrollo de iniciativas de marketing relacional para asegurar la fidelización y el crecimiento sostenido de la cartera de clientes.",
+      "tipo": "MISIONAL_COMERCIAL",
+      "id": "IA-1769185351086-2d06b"
+    },
+    {
+      "nombre": "Compras",
+      "descripcion": "Este proceso estratégico se encarga de la identificación, selección, adquisición y gestión de todos los bienes físicos necesarios para la operación a nivel nacional, así como de la contratación de soluciones de software y aplicaciones a nivel internacional para las integraciones clave. Su propósito es asegurar la disponibilidad oportuna de los recursos críticos, optimizar la eficiencia del gasto y garantizar la calidad de los insumos, impulsando la continuidad y el desarrollo de la empresa.",
+      "tipo": "MISIONAL_COMPRAS",
+      "id": "IA-1769185453488-rab9y"
+    },
+    {
+      "nombre": "finanzas",
+      "descripcion": "Este proceso es fundamental para el aseguramiento de la integridad financiera de la organización, abarcando el registro sistemático y el control de todas las transacciones económicas. Se encarga de la gestión eficiente de la tesorería para optimizar el control de liquidez, la planificación y ejecución oportuna de cobros y pagos, así como el cumplimiento riguroso de las obligaciones fiscales y normativas. Su propósito es garantizar la salud financiera de la empresa, proporcionar información contable fiable y estratégica para la toma de decisiones, y sustentar el crecimiento sostenido de la compañía.",
+      "tipo": "MISIONAL_FINANZAS",
+      "id": "IA-1769185752480-w7a4s"
+    },
+    {
+      "nombre": "Almacenamiento e Inventarios",
+      "descripcion": "Asegura la adecuada custodia, conservación y trazabilidad de los materiales y productos, desde su recepción hasta su disposición interna. Este proceso garantiza la integridad física de los activos, optimiza la utilización del espacio y facilita la disponibilidad oportuna de los recursos necesarios para las operaciones de la empresa, manteniendo un control preciso de las existencias y minimizando pérdidas.",
+      "tipo": "MISIONAL_ALMACENAMIENTO",
+      "id": "IA-1769185847496-9wej6"
+    },
+    {
+      "nombre": "Gestión del Capital Humano",
+      "descripcion": "Este proceso es fundamental para una empresa en crecimiento, ya que asegura la atracción, desarrollo y retención del personal idóneo. Su alcance abarca la planificación y ejecución de estrategias para el desarrollo continuo de competencias, el fomento de un clima laboral que potencie la productividad y el bienestar, y la salvaguarda de la seguridad jurídica de todos los colaboradores mediante la administración rigurosa de las normativas laborales.",
+      "tipo": "APOYO_RRHH",
+      "id": "IA-1769185883387-madyp"
+    },
+    {
+      "nombre": "Mantenimiento e Infraestructura",
+      "descripcion": "Este proceso fundamental asegura la disponibilidad, fiabilidad y resiliencia de los activos físicos y tecnológicos críticos de la organización. Su propósito es la planificación y ejecución de actividades de mantenimiento preventivo y correctivo, así como la gestión y protección de la infraestructura física y tecnológica, garantizando la continuidad operativa y minimizando interrupciones para el soporte ininterrumpido de las operaciones empresariales en crecimiento.",
+      "tipo": "APOYO_MANTENIMIENTO",
+      "id": "IA-1769185932505-bwpej"
+    },
+    {
+      "nombre": "Auditoría Interna",
+      "descripcion": "Establecer un mecanismo sistemático para la autoevaluación periódica de las operaciones y los resultados de la empresa. Este proceso busca verificar la conformidad con los estándares internos definidos y asegurar la eficacia de los controles establecidos. Su objetivo principal es identificar proactivamente riesgos operativos, desviaciones en el desempeño y oportunidades de mejora, promoviendo la transparencia y garantizando que las actividades de negocio se desarrollen conforme a la planificación estratégica y los objetivos de excelencia operativa.",
+      "tipo": "EVALUACION_AUDITORIA",
+      "id": "IA-1769185951934-woct7"
+    },
+    {
+      "nombre": "Mejora Continua",
+      "descripcion": "Este proceso es fundamental para la evolución constante de la organización, promoviendo un aprendizaje organizacional proactivo a partir de la experiencia operativa. Su objetivo es identificar y analizar oportunidades para optimizar la rentabilidad, la eficiencia y la calidad del desempeño empresarial a lo largo del tiempo. Mediante la aplicación de metodologías estructuradas, se asegura que la empresa se adapte, innove y resuelva desafíos de manera efectiva para alcanzar niveles superiores de excelencia operativa.",
+      "tipo": "EVALUACION_MEJORA",
+      "id": "IA-1769185973693-ckjq2"
+    },
+    {
+      "nombre": "Prestación de servicios",
+      "descripcion": "Este proceso abarca la ejecución sistemática y la entrega de los servicios ofrecidos, desde la planificación y diseño hasta la implementación y evaluación de resultados. Se enfoca en la creación de valor directo para el cliente a través de la aplicación de conocimientos, habilidades y recursos específicos, garantizando la eficacia operativa y la satisfacción de las expectativas definidas.",
+      "tipo": "MISIONAL_OPERATIVO",
+      "id": "IA-1769186323199-kyuv8"
+    }
+  ],
+  "riesgos": [
+    {
+      "id": "R-CAL-001",
+      "proceso": "Gestion Gerencial",
+      "actividad": "Actividades administrativas",
+      "categoria": "Calidad",
+      "nombre": "Documentación incompleta",
+      "descripcion": "Documentación incompleta, desactualizada y/u obsoleta.",
+      "causa": "Falta de conocimiento en la implementación de los requisitos y/o falta de control de la documentación.",
+      "consecuencia": "Desmejoramiento del SG y errores en los procesos.",
+      "probabilidad": 4,
+      "impacto": 4,
+      "nivelRiesgo": 16,
+      "conversion": 4,
+      "controles": "Auditorías internas semestrales.",
+      "eficacia": 3,
+      "probabilidadResidual": 3,
+      "impactoResidual": 4,
+      "nivelRiesgoResidual": 12,
+      "planAccion": "Capacitación continua en gestión documental."
+    },
+    {
+      "id": "R-CAL-002",
+      "proceso": "Prestación de servicios",
+      "actividad": "Desplazamiento hacia los clientes",
+      "categoria": "Calidad",
+      "nombre": "Incumplimiento tiempos llegada",
+      "descripcion": "Incumplimiento en los tiempos de llegada al cliente.",
+      "causa": "Falta de planificación en el tiempo de desplazamiento.",
+      "consecuencia": "Insatisfacción del cliente y pérdida de oportunidades de negocio.",
+      "probabilidad": 4,
+      "impacto": 2,
+      "nivelRiesgo": 8,
+      "conversion": 2,
+      "controles": "Políticas de servicios a tiempo, programa de capacitación.",
+      "eficacia": 2,
+      "probabilidadResidual": 1,
+      "impactoResidual": 5,
+      "nivelRiesgoResidual": 5,
+      "planAccion": "Continuar con los controles existentes."
+    },
+    {
+      "id": "R-FIN-001",
+      "proceso": "Finanzas",
+      "actividad": "Gestión de tesorería",
+      "categoria": "Financiero",
+      "nombre": "Fluctuación Cambiaria",
+      "descripcion": "Pérdida de valor en contratos internacionales debido a la devaluación del peso.",
+      "causa": "Volatilidad del mercado cambiario.",
+      "consecuencia": "Reducción del margen de utilidad.",
+      "probabilidad": 4,
+      "impacto": 3,
+      "nivelRiesgo": 12,
+      "conversion": 3,
+      "controles": "Cláusulas de ajuste por TRM en contratos, coberturas financieras básicas.",
+      "eficacia": 4,
+      "probabilidadResidual": 3,
+      "impactoResidual": 3,
+      "nivelRiesgoResidual": 9,
+      "planAccion": "Revisar contratos periódicamente."
+    },
+    {
+      "id": "R-SST-001",
+      "proceso": "Mantenimiento e Infraestructura",
+      "actividad": "Trabajo en alturas",
+      "categoria": "SST",
+      "nombre": "Caída a distinto nivel",
+      "descripcion": "Caída de trabajadores desde alturas superiores a 1.5m.",
+      "causa": "Falta de elementos de protección personal o capacitación inadecuada.",
+      "consecuencia": "Lesiones graves o muerte.",
+      "probabilidad": 2,
+      "impacto": 5,
+      "nivelRiesgo": 10,
+      "conversion": 2,
+      "controles": "Permisos de trabajo, uso de arnés y línea de vida, capacitación certificada.",
+      "eficacia": 5,
+      "probabilidadResidual": 1,
+      "impactoResidual": 5,
+      "nivelRiesgoResidual": 5,
+      "planAccion": "Mantener certificación vigente de alturas."
+    },
+    {
+      "id": "R-AMB-001",
+      "proceso": "Mantenimiento e Infraestructura",
+      "actividad": "Disposición de residuos",
+      "categoria": "Ambiental",
+      "nombre": "Contaminación por residuos electrónicos",
+      "descripcion": "Mala disposición de equipos tecnológicos obsoletos (RAEE).",
+      "causa": "Falta de gestor ambiental certificado.",
+      "consecuencia": "Sanciones legales y daño al ecosistema.",
+      "probabilidad": 2,
+      "impacto": 4,
+      "nivelRiesgo": 8,
+      "conversion": 2,
+      "controles": "Convenio con gestores de RAEE certificados.",
+      "eficacia": 4,
+      "probabilidadResidual": 1,
+      "impactoResidual": 4,
+      "nivelRiesgoResidual": 4,
+      "planAccion": "Verificar certificados de disposición final anualmente."
+    }
+  ],
+  "indicadores": [
+    {
+      "nombre": "Índice de Satisfacción del Cliente (ISC)",
+      "descripcion": "Mide la proporción de clientes que reportan un nivel de satisfacción positivo con los servicios o productos de la empresa, según encuestas post-servicio.",
+      "formula": "(Número de encuestas con calificación de 'satisfecho' o 'muy satisfecho' / Número total de encuestas post-servicio respondidas) * 100",
+      "fuente": "Plataforma de encuestas post-servicio, Sistema CRM",
+      "frecuencia": "Mensual",
+      "meta": 90,
+      "unidad": "%",
+      "id": "IND-1769446013993-0",
+      "datos": []
+    },
+    {
+      "nombre": "Tasa de Incidencia de Seguridad Laboral Reportable (TISLR)",
+      "descripcion": "Cuantifica la frecuencia de incidentes de seguridad laboral que requieren reporte formal, normalizado por horas-hombre trabajadas, para evaluar la efectividad de las medidas de seguridad.",
+      "formula": "(Número total de incidentes de seguridad laboral reportables / Total de horas-hombre trabajadas) * 1,000,000",
+      "fuente": "Registros de seguridad laboral, informes de incidentes, sistema de gestión de recursos humanos",
+      "frecuencia": "Mensual",
+      "meta": 1.7,
+      "unidad": "Incidentes por 1,000,000 Horas-Hombre",
+      "id": "IND-1769446013993-1",
+      "datos": []
+    },
+    {
+      "nombre": "Índice de Participación en Desarrollo Profesional",
+      "descripcion": "Evalúa el porcentaje de colaboradores que participan activamente en programas de formación y desarrollo profesional ofrecidos por la empresa.",
+      "formula": "(Número de colaboradores que han participado en al menos un programa de desarrollo profesional o formación especializada / Número total de colaboradores elegibles) * 100",
+      "fuente": "Registros de formación del Departamento de Recursos Humanos, plataformas de e-learning",
+      "frecuencia": "Trimestral",
+      "meta": 75,
+      "unidad": "%",
+      "id": "IND-1769446013993-2",
+      "datos": []
+    },
+    {
+      "nombre": "Índice de Disponibilidad de Recursos Críticos (IDRC)",
+      "descripcion": "Determina la proporción de recursos tecnológicos y humanos esenciales que se encuentran disponibles y operativos para soportar la operación y mejora del Sistema de Gestión.",
+      "formula": "(Número de recursos tecnológicos y humanos críticos disponibles / Número total de recursos tecnológicos y humanos críticos identificados) * 100",
+      "fuente": "Inventario de recursos, informes de mantenimiento preventivo, planillas de personal, informes de TI",
+      "frecuencia": "Trimestral",
+      "meta": 100,
+      "unidad": "%",
+      "id": "IND-1769446013993-3",
+      "datos": []
+    },
+    {
+      "nombre": "Índice de Cumplimiento Legal y Reglamentario (ICLR)",
+      "descripcion": "Mide el grado de conformidad de la empresa con los requisitos legales y reglamentarios aplicables a su sector de actividad, verificado a través de auditorías internas.",
+      "formula": "(Número de requisitos legales y reglamentarios cumplidos / Número total de requisitos legales y reglamentarios aplicables identificados) * 100",
+      "fuente": "Matriz de requisitos legales, informes de auditoría interna, registros de asesoría legal",
+      "frecuencia": "Semestral",
+      "meta": 100,
+      "unidad": "%",
+      "id": "IND-1769446013993-4",
+      "datos": []
+    },
+    {
+      "nombre": "Tasa de Participación en Mejora Continua",
+      "descripcion": "Refleja el porcentaje de colaboradores que contribuyen activamente con la identificación y propuesta de oportunidades de mejora para el Sistema de Gestión.",
+      "formula": "(Número de colaboradores que han propuesto al menos una mejora al Sistema de Gestión / Número total de colaboradores) * 100",
+      "fuente": "Sistema de gestión de ideas/propuestas, buzones de sugerencias, actas de reuniones de mejora continua",
+      "frecuencia": "Anual",
+      "meta": 80,
+      "unidad": "%",
+      "id": "IND-1769446013993-5",
+      "datos": []
+    }
+  ],
+  "mejoras": [],
+  "auditorias": []
+}

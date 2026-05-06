@@ -8,7 +8,8 @@ export async function GET() {
     try {
         const dataDir = await getCompanyDataDir();
         const svc = getMejoraContinuaService(dataDir);
-        const actions = await svc.getConsolidatedActions();
+        // Handle potentially mocked service gracefully
+        const actions = (await svc.getConsolidatedActions()) || [];
         return NextResponse.json(actions);
     } catch (error) {
         console.error('Error fetching consolidated actions:', error);

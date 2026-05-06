@@ -97,7 +97,7 @@ export class EmployeesService {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         `;
 
-        const params = [
+        const rawParams = [
             id, companyId, data.firstName, data.lastName, data.identification, data.documentType || 'CC',
             data.documentExpeditionCity, data.birthDate ? new Date(data.birthDate) : null, data.gender, data.bloodType, data.email, data.phone,
             data.address, data.city, data.bankName, data.bankAccountType, data.bankAccountNumber,
@@ -111,6 +111,8 @@ export class EmployeesService {
             data.standardEndTime, data.standardStartTime2, data.standardEndTime2, data.workDays,
             data.defaultSiteId, data.defaultPositionId, data.teamId, 1
         ];
+
+        const params = rawParams.map(p => p === undefined ? null : p);
 
         await query(sql, params);
         return await this.findOne(id);
@@ -126,19 +128,21 @@ export class EmployeesService {
         if (fields.length === 0) return await this.findOne(id);
 
         const setClause = fields.map(field => `${field} = ?`).join(', ');
-        const params = fields.map(field => {
+        const rawParams = fields.map(field => {
             let value = updateData[field];
             if (['birthDate', 'startDate', 'contractEndDate'].includes(field) && value) {
                 return new Date(value);
             }
-            if (field === 'salaryAmount' && value !== undefined) {
+            if (field === 'salaryAmount' && value !== undefined && value !== null) {
                 return Number(value);
             }
-            if (field === 'isIntegralSalary' && value !== undefined) {
+            if (field === 'isIntegralSalary' && value !== undefined && value !== null) {
                 return value ? 1 : 0;
             }
             return value;
         });
+
+        const params = rawParams.map(p => p === undefined ? null : p);
 
         const sql = `UPDATE Employee SET ${setClause}, updatedAt = NOW() WHERE id = ? AND companyId = ?`;
         await query(sql, [...params, id, companyId]);

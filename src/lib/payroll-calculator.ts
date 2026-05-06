@@ -37,6 +37,10 @@ export function calculateShiftColombian({
     const monthlyHours = (weeklyHours / 6) * 30;
     const hourlyRate = salary / monthlyHours;
 
+    if (!startTime || !endTime) {
+        return { ordinaryHours: 0, nightSurchargeHours: 0, sundayHours: 0 };
+    }
+
     const [startH, startM] = startTime.split(':').map(Number);
     const [endH, endM] = endTime.split(':').map(Number);
 

@@ -250,7 +250,14 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Sueldo Base ($)</label>
                 <input type="number" name="salaryAmount" required step="any" defaultValue={employee.salaryAmount} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-black text-primary-600" />
               </div>
-              <div className="md:col-span-2">
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Esquema Salarial</label>
+                <select name="salaryScheme" required defaultValue={employee.salaryScheme || 'ORDINARIO'} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold">
+                  <option value="ORDINARIO">Sueldo Ordinario</option>
+                  <option value="INTEGRAL">Sueldo Integral</option>
+                </select>
+              </div>
+              <div>
                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Sede Principal</label>
                  <input type="text" name="defaultSite" defaultValue={employee.defaultSiteId} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
               </div>

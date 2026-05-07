@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, UserCog, Loader2, User, Briefcase, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { getEmployeeByIdAction, updateEmployeeAction } from '@/actions/employee';
+import { getSitesAction, getPositionsAction } from '@/actions/catalog';
 
 interface EditEmployeePageProps {
   params: Promise<{ id: string }>;
@@ -14,27 +15,36 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
   const router = useRouter();
   const { id } = React.use(params);
   const [employee, setEmployee] = useState<any | null>(null);
+  const [sites, setSites] = useState<any[]>([]);
+  const [positions, setPositions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchEmployee = async () => {
+    const fetchData = async () => {
       try {
-        const emp = await getEmployeeByIdAction(id);
+        const [emp, st, pos] = await Promise.all([
+          getEmployeeByIdAction(id),
+          getSitesAction(),
+          getPositionsAction()
+        ]);
+        
         if (emp) {
           setEmployee(emp);
+          setSites(st);
+          setPositions(pos);
         } else {
           toast.error('Empleado no encontrado.');
           router.push('/gestion-humana/employees');
         }
       } catch (error) {
-        console.error('Error al cargar empleado:', error);
+        console.error('Error al cargar datos:', error);
         toast.error('Error al cargar los datos del empleado.');
         router.push('/gestion-humana/employees');
       } finally {
         setLoading(false);
       }
     };
-    fetchEmployee();
+    fetchData();
   }, [id, router]);
 
   const handleSubmit = async (formData: FormData) => {
@@ -45,7 +55,7 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
       router.push('/gestion-humana/employees');
     } catch (error) {
       console.error('Error al actualizar empleado:', error);
-      toast.error('Error al actualizar el empleado.', { id: toastId });
+      toast.error('Error al actualizar el empleado. Verifique los datos.', { id: toastId });
     }
   };
 
@@ -231,7 +241,12 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Cargo Principal</label>
-                <input type="text" name="defaultPosition" defaultValue={employee.defaultPositionId} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                <select name="defaultPosition" defaultValue={employee.defaultPositionId || ''} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold">
+                  <option value="">Seleccione...</option>
+                  {positions.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Fecha Inicio</label>
@@ -259,7 +274,12 @@ export default function EditEmployeePage({ params }: EditEmployeePageProps) {
               </div>
               <div>
                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">Sede Principal</label>
-                 <input type="text" name="defaultSite" defaultValue={employee.defaultSiteId} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium" />
+                 <select name="defaultSite" defaultValue={employee.defaultSiteId || ''} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold">
+                   <option value="">Seleccione...</option>
+                   {sites.map(s => (
+                     <option key={s.id} value={s.id}>{s.name}</option>
+                   ))}
+                 </select>
               </div>
             </div>
           </section>

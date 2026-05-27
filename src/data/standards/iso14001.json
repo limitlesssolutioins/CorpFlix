@@ -1,0 +1,487 @@
+{
+  "code": "ISO14001",
+  "name": "ISO 14001:2015",
+  "fullName": "Sistema de Gestión Ambiental",
+  "category": "Ambiental",
+  "color": "#10b981",
+  "chapters": [
+    {
+      "number": "4",
+      "title": "Contexto de la organización",
+      "requirements": [
+        {
+          "code": "4.1",
+          "title": "Comprensión de la organización y de su contexto",
+          "isAuditable": true,
+          "criteria": [
+            "Las cuestiones externas e internas que son pertinentes para su propósito y que afectan a su capacidad para lograr los resultados previstos de su sistema de gestión ambiental",
+            "Realizar el seguimiento y la revisiòn de la informaciòn  sobre estas cuestiones internas y externas"
+          ]
+        },
+        {
+          "code": "4.2",
+          "title": "Comprensión de las necesidades y expectativas de las partes interesadas",
+          "isAuditable": true,
+          "criteria": [
+            "a. Las partes interesadas que son pertinentes al sistema de gestión ambiental;",
+            "b.Las necesidades y expectativas pertinentes (es decir, requisitos) de estas partes interesadas;",
+            "c. cuáles de estas son requisitos legales y otros requisitos.",
+            "La organización debe realizar el seguimiento y la revisión de la información sobre estas partes interesadas y sus requisitos pertientes."
+          ]
+        },
+        {
+          "code": "4.3",
+          "title": "Determinación del alcance del sistema de gestión ambiental",
+          "isAuditable": true,
+          "criteria": [
+            "Cuando se determina este alcance, la organización debe considerar:",
+            "a. Las cuestiones externas e internas referidas en el apartado 4.1;",
+            "b. Los requisitos legales y otros requisitos a que se hace referencia en el apartado 4.2;",
+            "c. Las unidades, funciones y límites físicos de la organización;",
+            "d. Sus actividades, productos y servicios;",
+            "e. Su autoridad y capacidad para ejercer control e influencia.",
+            "El alcance debe estar disponible y mantenerse  como información documentada estableciendo:",
+            "»Todas las actividades, productos y servicios cubiertos por el sistema de gestión ambiental;"
+          ]
+        },
+        {
+          "code": "4.4",
+          "title": "Sistema de Gestión Ambiental",
+          "isAuditable": true,
+          "criteria": [
+            "Para lograr los resultados previstos, incluida la mejora de su desempeño ambiental, la organización debe",
+            "establecer, implementar, mantener y mejorar continuamente su sistema de gestión ambiental incluyendo los procesos e interacciones necesarias.",
+            "Considerar  los apartados 4.1 y 4.2"
+          ]
+        }
+      ]
+    },
+    {
+      "number": "5",
+      "title": "Liderazgo",
+      "requirements": [
+        {
+          "code": "5.1",
+          "title": "Liderazgo y compromiso",
+          "isAuditable": true,
+          "criteria": [
+            "La alta dirección debe demostrar liderazgo y compromiso con respecto al Sistema de gestión ambiental",
+            "a) asumiendo la responsabilidad y la obligaciòn de rendir cuentas con relación a la eficacia del sistema de gestión ambiental;",
+            "b) asegurando que se establezcan la política ambiental y los objetivos ambientales, y que éstos sean compatibles con la dirección estratégica y el contexto de la organización;",
+            "c) asegurándose de la integración de los requisitos del Sistema de Gestión ambiental en los procesos de negocios de la organización",
+            "d) Asegurando que los recursos necesarios para el sistema de gestión ambiental estén disponibles",
+            "e) comunicando la importancia de una gestión ambiental eficaz y conforme con los requisitos del sistema de gestión ambiental",
+            "f) asegurándose de que el sistema de gestión ambiental logre los resultados previstos;",
+            "g) dirigiendo y apoyando a las personas, para contribuir a la eficacia del sistema de gestión ambiental;",
+            "h)  Promover la mejora continua;",
+            "i) Apoyando otros roles pertinentes de la dirección, para demostrar su liderazgo aplicado a sus áreas de responsabilidad."
+          ]
+        },
+        {
+          "code": "5.2",
+          "title": "Política Ambiental",
+          "isAuditable": true,
+          "criteria": [
+            "La alta dirección debe establecer, implementar y mantener una política ambiental que, dentro del alcance definido de su sistema de gestión ambiental:",
+            "a) sea apropiada al propósito y contexto de la organización, incluida la naturaleza, magnitud e impactos ambientales de sus actividades, productos y servicios;",
+            "b) proporcione un marco de referencia para el establecimiento de los objetivos ambientales;",
+            "c) incluya un compromiso con la protección del medio ambient, incluida la prevención de la contaminación, y otros compromisos específicos pertinentes al contexto de la organización;",
+            "d) incluya un compromiso de cumplir con los requisitos legales y otros requisitos;",
+            "e) incluya un compromiso de mejora continua del seistema de gestión ambiental para la mejora del desempeño ambiental.",
+            "La política ambiental debe:",
+            "» mantenerse como información documentada;",
+            "» comunicarse dentro de la organización;",
+            "» estar disponible para las partes interesadas.",
+            "5.3. Roles, responsabilidades y autoridades en la organización",
+            "La alta dirección debe asegurarse de que las responsabilidades y autoridades para los roles pertinentes se asignen, se comuniquen y se entiendan dentro de la organización.",
+            "La alta dirección debe asignar la responsabilidad y autoridad para:",
+            "a) asegurarse de que el sistema de gestión ambiental es conforme con los requisitos de esta Norma Internacional;",
+            "b) informar en particular a la alta dirección el desempeño del sistema de gestión ambiental, incluyendo su desempeño"
+          ]
+        }
+      ]
+    },
+    {
+      "number": "6",
+      "title": "Planificación",
+      "requirements": [
+        {
+          "code": "6.1",
+          "title": "Acciones para abordar riesgos  y oportunidades",
+          "isAuditable": false,
+          "criteria": [],
+          "requirements": [
+            {
+              "code": "6.1.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "La organización debe establecer, implementar y mantener los procesos necesarios para cumplir con los requisitos de los apartados 6.1.1 a 6.1.4.",
+                "Al planificar el sisteme de gestión ambiental la organización debe considerar: a) las cuestiones referidas en el apartado 4.1;",
+                "Al planificar el sisteme de gestión ambiental la organización debe considerar: b) los requisitos referidos en el apartado 4.2;",
+                "Al planificar el sisteme de gestión ambiental la organización debe considerar: c) el alcance de su sistema de gestión ambiental;",
+                "Determina los riesgos y oportunidades relacionados con sus: aspectos ambientales; requisitos legales y otros requisitos; y otras cuestiones y requisitos identificados en los apartados 4.1 y 4.2.",
+                "Asegura que el sistema de gestión ambiental puede lograr los resultados previstos.",
+                "Prevenir o reducir los efectos no deseados.",
+                "Lograr la mejora continua.",
+                "Dentro del alcance del sistema de gestión ambiental, la organización determinara las situaciones de emergencia potenciales, incluidas las que pueden tener un impacto ambiental.",
+                "La organización mantiene la información documentada de sus riesgos y oportunidades que son necesario abordar."
+              ]
+            },
+            {
+              "code": "6.1.2",
+              "title": "Aspectos ambientales",
+              "isAuditable": true,
+              "criteria": [
+                "Dentro del alcance definido del sistema de gestión ambiental, la organización determinara los aspectos ambientales de sus actividades, productos y servicios",
+                "Cuando se determinan los aspectos ambientales, la organización tiene en cuenta los cambios, incluidos los desarrollos nuevos o planificados, y las actividades, productos y servicios nuevos o modificados",
+                "La organización tiene en cuenta las condiciones anormales y las situaciones de emergencia razonablemente previsibles",
+                "La  organización determina  aquellos  aspectos  que  tengan  o  puedan  tener  un  impacto ambiental  significativo,  es  decir,  los  aspectos  ambientales  significativos,  mediante  el  uso  de criterios establecidos?",
+                "La organización determinara aquellos aspectos que tengan o puedan tener un impacto ambiental significativo",
+                "La organización  mantiene información documentada de sus aspectos ambientales e impactos ambientales asociados, criterios usados para determinar sus aspectos ambientales significativos y  aspectos ambientales significativos"
+              ]
+            },
+            {
+              "code": "6.1.3",
+              "title": "Requisitos legales y otros requisitos",
+              "isAuditable": true,
+              "criteria": [
+                "a) determinar y tener acceso a los requisitos legales y otros requisitos relacionados con sus aspectos ambientales;",
+                "b) determinar cómo estos requisitos legales y otros requisitos se aplican a la organización;",
+                "c) tener en cuenta estos requisitos legales y otros requisitos cuando se establezca, implemente, mantenga y mejore continuamente su sistema de gestión ambiental.",
+                "La organización mantiene  información documentada de sus requisitos legales y otros requisitos"
+              ]
+            },
+            {
+              "code": "6.1.4",
+              "title": "Planificación de acciones",
+              "isAuditable": true,
+              "criteria": [
+                "a) La organización debe planificar la toma de acciones para abordar sus aspectos ambientales significativos; requisitos legales y otros requisitos; riesgos y oportunidades identificados en el apartado 6.1.1.",
+                "b) Debe planificar la manera de integrar e interpretar las acciones en los procesos de su sistema de gestión ambiental, planificar la manera de evaluar la eficacia de estas acciones.",
+                "La organización debe considerar sus opciones tecnológicas y sus requisitos financieros, operacionales y de negocio."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "6.2",
+          "title": "Objetivos ambientales y planificación para lograrlos",
+          "isAuditable": false,
+          "criteria": [],
+          "requirements": [
+            {
+              "code": "6.2.1",
+              "title": "Objetivos ambientales",
+              "isAuditable": true,
+              "criteria": [
+                "La organización establece objetivos ambientales para las funciones y niveles pertinentes, teniendo en cuenta los aspectos ambientales significativos de la organización y sus requisitos legales y otros requisitos asociados y considerando sus riesgos y oportunidades. Los objetivos ambientales deben:",
+                "a) Los objetivos ambientales son coherentes con la política ambiental;",
+                "b) Los objetivos ambientales son medibles (si es factible);",
+                "c) Los objetivos ambientales son objeto de seguimiento",
+                "d) Los objetivos ambietales son comunicados en la organización",
+                "e) Los objetivos ambientales son actualizados según correspondan",
+                "La organización conserva información documentada sobre los objetivos ambientales"
+              ]
+            },
+            {
+              "code": "6.2.2",
+              "title": "Planificación de acciones para lograr los objetivos ambientales",
+              "isAuditable": true,
+              "criteria": [
+                "Al planificar cómo lograr sus objetivos ambientales, la organización determina, qué se va a hacer, qué recursos se requerirán, quién será responsable,  cuándo se finalizará, cómo se evaluarán los resultados",
+                "La organización considera cómo se pueden integrar las acciones para el logro de sus objetivos ambientales a los procesos de negocio de la organización"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "7",
+      "title": "Apoyo",
+      "requirements": [
+        {
+          "code": "7.1",
+          "title": "Recursos",
+          "isAuditable": true,
+          "criteria": [
+            "Alutrafic determina y proporciona los recursos necesarios para el establecimiento, implementación, mantenimiento y mejora continua del sistema de gestión ambiental"
+          ]
+        },
+        {
+          "code": "7.2",
+          "title": "Competensia",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe:",
+            "Alutrafic determina la competencia  necesaria  de  las  personas  que  realizan  trabajos  bajo  su control,  que  afecte  a  su  desempeño  ambiental  y  su  capacidad  para  cumplir  sus requisitos legales y otros requisitos.",
+            "Alutrafic asegura  de  que  estas  personas  sean competentes,  con  base  en  su  educación, formación o experiencia apropiadas.",
+            "Alutrafic determina las necesidades de formación asociadas con sus aspectos ambientales y su sistema de gestión ambiental.",
+            "Alutrafic determina cuando sea aplicable, tomar acciones para adquirir la competencia necesaria y evaluar la eficacia de las acciones tomadas?",
+            "¿La organización debe conservar información documentada apropiada, como evidencia de la competencia?"
+          ]
+        },
+        {
+          "code": "7.3",
+          "title": "Toma de conciencia",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe asegurarse de que las personas que realicen el trabajo bajo el control de la organización tomen conciencia",
+            "a. La política ambiental",
+            "b. los aspectos ambientales significativos y los impactos ambientales reales o potenciales\r\nrelacionados, asociados con su trabajo;",
+            "c. su contribución a la eficacia del sistema de gestión ambiental, incluidos los beneficios\r\nde una mejora del desempeño ambiental;",
+            "d. las implicaciones de no satisfacer los requisitos del sistema de gestión ambiental,\r\nincluido el incumplimiento de los requisitos legales y otros requisitos de la organización."
+          ]
+        },
+        {
+          "code": "7.4",
+          "title": "Comunicación",
+          "isAuditable": false,
+          "criteria": [],
+          "requirements": [
+            {
+              "code": "7.4.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "La organización debe establecer, implementar y mantener los procesos necesarios para las\r\ncomunicaciones internas y externas pertinentes al sistema de gestión ambiental, que incluyan: a) que comunicar; b) cuándo counicar; c) a quién comunicar; d) cómo comunicar",
+                "Cuando establece los procesos de comunicación Alutrafic tiene en cuanta los requisitos legales y otros requisitos, asegura que la información ambiental comunicada sea coherente con la información generada dentro del sistema de gestión ambiental, a que sea fiable",
+                "La organización conserva la información documentada como evidencia de sus comunicaciones, según corresponda."
+              ]
+            },
+            {
+              "code": "7.4.2",
+              "title": "Comunicación Interna",
+              "isAuditable": true,
+              "criteria": [
+                "a) La organización comunica internamente la información pertinente del sistema de gestión ambiental entre los diversos niveles y funciones de la organización, incluidos los cambios en el sistema de gestión ambiental, según corresponda;",
+                "b) La organización asegura que sus procesos de comunicación permitan que las personas que realicen trabajos bajo control de la organización contribuyan a la mejora continua."
+              ]
+            },
+            {
+              "code": "7.4.3",
+              "title": "Comunicación externa",
+              "isAuditable": true,
+              "criteria": [
+                "La organización comunica externamente información pertinente al sistema de gestión ambiental, según se establezca en los procesos de comunicación de la organización"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "7.5",
+          "title": "INFORMACIÓN DOCUMENTADA",
+          "isAuditable": false,
+          "criteria": [],
+          "requirements": [
+            {
+              "code": "7.5.1",
+              "title": "Generalidades.",
+              "isAuditable": true,
+              "criteria": [
+                "El sistema de gestión ambiental debe incluir, información documentada requerida por esta Norma Internacional",
+                "El sistema de gestión ambiental de la organización determina información documentada como necesaria para la eficacia del sistema de gestión ambiental"
+              ]
+            },
+            {
+              "code": "7.5.2",
+              "title": "Creación y actualización",
+              "isAuditable": true,
+              "criteria": [
+                "Al crear y actualizar la información documentada, la organización se asegura de que lo siguiente sea apropiado:La identificación y descripción, el formato la revisión y aprobación"
+              ]
+            },
+            {
+              "code": "7.5.3",
+              "title": "Control de la información documentada",
+              "isAuditable": true,
+              "criteria": [
+                "a) La información documentada requerida por el sistema de gestión ambiental y por esta Norma Internacional se controla para asegurarse de que esté disponible y sea idónea para su uso, dónde y cuándo se necesite",
+                "b) Qué esté  protegida  adecuadamente  (por  ejemplo,  contra  pérdida  de  confidencialidad, uso\r\ninadecuado, o pérdida de integridad)",
+                "Para el control de la información documentada, la organización aborda distribución, acceso, recuperación, uso, almacenamiento y preservación, incluida la preservación de la legibilidad, control de cambios (por ejemplo, control de versión),conservación y disposición"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "8",
+      "title": "Operación",
+      "requirements": [
+        {
+          "code": "8.1",
+          "title": "Planificación y control operacional",
+          "isAuditable": true,
+          "criteria": [
+            "La organización  establece, implementa, controla y mantiene los procesos necesarios para satisfacer los requisitos del sistema de gestión ambiental",
+            "La organización controla  los  cambios  planificados  y  examinar  las  consecuencias  de  los cambios  no  previstos,  tomando  acciones  para  mitigar  los  efectos  adversos,  cuando  sea necesario",
+            "La  organización se asegura de  que  los  procesos  contratados  externamente  estén  controlados o que se tenga influencia sobre ellos",
+            "a) La organización establece  los  controles,  según  corresponda,  para  asegurarse  de  que  sus  requisitos ambientales  se  aborden  en  el  proceso  de  diseño  y  desarrollo  del  producto  o  servicio, considerando cada etapa de su ciclo de vida",
+            "b) La organización determina sus  requisitos  ambientales  para  la  compra  de  productos  y  servicios,  según corresponda.",
+            "c) La organización comunicar sus requisitos ambientales pertinentes a los proveedores externos, incluidos los contratistas",
+            "d) La organización considera la necesidad de suministrar información acerca de los impactos ambientales potenciales significativos asociados con el transporte o la entrega, el uso, el tratamiento al fin de la vida útil y la disposición final de sus productos o servicios.",
+            "La organización mantiene la información documentada en la medida necesaria para tener la confianza en que los procesos se han llevado a cabo según lo planificado."
+          ]
+        },
+        {
+          "code": "8.2",
+          "title": "Preparación y respuesta ante emergencia",
+          "isAuditable": true,
+          "criteria": [
+            "La  organización establece,  implementa y  mantiene  los  procesos  necesarios  acerca  decómo  prepararse  y  responder  a  situaciones  potenciales  de  emergencia  identificadas  en  el apartado 6.1.1",
+            "a) La organización está preprada para responder, mediante la planificación de acciones para prevenir o mitigar los impactos ambientales adversos provocados por situaciones de emergencia.",
+            "b) La organización responde a situaciones de emergencia reales",
+            "c) La organización toma acciones  para  prevenir  o  mitigar  las  consecuencias  de  las  situaciones  de emergencia,  apropiadas  a  la  magnitud  de  la  emergencia  y  al  impacto  ambiental potencial.",
+            "d) La organización toma  acciones  para  prevenir  o  mitigar  las  consecuencias  de  las  situaciones  de emergencia,  apropiadas  a  la  magnitud  de  la  emergencia  y  al  impacto  ambiental potencial",
+            "e) La rganización pone a prueba periodicamente las acciones de respuesta planificadas, cuando sea factible",
+            "f) La organización proporciona  información  y  formación  pertinentes,  con  relación  a  la  preparación  y respuesta  ante  emergencias,  según  corresponda,  a  las  partes  interesadas  pertinentes,incluidas las personas que trabajan bajo su control",
+            "La organización  mantiene la información documentada en la medida necesaria para tener confianza en que los procesos se llevan a cabo de la manera planificada"
+          ]
+        }
+      ]
+    },
+    {
+      "number": "9",
+      "title": "Evaluación del desempeño",
+      "requirements": [
+        {
+          "code": "9.1",
+          "title": "Seguimiento, medición, análisis y evaluación",
+          "isAuditable": false,
+          "criteria": [],
+          "requirements": [
+            {
+              "code": "9.1.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "La organización debe determinar: a) a qué es necesario hacer seguimiento y qué es necesario medir;",
+                "La organización debe determinar: b) los métodos de seguimiento, medición, análisis y evaluación necesarios para asegurar resultados válidos;",
+                "La organización debe determinar: c) Los criterios contra los cuales la organización evaluará su desempeño ambiental e indicadores;",
+                "La organización debe determinar: d) cuándo se deben llevar a cabo el seguimiento y la medición;",
+                "La organización debe determinar: e) cuándo se deben analizar y evaluar los resultados del seguimiento y la medición.",
+                "La organización debe asegurarse de que se usan y mantienen equipos de seguimiento y medición calibrados o verificados.",
+                "Deberá evaluar el desempeño ambiental y la eficacia del sistema de gestión ambiental.",
+                "Comunicar externa e internamente la información pertinente a su desempeño ambiental, según sus procesos de comunicación.",
+                "La organización deberá conservar información documentada como evidencia del seguimiento, medición, análisis y la evaluación."
+              ]
+            },
+            {
+              "code": "9.1.2",
+              "title": "Evaluación del cumplimiento",
+              "isAuditable": true,
+              "criteria": [
+                "La organización debe establecer, implementar y mantener los procesos necesarios para evaluar el cumplimiento de sus requisitos legales y otros requisitos. La organización debe:",
+                "a) determinar la frecuencia con la que se evaluará el cumplimiento;",
+                "b) evaluar el cumplimiento y emprender las acciones que fueran necesarias;",
+                "c) mantener el conocimiento y la comprensión de su estado de cumplimiento",
+                "La organización debe conservar información documentada como evidencia de los resultados de la evaluación del cumplimiento."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "9.2",
+          "title": "Auditoría interna",
+          "isAuditable": false,
+          "criteria": [],
+          "requirements": [
+            {
+              "code": "9.2.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "La organización debe llevar a cabo auditorías internas a intervalos planificados, para proporcionar información acerca de si el sistema de gestión de la calidad:",
+                "a) es conforme con: \r\n1) los requisitos propios de la organización para su sistema de gestión ambiental; \r\n2) los requisitos de esta Norma Internacional",
+                "b) está implementado y mantenido eficazmente."
+              ]
+            },
+            {
+              "code": "9.2.2",
+              "title": "Programa de auditoría interna",
+              "isAuditable": true,
+              "criteria": [
+                "La organización debe establecer, implementar y mantener uno o varios programas de auditoría que incluyan frecuencia, métodos y responsabilidades.",
+                "Al establecer el programa, la organización debe tener en cuenta la importancia ambiental de los procesos y resultados de auditorías previas.",
+                "La organización debe: a) para cada auditoría, definir los criterios y el alcance de ésta;",
+                "La organización debe: c) seleccionar los auditores para asegurarse de la objetividad e imparcialidad del proceso;",
+                "La organización debe: c) asegurarse de que los resultados de las auditorías se informan a la dirección pertinente.",
+                "Conservar la información documentada como evidencia de la implementación del programa de auditoría y sus resultados."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "9.3",
+          "title": "Revisión por la dirección",
+          "isAuditable": true,
+          "criteria": [
+            "La alta dirección debe revisar el SGA de la organización a intervalos planificados para asegurarse de su conveniencia, adecuación y eficacia continuas.",
+            "La revisión incluye: a) consideraciones sobre el estado de las acciones desde anteriores revisiones;",
+            "La revisión incluye: b) 1) cambios en cuestiones externas e internas pertinentes al SGA;",
+            "La revisión incluye: b) 2) cambios en necesidades y expectativas de partes interesadas (legales y otros);",
+            "La revisión incluye: b) 3) cambios en sus aspectos ambientales significativos;",
+            "La revisión incluye: b) 4) cambios en los riesgos y oportunidades;",
+            "La revisión incluye: c) el grado en que se han logrado los objetivos ambientales;",
+            "La revisión incluye: d) 1) información sobre tendencias en no conformidades y acciones correctivas;",
+            "La revisión incluye: d) 2) información sobre tendencias en seguimiento y resultados de las mediciones;",
+            "La revisión incluye: d) 3) información sobre tendencias en cumplimiento de requisitos legales y otros;",
+            "La revisión incluye: d) 4) información sobre tendencias en resultados de la auditoría;",
+            "La revisión incluye: e) adecuación de los recursos;",
+            "La revisión incluye: f) las comunicaciones pertinentes de las partes interesadas, incluidas las quejas;",
+            "La revisión incluye: g) las oportunidades de mejora continua.",
+            "La revisión debe incluir conclusiones sobre la conveniencia, adecuación y eficacia continuas del SGA.",
+            "La revisión debe incluir decisiones relacionadas con las oportunidades de mejora continua.",
+            "La revisión debe incluir decisiones sobre cualquier necesidad de cambio en el SGA, incluidos los recursos.",
+            "La revisión debe incluir acciones necesarias cuando no se hayan logrado los objetivos ambientales.",
+            "La revisión debe incluir oportunidades de mejorar la integración del SGA a otros procesos de negocio.",
+            "La revisión debe incluir cualquier implicación para la dirección estratégica de la organización.",
+            "La organización conserva información documentada como evidencia de los resultados de las revisiones por la dirección."
+          ]
+        }
+      ]
+    },
+    {
+      "number": "10",
+      "title": "Mejora",
+      "requirements": [
+        {
+          "code": "10.1",
+          "title": "Generalidades",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe determinar y seleccionar las oportunidades de mejora (véanse 9.1, 9.2 y 9.3) e implementar las acciones necesarias para lograr los resultados previstos en su sistema de gestión ambiental."
+          ]
+        },
+        {
+          "code": "10.2",
+          "title": "No conformidad y acción correctiva",
+          "isAuditable": true,
+          "criteria": [
+            "Cuando ocurra una no conformidad la organización debe: a) reaccionar ante la no conformidad, cuando aplique: 1) tomar acciones para controlarla y corregirla;",
+            "Cuando ocurra una no conformidad la organización debe: a) reaccionar ante la no conformidad, cuando aplique: 2) hacer frente a las consecuencias incluida la mitigación de los impactos ambientales adversos;",
+            "Cuando ocurra una no conformidad la organización debe: b) evaluar la necesidad de acciones mediante: 1) la revisión de la no conformidad;",
+            "Cuando ocurra una no conformidad la organización debe: b) evaluar la necesidad de acciones mediante: 2) la determinación de las causas de la no conformidad;",
+            "Cuando ocurra una no conformidad la organización debe: b) evaluar la necesidad de acciones mediante: 3) la determinación de si existen no conformidades similares, o que potencialmente podrían ocurrir;",
+            "Cuando ocurra una no conformidad la organización debe: c) implementar cualquier acción necesaria;",
+            "Cuando ocurra una no conformidad la organización debe: d) revisar la eficacia de las acciones correctivas tomadas;",
+            "Cuando ocurra una no conformidad la organización debe: e) si es necesario, hacer cambios al sistema de gestión ambiental.",
+            "Las acciones correctivas deben ser adecuadas a los efectos de las no conformidades encontradas, incluidos los impactos ambientales.",
+            "La organización debe conservar información documentada, como evidencia de: a) la naturaleza de las no conformidades y cualquier acción tomada posteriormente;",
+            "La organización debe conservar información documentada, como evidencia de: b) los resultados de cualquier acción correctiva."
+          ]
+        },
+        {
+          "code": "10.3",
+          "title": "Mejora continua",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe mejorar continuamente la conveniencia, adecuación y eficacia del sistema de gestión ambiental para mejorar el desempeño ambiental."
+          ]
+        }
+      ]
+    }
+  ]
+}

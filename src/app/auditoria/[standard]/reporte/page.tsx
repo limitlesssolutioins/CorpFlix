@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Printer, CheckCircle2, XCircle, Lightbulb, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Printer, CheckCircle2, XCircle, Lightbulb, AlertTriangle, Pencil, Loader2, TrendingUp } from 'lucide-react';
 
 interface CompanyInfo { company_name?: string; nit?: string; logo?: string; sector?: string; city?: string; address?: string; email?: string; phone?: string; }
 interface AuditInfo {
     id: number; audit_code: string; auditor_name: string; audit_date: string;
     scope: string; objectives: string; status: string; standard_name: string;
-    standard_color: string; company_profile: string;
+    standard_color: string; company_profile: string; standard_id: number;
 }
 interface ChecklistItem {
     id: number; requirement_code: string; requirement_title: string;
@@ -19,9 +19,22 @@ interface ChecklistItem {
     finding_description: string | null; evidence: string | null; observations: string | null;
     is_op: number | null;
 }
+interface AuditProgram {
+    id?: number; year: number; objectives?: string; scope?: string; criteria?: string;
+    frequency?: string; audit_type?: string; responsible?: string; duration?: string; risks?: string;
+}
+interface AuditPlan {
+    objective?: string; scope?: string; criteria?: string; methods?: string; resources?: string; risks?: string;
+}
+interface AuditReport {
+    suitability?: string; effectiveness?: string; convenience?: string; risks?: string; summary?: string;
+}
+interface TeamMember { name: string; role_in_audit: string; email: string; }
 
 const CUMPLE_ID = 1;
-const NC_ID = 3;
+const NC_ID = 2;
+const OPPORTUNITY_ID = 3;
+const FORTALEZA_ID = 4;
 
 function groupByChapter(items: ChecklistItem[]) {
     const map = new Map<number, { chapter_id: number; chapter_number: string; chapter_title: string; items: ChecklistItem[] }>();
@@ -45,7 +58,12 @@ export default function InformeDetallado() {
     const [company, setCompany] = useState<CompanyInfo>({});
     const [audit, setAudit] = useState<AuditInfo | null>(null);
     const [items, setItems] = useState<ChecklistItem[]>([]);
+    const [program, setProgram] = useState<AuditProgram | null>(null);
+    const [plan, setPlan] = useState<AuditPlan | null>(null);
+    const [report, setReport] = useState<AuditReport | null>(null);
+    const [team, setTeam] = useState<TeamMember[]>([]);
     const [loading, setLoading] = useState(true);
+    const [savingReport, setSavingReport] = useState(false);
 
     useEffect(() => {
         if (auditId) loadData();
@@ -54,20 +72,56 @@ export default function InformeDetallado() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [companyRes, auditRes, checklistRes] = await Promise.all([
+            const [companyRes, auditRes, checklistRes, teamRes, reportRes] = await Promise.all([
                 fetch('/api/admin/general').then(r => r.json()),
                 fetch('/api/auditoria/audits').then(r => r.json()),
                 fetch(`/api/auditoria/checklist?audit_id=${auditId}`).then(r => r.json()),
+                fetch(`/api/auditoria/audit-team?audit_id=${auditId}`).then(r => r.json()),
+                fetch(`/api/auditoria/reporte?audit_id=${auditId}`).then(r => r.json()),
             ]);
+            
             setCompany(companyRes || {});
             const allAudits: AuditInfo[] = Array.isArray(auditRes) ? auditRes : [];
             const found = allAudits.find(a => a.id === parseInt(auditId!));
-            if (found) setAudit(found);
+            if (found) {
+                setAudit(found);
+                // Fetch program and plan linked to this audit
+                const auditYear = new Date(found.audit_date).getFullYear();
+                const [progRes, planRes] = await Promise.all([
+                    fetch(`/api/auditoria/programs?standard_id=${found.standard_id}&year=${auditYear}`).then(r => r.json()),
+                    fetch(`/api/auditoria/plans?audit_id=${auditId}`).then(r => r.json()),
+                ]);
+                setProgram(Array.isArray(progRes) ? progRes[0] : null);
+                setPlan(planRes?.plan || null);
+            }
             setItems(Array.isArray(checklistRes) ? checklistRes : []);
+            setTeam(Array.isArray(teamRes) ? teamRes : []);
+            setReport(reportRes || { summary: '', risks: '', suitability: '', effectiveness: '', convenience: '' });
         } catch (e) {
             console.error(e);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSaveReport = async () => {
+        if (!auditId || !report) return;
+        setSavingReport(true);
+        try {
+            const res = await fetch('/api/auditoria/reporte', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ auditId, ...report }),
+            });
+            if (res.ok) {
+                const saved = await res.json();
+                setReport(saved);
+                alert('Informe guardado correctamente');
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setSavingReport(false);
         }
     };
 
@@ -76,11 +130,16 @@ export default function InformeDetallado() {
     const evaluated = items.filter(i => i.finding_type_id !== null).length;
     const cumpleCount = items.filter(i => i.finding_type_id === CUMPLE_ID).length;
     const ncCount = items.filter(i => i.finding_type_id === NC_ID).length;
-    const opCount = items.filter(i => i.is_op === 1).length;
-    const pctCumplimiento = evaluated > 0 ? Math.round((cumpleCount / evaluated) * 100) : 0;
+    const opCount = items.filter(i => i.finding_type_id === OPPORTUNITY_ID).length;
+    const fortalezaCount = items.filter(i => i.finding_type_id === FORTALEZA_ID).length;
+    const pctCumplimiento = evaluated > 0 ? Math.round(((cumpleCount + fortalezaCount + opCount) / evaluated) * 100) : 0;
 
     const ncItems = items.filter(i => i.finding_type_id === NC_ID);
-    const opItems = items.filter(i => i.is_op === 1);
+    const opItems = items.filter(i => i.finding_type_id === OPPORTUNITY_ID);
+    const fortalezaItems = items.filter(i => i.finding_type_id === FORTALEZA_ID);
+
+    const leadAuditor = team.find(m => m.role_in_audit === 'Auditor Líder') || team[0];
+    const auditTeam = team.filter(m => m.role_in_audit !== 'Auditor Líder');
 
     const formatDate = (d: string) => new Date(d).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
     const today = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -196,26 +255,31 @@ export default function InformeDetallado() {
                             <table className="w-full text-sm">
                                 <tbody className="divide-y divide-slate-100">
                                     <tr><td className="py-1.5 font-semibold text-slate-500 pr-3 w-28">Código</td><td className="py-1.5 font-mono font-bold text-slate-800">{audit?.audit_code}</td></tr>
-                                    <tr><td className="py-1.5 font-semibold text-slate-500 pr-3">Norma</td><td className="py-1.5 font-bold text-slate-800">{audit?.standard_name}</td></tr>
-                                    <tr><td className="py-1.5 font-semibold text-slate-500 pr-3">Auditor</td><td className="py-1.5 text-slate-700">{audit?.auditor_name || '—'}</td></tr>
-                                    <tr><td className="py-1.5 font-semibold text-slate-500 pr-3">Fecha</td><td className="py-1.5 text-slate-700">{audit?.audit_date ? formatDate(audit.audit_date) : '—'}</td></tr>
+                                    <tr><td className="py-1.5 font-semibold text-slate-500 pr-3">Auditor Líder</td><td className="py-1.5 font-bold text-slate-800">{leadAuditor?.name || audit?.auditor_name || '—'}</td></tr>
+                                    <tr><td className="py-1.5 font-semibold text-slate-500 pr-3">Equipo Auditor</td><td className="py-1.5 text-slate-700">{auditTeam.map(t => t.name).join(', ') || '—'}</td></tr>
+                                    <tr><td className="py-1.5 font-semibold text-slate-500 pr-3">Criterios</td><td className="py-1.5 text-slate-700">{plan?.criteria || program?.criteria || audit?.standard_name}</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    {audit?.objectives && (
-                        <div className="mt-4">
-                            <div className="text-xs font-black uppercase text-slate-400 mb-1">Objetivos</div>
-                            <p className="text-sm text-slate-700 leading-relaxed">{audit.objectives}</p>
+                    <div className="grid grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <div className="text-xs font-black uppercase text-slate-400 mb-1">Objetivos de la Auditoría</div>
+                            <p className="text-sm text-slate-700 leading-relaxed">{plan?.objective || audit?.objectives || '—'}</p>
                         </div>
-                    )}
-                    {audit?.scope && (
-                        <div className="mt-3">
+                        <div>
                             <div className="text-xs font-black uppercase text-slate-400 mb-1">Alcance</div>
-                            <p className="text-sm text-slate-700 leading-relaxed">{audit.scope}</p>
+                            <p className="text-sm text-slate-700 leading-relaxed">{plan?.scope || audit?.scope || '—'}</p>
                         </div>
-                    )}
+                    </div>
+
+                    <div className="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <div className="text-xs font-black uppercase text-slate-400 mb-2">Descripción del Proceso de Auditoría</div>
+                        <p className="text-sm text-slate-700 leading-relaxed italic">
+                            {report?.summary || 'La auditoría se realizó siguiendo el plan establecido, cubriendo los procesos y áreas definidos en el alcance mediante entrevistas, revisión documental y observación directa.'}
+                        </p>
+                    </div>
                 </div>
 
                 {/* ═══════════════════════════════════════════
@@ -225,22 +289,26 @@ export default function InformeDetallado() {
                     <h2 className="text-base font-black text-slate-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-slate-800">
                         2. Resumen de Resultados
                     </h2>
-                    <div className="grid grid-cols-4 gap-4 mb-5">
-                        <div className="border-2 border-slate-200 rounded-xl p-4 text-center">
-                            <div className="text-2xl font-black text-slate-700">{evaluated}<span className="text-base font-normal text-slate-400">/{total}</span></div>
-                            <div className="text-xs font-bold text-slate-500 mt-1">Evaluados</div>
+                    <div className="grid grid-cols-5 gap-3 mb-5">
+                        <div className="border border-slate-200 rounded-xl p-3 text-center">
+                            <div className="text-xl font-black text-slate-700">{evaluated}<span className="text-xs font-normal text-slate-400">/{total}</span></div>
+                            <div className="text-[10px] font-bold text-slate-500 uppercase">Evaluados</div>
                         </div>
-                        <div className="border-2 border-emerald-200 bg-emerald-50 rounded-xl p-4 text-center">
-                            <div className="text-2xl font-black text-emerald-700">{cumpleCount}</div>
-                            <div className="text-xs font-bold text-emerald-600 mt-1">Cumplen</div>
+                        <div className="border border-blue-200 bg-blue-50 rounded-xl p-3 text-center">
+                            <div className="text-xl font-black text-blue-700">{fortalezaCount}</div>
+                            <div className="text-[10px] font-bold text-blue-600 uppercase">Fortalezas</div>
                         </div>
-                        <div className="border-2 border-red-200 bg-red-50 rounded-xl p-4 text-center">
-                            <div className="text-2xl font-black text-red-700">{ncCount}</div>
-                            <div className="text-xs font-bold text-red-600 mt-1">No Conformidades</div>
+                        <div className="border border-emerald-200 bg-emerald-50 rounded-xl p-3 text-center">
+                            <div className="text-xl font-black text-emerald-700">{cumpleCount}</div>
+                            <div className="text-[10px] font-bold text-emerald-600 uppercase">Cumplen</div>
                         </div>
-                        <div className={`border-2 rounded-xl p-4 text-center ${pctCumplimiento >= 80 ? 'border-emerald-300 bg-emerald-50' : pctCumplimiento >= 50 ? 'border-yellow-300 bg-yellow-50' : 'border-red-300 bg-red-50'}`}>
-                            <div className={`text-2xl font-black ${pctCumplimiento >= 80 ? 'text-emerald-700' : pctCumplimiento >= 50 ? 'text-yellow-700' : 'text-red-700'}`}>{pctCumplimiento}%</div>
-                            <div className={`text-xs font-bold mt-1 ${pctCumplimiento >= 80 ? 'text-emerald-600' : pctCumplimiento >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>Cumplimiento</div>
+                        <div className="border border-amber-200 bg-amber-50 rounded-xl p-3 text-center">
+                            <div className="text-xl font-black text-amber-700">{opCount}</div>
+                            <div className="text-[10px] font-bold text-amber-600 uppercase">Oportunidades</div>
+                        </div>
+                        <div className="border border-red-200 bg-red-50 rounded-xl p-3 text-center">
+                            <div className="text-xl font-black text-red-700">{ncCount}</div>
+                            <div className="text-[10px] font-bold text-red-600 uppercase">No Conf.</div>
                         </div>
                     </div>
 
@@ -249,41 +317,33 @@ export default function InformeDetallado() {
                         <thead>
                             <tr className="bg-slate-100 text-slate-700">
                                 <th className="text-left p-2.5 font-semibold border border-slate-200">Capítulo</th>
-                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-20">Req.</th>
-                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-20">Cumple</th>
-                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16">NC</th>
-                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16">OP</th>
-                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-20">%</th>
-                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-28">Estado</th>
+                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16">Total</th>
+                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16">Fort.</th>
+                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16">C</th>
+                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16 text-amber-700">OP</th>
+                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16 text-red-700">NC</th>
+                                <th className="text-center p-2.5 font-semibold border border-slate-200 w-16">%</th>
                             </tr>
                         </thead>
                         <tbody>
                             {chapters.map((ch, i) => {
                                 const chEval = ch.items.filter(r => r.finding_type_id !== null).length;
+                                const chFort = ch.items.filter(r => r.finding_type_id === FORTALEZA_ID).length;
                                 const chCumple = ch.items.filter(r => r.finding_type_id === CUMPLE_ID).length;
+                                const chOP = ch.items.filter(r => r.finding_type_id === OPPORTUNITY_ID).length;
                                 const chNC = ch.items.filter(r => r.finding_type_id === NC_ID).length;
-                                const chOP = ch.items.filter(r => r.is_op === 1).length;
-                                const pct = chEval > 0 ? Math.round((chCumple / chEval) * 100) : 0;
-                                const allCumple = ch.items.length > 0 && ch.items.every(r => r.finding_type_id === CUMPLE_ID);
+                                const pct = chEval > 0 ? Math.round(((chCumple + chFort + chOP) / chEval) * 100) : 0;
                                 return (
                                     <tr key={ch.chapter_id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                                        <td className="p-2.5 border border-slate-200">
+                                        <td className="p-2 border border-slate-200">
                                             <span className="font-bold">{ch.chapter_number}.</span> {ch.chapter_title}
                                         </td>
-                                        <td className="p-2.5 border border-slate-200 text-center">{ch.items.length}</td>
-                                        <td className="p-2.5 border border-slate-200 text-center text-emerald-700 font-bold">{chCumple}</td>
-                                        <td className="p-2.5 border border-slate-200 text-center text-red-700 font-bold">{chNC || '—'}</td>
-                                        <td className="p-2.5 border border-slate-200 text-center text-amber-700 font-bold">{chOP || '—'}</td>
-                                        <td className="p-2.5 border border-slate-200 text-center font-bold">{chEval > 0 ? `${pct}%` : '—'}</td>
-                                        <td className="p-2.5 border border-slate-200 text-center">
-                                            {allCumple ? (
-                                                <span className="text-emerald-700 font-bold text-xs">✓ Conforme</span>
-                                            ) : chNC > 0 ? (
-                                                <span className="text-red-700 font-bold text-xs">✗ No Conforme</span>
-                                            ) : (
-                                                <span className="text-slate-400 text-xs">Parcial</span>
-                                            )}
-                                        </td>
+                                        <td className="p-2 border border-slate-200 text-center">{ch.items.length}</td>
+                                        <td className="p-2 border border-slate-200 text-center text-blue-700 font-bold">{chFort || '—'}</td>
+                                        <td className="p-2 border border-slate-200 text-center text-emerald-700 font-bold">{chCumple || '—'}</td>
+                                        <td className="p-2 border border-slate-200 text-center text-amber-700 font-bold">{chOP || '—'}</td>
+                                        <td className="p-2 border border-slate-200 text-center text-red-700 font-bold">{chNC || '—'}</td>
+                                        <td className="p-2 border border-slate-200 text-center font-bold">{chEval > 0 ? `${pct}%` : '—'}</td>
                                     </tr>
                                 );
                             })}
@@ -292,49 +352,82 @@ export default function InformeDetallado() {
                 </div>
 
                 {/* ═══════════════════════════════════════════
-                    3. NO CONFORMIDADES
+                    3. HALLAZGOS DETALLADOS
                 ═══════════════════════════════════════════ */}
+                
+                {/* FORTALEZAS */}
+                {fortalezaItems.length > 0 && (
+                    <div className="mb-8">
+                        <h2 className="text-base font-black text-slate-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-slate-800">
+                            3. Fortalezas ({fortalezaCount})
+                        </h2>
+                        <div className="grid grid-cols-1 gap-3">
+                            {fortalezaItems.map((item, idx) => (
+                                <div key={item.id} className="avoid-break border border-blue-200 rounded-xl p-4 bg-blue-50/30">
+                                    <div className="flex items-start gap-3">
+                                        <span className="shrink-0 bg-blue-700 text-white text-xs font-black px-2 py-0.5 rounded font-mono">{item.requirement_code}</span>
+                                        <div className="flex-1">
+                                            <p className="font-bold text-slate-900 text-sm">{item.requirement_title}</p>
+                                            <p className="text-sm text-slate-700 mt-2">{item.finding_description || item.observations || 'Sin descripción detallada.'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* OPORTUNIDADES */}
+                {opItems.length > 0 && (
+                    <div className="mb-8">
+                        <h2 className="text-base font-black text-slate-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-slate-800">
+                            4. Oportunidades de Mejora ({opCount})
+                        </h2>
+                        <div className="space-y-3">
+                            {opItems.map((item, idx) => (
+                                <div key={item.id} className="avoid-break border border-amber-200 rounded-xl p-4 bg-amber-50/30">
+                                    <div className="flex items-start gap-3">
+                                        <span className="shrink-0 bg-amber-600 text-white text-xs font-black px-2 py-0.5 rounded font-mono">{item.requirement_code}</span>
+                                        <div className="flex-1">
+                                            <p className="font-bold text-slate-900 text-sm">{item.requirement_title}</p>
+                                            <p className="text-sm text-slate-700 mt-2 italic">"{item.finding_description || item.observations}"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* NO CONFORMIDADES */}
                 {ncItems.length > 0 && (
                     <div className="mb-8">
                         <h2 className="text-base font-black text-slate-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-slate-800">
-                            3. No Conformidades ({ncCount})
+                            5. No Conformidades ({ncCount})
                         </h2>
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {ncItems.map((item, idx) => (
-                                <div key={item.id} className="avoid-break border border-red-200 rounded-xl p-4 bg-red-50">
-                                    <div className="flex items-start gap-3 mb-2">
+                                <div key={item.id} className="avoid-break border border-red-200 rounded-xl p-4 bg-red-50/30">
+                                    <div className="flex items-start gap-3 mb-3">
                                         <span className="shrink-0 bg-red-700 text-white text-xs font-black px-2 py-0.5 rounded font-mono">{item.requirement_code}</span>
                                         <div className="flex-1">
                                             <p className="font-bold text-slate-900 text-sm">{item.requirement_title}</p>
                                             <p className="text-xs text-slate-500 mt-0.5">{item.chapter_number}. {item.chapter_title}</p>
                                         </div>
-                                        <span className="text-xs font-black text-red-700 bg-red-100 border border-red-300 px-2 py-0.5 rounded-full shrink-0">NC #{idx + 1}</span>
                                     </div>
-                                    <div className="grid grid-cols-1 gap-2 mt-3 ml-0 text-sm">
-                                        {item.finding_description && (
-                                            <div className="bg-white rounded-lg p-3 border border-red-100">
-                                                <div className="text-xs font-black text-red-500 uppercase mb-1">Descripción de la No Conformidad</div>
-                                                <p className="text-slate-700">{item.finding_description}</p>
-                                            </div>
-                                        )}
-                                        {item.evidence && (
+                                    <div className="space-y-3 ml-0">
+                                        <div className="bg-white rounded-lg p-3 border border-red-100">
+                                            <div className="text-[10px] font-black text-red-500 uppercase mb-1">Descripción del Hallazgo</div>
+                                            <p className="text-sm text-slate-700">{item.finding_description || 'Sin descripción.'}</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
                                             <div className="bg-white rounded-lg p-3 border border-slate-100">
-                                                <div className="text-xs font-black text-slate-400 uppercase mb-1">Evidencia</div>
-                                                <p className="text-slate-700">{item.evidence}</p>
+                                                <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Evidencia / Soporte</div>
+                                                <p className="text-xs text-slate-700">{item.evidence || 'Ver registros del proceso.'}</p>
                                             </div>
-                                        )}
-                                        {item.observations && (
                                             <div className="bg-white rounded-lg p-3 border border-slate-100">
-                                                <div className="text-xs font-black text-slate-400 uppercase mb-1">Observaciones</div>
-                                                <p className="text-slate-700">{item.observations}</p>
-                                            </div>
-                                        )}
-                                        <div className="bg-white rounded-lg p-3 border border-orange-100">
-                                            <div className="text-xs font-black text-orange-500 uppercase mb-1">Acción Correctiva Requerida</div>
-                                            <div className="grid grid-cols-3 gap-3 mt-1 text-xs text-slate-500">
-                                                <div>Responsable: <span className="border-b border-slate-300 inline-block w-20"></span></div>
-                                                <div>Fecha límite: <span className="border-b border-slate-300 inline-block w-20"></span></div>
-                                                <div>Estado: <span className="border-b border-slate-300 inline-block w-16"></span></div>
+                                                <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Observaciones</div>
+                                                <p className="text-xs text-slate-700">{item.observations || '—'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -345,74 +438,116 @@ export default function InformeDetallado() {
                 )}
 
                 {/* ═══════════════════════════════════════════
-                    4. OPORTUNIDADES DE MEJORA
-                ═══════════════════════════════════════════ */}
-                {opItems.length > 0 && (
-                    <div className="mb-8">
-                        <h2 className="text-base font-black text-slate-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-slate-800">
-                            {ncItems.length > 0 ? '4' : '3'}. Oportunidades de Mejora ({opCount})
-                        </h2>
-                        <div className="space-y-3">
-                            {opItems.map((item, idx) => (
-                                <div key={item.id} className="avoid-break border border-amber-200 rounded-xl p-4 bg-amber-50">
-                                    <div className="flex items-start gap-3">
-                                        <span className="shrink-0 bg-amber-600 text-white text-xs font-black px-2 py-0.5 rounded font-mono">{item.requirement_code}</span>
-                                        <div className="flex-1">
-                                            <p className="font-bold text-slate-900 text-sm">{item.requirement_title}</p>
-                                            <p className="text-xs text-slate-500 mt-0.5">{item.chapter_number}. {item.chapter_title}</p>
-                                            {item.observations && (
-                                                <p className="text-sm text-slate-700 mt-2 bg-white rounded-lg p-2 border border-amber-100">
-                                                    {item.observations}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <span className="text-xs font-black text-amber-700 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full shrink-0">OP #{idx + 1}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {ncItems.length === 0 && opItems.length === 0 && evaluated > 0 && (
-                    <div className="mb-8 p-5 border-2 border-emerald-200 rounded-xl bg-emerald-50 text-center avoid-break">
-                        <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-                        <p className="font-bold text-emerald-800">Sin No Conformidades ni Oportunidades de Mejora identificadas</p>
-                        <p className="text-sm text-emerald-600 mt-1">Todos los requisitos evaluados cumplen con los criterios de la norma</p>
-                    </div>
-                )}
-
-                {/* ═══════════════════════════════════════════
-                    5. CONCLUSIONES Y FIRMA
+                    6. CONCLUSIONES
                 ═══════════════════════════════════════════ */}
                 <div className="mb-8 avoid-break">
                     <h2 className="text-base font-black text-slate-800 uppercase tracking-widest mb-4 pb-2 border-b-2 border-slate-800">
-                        {ncItems.length > 0 && opItems.length > 0 ? '5' : ncItems.length > 0 || opItems.length > 0 ? '4' : '3'}. Conclusiones
+                        6. Conclusiones del Sistema
                     </h2>
-                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-600 leading-relaxed mb-6">
-                        <p>
-                            La auditoría interna realizada a <strong>{company.company_name || '[Empresa]'}</strong> bajo los criterios de la norma <strong>{audit?.standard_name}</strong> arrojó un nivel de cumplimiento del <strong>{pctCumplimiento}%</strong> ({cumpleCount} de {evaluated} requisitos evaluados).
-                            {ncCount > 0 && ` Se identificaron ${ncCount} No Conformidad${ncCount > 1 ? 'es' : ''} que requieren${ncCount > 1 ? '' : ''} acciones correctivas.`}
-                            {opCount > 0 && ` Se identificaron además ${opCount} Oportunidad${opCount > 1 ? 'es' : ''} de Mejora que el equipo debería considerar implementar.`}
-                        </p>
-                        <p className="mt-3 text-xs text-slate-400">
-                            Informe generado el {today} · {evaluated} de {total} requisitos evaluados
-                        </p>
+                    
+                    <div className="space-y-4">
+                        <div className="border-l-4 border-emerald-500 pl-4 py-1">
+                            <h4 className="text-xs font-black uppercase text-slate-400 mb-1">Adecuación del Sistema</h4>
+                            <p className="text-sm text-slate-700 italic">
+                                {report?.suitability || 'El sistema de gestión se considera adecuado para los propósitos de la organización y cumple con la estructura requerida por la norma.'}
+                            </p>
+                        </div>
+                        <div className="border-l-4 border-blue-500 pl-4 py-1">
+                            <h4 className="text-xs font-black uppercase text-slate-400 mb-1">Eficacia del Sistema</h4>
+                            <p className="text-sm text-slate-700 italic">
+                                {report?.effectiveness || 'Se evidencia una implementación eficaz de los controles evaluados, logrando los resultados planificados en la mayoría de los procesos.'}
+                            </p>
+                        </div>
+                        <div className="border-l-4 border-amber-500 pl-4 py-1">
+                            <h4 className="text-xs font-black uppercase text-slate-400 mb-1">Conveniencia del Sistema</h4>
+                            <p className="text-sm text-slate-700 italic">
+                                {report?.convenience || 'El sistema sigue siendo conveniente para la mejora continua y el cumplimiento de los objetivos estratégicos de la empresa.'}
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-16">
+                    <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-600 leading-relaxed mb-6">
+                        <div className="text-xs font-black uppercase text-slate-400 mb-2">Resumen Ejecutivo</div>
+                        <p>
+                            La auditoría interna realizada a <strong>{company.company_name || '[Empresa]'}</strong> bajo los criterios de la norma <strong>{audit?.standard_name}</strong> arrojó un nivel de cumplimiento del <strong>{pctCumplimiento}%</strong>.
+                            Se identificaron <strong>{fortalezaCount}</strong> fortalezas y <strong>{opCount}</strong> oportunidades de mejora.
+                            {ncCount > 0 ? ` Asimismo, se registraron ${ncCount} no conformidades que requieren acciones correctivas inmediatas.` : ' No se registraron no conformidades durante este ciclo.'}
+                        </p>
+                        {report?.risks && (
+                            <div className="mt-4 pt-4 border-t border-slate-200">
+                                <div className="text-xs font-black uppercase text-red-400 mb-1">Riesgos Identificados</div>
+                                <p className="text-xs text-slate-500">{report.risks}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-16 mt-12">
                         <div className="text-center">
-                            <div className="border-b-2 border-slate-400 mb-2 pb-12"></div>
-                            <p className="text-sm font-bold text-slate-800">{audit?.auditor_name || 'Auditor'}</p>
+                            <div className="border-b border-slate-400 mb-2 pb-12"></div>
+                            <p className="text-sm font-bold text-slate-800">{leadAuditor?.name || audit?.auditor_name || 'Auditor'}</p>
                             <p className="text-xs text-slate-500">Auditor Responsable</p>
-                            <p className="text-xs text-slate-400 mt-1">{audit?.audit_date ? formatDate(audit.audit_date) : ''}</p>
+                            <p className="text-[10px] text-slate-400 mt-1">{audit?.audit_date ? formatDate(audit.audit_date) : ''}</p>
                         </div>
                         <div className="text-center">
-                            <div className="border-b-2 border-slate-400 mb-2 pb-12"></div>
+                            <div className="border-b border-slate-400 mb-2 pb-12"></div>
                             <p className="text-sm font-bold text-slate-800">Representante de la Dirección</p>
                             <p className="text-xs text-slate-500">{company.company_name || '[Empresa]'}</p>
-                            <p className="text-xs text-slate-400 mt-1">{today}</p>
+                            <p className="text-[10px] text-slate-400 mt-1">{today}</p>
                         </div>
+                    </div>
+                </div>
+
+                {/* ═══════════════════════════════════════════
+                    SECCIÓN DE EDICIÓN (SOLO PANTALLA)
+                ═══════════════════════════════════════════ */}
+                <div className="no-print mt-20 p-8 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-300">
+                    <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+                        <Pencil size={20} className="text-blue-500" />
+                        Finalizar Conclusiones del Informe
+                    </h2>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Descripción General de la Auditoría</label>
+                            <textarea rows={3} value={report?.summary || ''}
+                                onChange={e => setReport(r => r ? { ...r, summary: e.target.value } : null)}
+                                className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="Relato de cómo se desarrolló la auditoría..."
+                            />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Adecuación</label>
+                                <textarea rows={4} value={report?.suitability || ''}
+                                    onChange={e => setReport(r => r ? { ...r, suitability: e.target.value } : null)}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Eficacia</label>
+                                <textarea rows={4} value={report?.effectiveness || ''}
+                                    onChange={e => setReport(r => r ? { ...r, effectiveness: e.target.value } : null)}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Conveniencia</label>
+                                <textarea rows={4} value={report?.convenience || ''}
+                                    onChange={e => setReport(r => r ? { ...r, convenience: e.target.value } : null)}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Riesgos Identificados</label>
+                            <textarea rows={2} value={report?.risks || ''}
+                                onChange={e => setReport(r => r ? { ...r, risks: e.target.value } : null)}
+                                className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                        </div>
+                        <button onClick={handleSaveReport} disabled={savingReport}
+                            className="w-full py-4 bg-slate-900 text-white rounded-xl font-black hover:bg-slate-800 transition-colors disabled:opacity-50">
+                            {savingReport ? 'Guardando...' : 'Guardar Informe y Finalizar'}
+                        </button>
                     </div>
                 </div>
 

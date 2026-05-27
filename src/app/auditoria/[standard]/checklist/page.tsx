@@ -32,7 +32,9 @@ interface VarAnswerData { answer: VarAnswer; nc_text: string; op_text: string; e
 interface Opportunity { area: string; oportunidad: string; beneficio: string; }
 
 const CUMPLE_ID = 1;
-const NC_ID = 3;
+const NC_ID = 2;
+const OPPORTUNITY_ID = 3;
+const FORTALEZA_ID = 4;
 
 function groupByChapter(items: ChecklistItem[]) {
     const map = new Map<number, { chapter_id: number; chapter_number: string; chapter_title: string; items: ChecklistItem[] }>();
@@ -621,12 +623,15 @@ export default function ChecklistPage() {
     const evaluated = fValues.filter(f => f.type_id !== null).length;
     const confCount = fValues.filter(f => f.type_id === CUMPLE_ID).length;
     const ncCount = fValues.filter(f => f.type_id === NC_ID).length;
+    const opCount = fValues.filter(f => f.type_id === OPPORTUNITY_ID).length;
+    const fortalezaCount = fValues.filter(f => f.type_id === FORTALEZA_ID).length;
 
     const isRes0312 = code === 'RES0312';
     const totalWeight = isRes0312 ? leafItems.reduce((s, i) => s + (i.weight || 0), 0) : 0;
     const achievedWeight = isRes0312 ? leafItems.reduce((s, i) => {
         const f = findings.get(i.id);
-        return s + (f?.type_id === CUMPLE_ID ? (i.weight || 0) : 0);
+        // Strength and Conformity (and Opportunity since it is compliant) count towards weight
+        return s + ((f?.type_id === CUMPLE_ID || f?.type_id === FORTALEZA_ID || f?.type_id === OPPORTUNITY_ID) ? (i.weight || 0) : 0);
     }, 0) : 0;
 
     const accentColor = audit?.standard_color || '#3b82f6';
@@ -700,16 +705,24 @@ export default function ChecklistPage() {
                     <div className="h-2.5 rounded-full transition-all duration-500"
                         style={{ width: `${leafItems.length > 0 ? (evaluated / leafItems.length) * 100 : 0}%`, backgroundColor: accentColor }} />
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+                        <div className="text-xl font-black text-blue-700">{fortalezaCount}</div>
+                        <div className="text-xs font-semibold text-blue-600">Fortalezas</div>
+                    </div>
                     <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
                         <div className="text-xl font-black text-emerald-700">{confCount}</div>
                         <div className="text-xs font-semibold text-emerald-600">Cumplen</div>
+                    </div>
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                        <div className="text-xl font-black text-amber-700">{opCount}</div>
+                        <div className="text-xs font-semibold text-amber-600">Oportunidades</div>
                     </div>
                     <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
                         <div className="text-xl font-black text-red-700">{ncCount}</div>
                         <div className="text-xs font-semibold text-red-600">No Cumplen</div>
                     </div>
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center col-span-2 sm:col-span-1">
                         <div className="text-xl font-black text-slate-500">{leafItems.length - evaluated}</div>
                         <div className="text-xs font-semibold text-slate-400">Sin evaluar</div>
                     </div>
@@ -806,6 +819,9 @@ export default function ChecklistPage() {
                                         const f = findings.get(item.id);
                                         const isCumple = f?.type_id === CUMPLE_ID;
                                         const isNC = f?.type_id === NC_ID;
+                                        const isOP = f?.type_id === OPPORTUNITY_ID;
+                                        const isFortaleza = f?.type_id === FORTALEZA_ID;
+
                                         // isExpanded is already declared above
                                         const vars = reqVariables.get(item.id) || [];
                                         const isLoadingV = loadingVars.has(item.id);
@@ -815,7 +831,11 @@ export default function ChecklistPage() {
                                         const drafts = varDrafts.get(item.id) || [];
                                         const hasVars = vars.length > 0;
                                         const answeredCount = hasVars ? vars.filter(v => varAnswers.has(`${item.id}-${v.id}`)).length : 0;
-                                        const bgColor = isCumple ? '#10b98108' : isNC ? '#ef444408' : 'transparent';
+                                        
+                                        const bgColor = isCumple ? '#10b98108' : 
+                                                        isNC ? '#ef444408' : 
+                                                        isOP ? '#f59e0b08' : 
+                                                        isFortaleza ? '#3b82f608' : 'transparent';
 
                                         return (
                                             <div key={item.id} className="border-b border-slate-50 last:border-0"
@@ -841,7 +861,7 @@ export default function ChecklistPage() {
                                                                     {hasVars && (
                                                                         <p className="text-xs text-slate-400 mt-0.5">
                                                                             {answeredCount}/{vars.length} criterios respondidos
-                                                                            {answeredCount === vars.length && isCumple && <span className="text-emerald-600 font-bold ml-1">→ Cumple automático</span>}
+                                                                            {answeredCount === vars.length && (isCumple || isFortaleza) && <span className="text-emerald-600 font-bold ml-1">→ Cumple automático</span>}
                                                                             {answeredCount === vars.length && isNC && <span className="text-red-600 font-bold ml-1">→ No Cumple automático</span>}
                                                                         </p>
                                                                     )}
@@ -849,13 +869,25 @@ export default function ChecklistPage() {
 
                                                                 {/* Status buttons */}
                                                                 <div className="flex items-center gap-1.5 shrink-0">
+                                                                    <button onClick={() => setFindingType(item.id, isFortaleza ? null : FORTALEZA_ID)}
+                                                                        title="Fortaleza"
+                                                                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isFortaleza ? 'bg-blue-50 border-blue-400 text-blue-700' : 'border-slate-200 hover:border-blue-300 bg-white text-slate-500'}`}>
+                                                                        <TrendingUp size={12} /> Fortaleza
+                                                                    </button>
                                                                     <button onClick={() => setFindingType(item.id, isCumple ? null : CUMPLE_ID)}
+                                                                        title="Cumple"
                                                                         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isCumple ? 'bg-emerald-50 border-emerald-400 text-emerald-700' : 'border-slate-200 hover:border-emerald-300 bg-white text-slate-500'}`}>
                                                                         <CheckCircle2 size={12} /> Cumple
                                                                     </button>
+                                                                    <button onClick={() => setFindingType(item.id, isOP ? null : OPPORTUNITY_ID)}
+                                                                        title="Oportunidad de Mejora"
+                                                                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isOP ? 'bg-amber-50 border-amber-400 text-amber-700' : 'border-slate-200 hover:border-amber-300 bg-white text-slate-500'}`}>
+                                                                        <Lightbulb size={12} /> Oportunidad
+                                                                    </button>
                                                                     <button onClick={() => setFindingType(item.id, isNC ? null : NC_ID)}
+                                                                        title="No Conformidad"
                                                                         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isNC ? 'bg-red-50 border-red-400 text-red-700' : 'border-slate-200 hover:border-red-300 bg-white text-slate-500'}`}>
-                                                                        <XCircle size={12} /> No Cumple
+                                                                        <XCircle size={12} /> NC
                                                                     </button>
                                                                     <button onClick={() => toggleExpand(item.id)}
                                                                         className={`p-1.5 rounded-lg border-2 transition-all ${isExpanded ? 'border-slate-300 bg-slate-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
@@ -866,16 +898,10 @@ export default function ChecklistPage() {
 
                                                             {/* Status badges */}
                                                             <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                                {isCumple && (
-                                                                    <>
-                                                                        <span className="text-xs font-bold text-emerald-600 flex items-center gap-1"><CheckCircle2 size={10} /> Cumple</span>
-                                                                        <button onClick={() => toggleOp(item.id)}
-                                                                            className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border transition-all ${f?.is_op ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-400 hover:border-amber-300'}`}>
-                                                                            <Lightbulb size={10} /> {f?.is_op ? 'Oportunidad de Mejora' : '+ Oportunidad'}
-                                                                        </button>
-                                                                    </>
-                                                                )}
-                                                                {isNC && <span className="flex items-center gap-1 text-xs font-bold text-red-600"><AlertTriangle size={10} /> NC — acción correctiva</span>}
+                                                                {isFortaleza && <span className="text-xs font-bold text-blue-600 flex items-center gap-1"><TrendingUp size={10} /> Fortaleza</span>}
+                                                                {isCumple && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1"><CheckCircle2 size={10} /> Cumple</span>}
+                                                                {isOP && <span className="text-xs font-bold text-amber-600 flex items-center gap-1"><Lightbulb size={10} /> Oportunidad de Mejora</span>}
+                                                                {isNC && <span className="flex items-center gap-1 text-xs font-bold text-red-600"><AlertTriangle size={10} /> No Conformidad</span>}
                                                                 
                                                                 {/* Evidence Badge/Button */}
                                                                 <div className="flex items-center gap-2">

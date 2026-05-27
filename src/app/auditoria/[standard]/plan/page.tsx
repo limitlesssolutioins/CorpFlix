@@ -17,12 +17,15 @@ interface Activity {
     process_area: string;
     auditor_ids: string;
     documents: string;
+    auditee?: string;
+    observations?: string;
     sort_order?: number;
 }
 
 const emptyActivity = (): Activity => ({
     activity_date: '', start_time: '', end_time: '',
     activity: '', process_area: '', auditor_ids: '', documents: '',
+    auditee: '', observations: '',
 });
 
 function PlanContent() {
@@ -41,6 +44,11 @@ function PlanContent() {
         criteria: '',
         documents_to_review: '',
         confidentiality: '',
+        objective: '',
+        scope: '',
+        methods: '',
+        resources: '',
+        risks: '',
     });
     const [activities, setActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
@@ -79,6 +87,11 @@ function PlanContent() {
                     criteria: p.criteria || '',
                     documents_to_review: p.documents_to_review || '',
                     confidentiality: p.confidentiality || '',
+                    objective: p.objective || '',
+                    scope: p.scope || '',
+                    methods: p.methods || '',
+                    resources: p.resources || '',
+                    risks: p.risks || '',
                 });
             }
             setActivities(Array.isArray(planRes?.activities) && planRes.activities.length > 0
@@ -194,6 +207,50 @@ function PlanContent() {
                 </div>
             ) : (
                 <div className="space-y-5">
+                    {/* Generalidades */}
+                    <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <h2 className="text-base font-bold text-slate-900 mb-4">Generalidades del Plan</h2>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Objetivo</label>
+                                    <textarea rows={2} value={planData.objective}
+                                        onChange={e => setPlanData({ ...planData, objective: e.target.value })}
+                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Alcance</label>
+                                    <textarea rows={2} value={planData.scope}
+                                        onChange={e => setPlanData({ ...planData, scope: e.target.value })}
+                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Métodos</label>
+                                    <textarea rows={2} value={planData.methods}
+                                        onChange={e => setPlanData({ ...planData, methods: e.target.value })}
+                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Recursos</label>
+                                    <textarea rows={2} value={planData.resources}
+                                        onChange={e => setPlanData({ ...planData, resources: e.target.value })}
+                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Riesgos de la Auditoría</label>
+                                <textarea rows={2} value={planData.risks}
+                                    onChange={e => setPlanData({ ...planData, risks: e.target.value })}
+                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Meetings */}
                     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                         <h2 className="text-base font-bold text-slate-900 mb-4">Reuniones</h2>
@@ -274,6 +331,8 @@ function PlanContent() {
                                         <th className="text-left px-3 py-3 font-bold text-slate-600 text-xs uppercase tracking-wide whitespace-nowrap">Proceso/Área</th>
                                         <th className="text-left px-3 py-3 font-bold text-slate-600 text-xs uppercase tracking-wide">Auditor(es)</th>
                                         <th className="text-left px-3 py-3 font-bold text-slate-600 text-xs uppercase tracking-wide">Documentos</th>
+                                        <th className="text-left px-3 py-3 font-bold text-slate-600 text-xs uppercase tracking-wide">Auditado</th>
+                                        <th className="text-left px-3 py-3 font-bold text-slate-600 text-xs uppercase tracking-wide">Observaciones</th>
                                         <th className="px-3 py-3 print:hidden" />
                                     </tr>
                                 </thead>
@@ -326,13 +385,28 @@ function PlanContent() {
                                                     className="w-36 px-2 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
                                                 />
                                             </td>
-                                            <td className="px-3 py-2 print:hidden">
+                                            <td className="px-3 py-2">
+                                                <input type="text" value={act.auditee || ''}
+                                                    onChange={e => updateActivity(i, 'auditee', e.target.value)}
+                                                    placeholder="Auditado"
+                                                    className="w-32 px-2 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                                                />
+                                            </td>
+                                            <td className="px-3 py-2">
+                                                <input type="text" value={act.observations || ''}
+                                                    onChange={e => updateActivity(i, 'observations', e.target.value)}
+                                                    placeholder="Observaciones"
+                                                    className="w-48 px-2 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                                                />
+                                            </td>
+                                            <td className="px-3 py-2 text-right whitespace-nowrap print:hidden">
                                                 <button type="button" onClick={() => removeActivity(i)}
-                                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                                    <Trash2 size={14} />
+                                                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                                    <Trash2 size={16} />
                                                 </button>
                                             </td>
                                         </tr>
+
                                     ))}
                                 </tbody>
                             </table>

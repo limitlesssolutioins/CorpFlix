@@ -10,6 +10,7 @@ interface AuditProgram {
     id?: number; standard_id?: number; year: number;
     objectives?: string; scope?: string; criteria?: string;
     resources?: string; methodology?: string;
+    frequency?: string; audit_type?: string; responsible?: string; risks?: string; duration?: string;
     status?: string; approved_by?: string; approved_date?: string;
 }
 interface AuditRow {
@@ -33,7 +34,9 @@ export default function ProgramaPage() {
     const [year, setYear] = useState(currentYear);
     const [program, setProgram] = useState<AuditProgram | null>(null);
     const [formData, setFormData] = useState<Omit<AuditProgram, 'id' | 'standard_id' | 'year'>>({
-        objectives: '', scope: '', criteria: '', resources: '', methodology: '', status: 'DRAFT', approved_by: '', approved_date: '',
+        objectives: '', scope: '', criteria: '', resources: '', methodology: '', 
+        frequency: 'Anual', audit_type: '', responsible: '', risks: '', duration: '',
+        status: 'DRAFT', approved_by: '', approved_date: '',
     });
     const [audits, setAudits] = useState<AuditRow[]>([]);
     const [saving, setSaving] = useState(false);
@@ -69,12 +72,21 @@ export default function ProgramaPage() {
                     criteria: prog.criteria || '',
                     resources: prog.resources || '',
                     methodology: prog.methodology || '',
+                    frequency: prog.frequency || 'Anual',
+                    audit_type: prog.audit_type || '',
+                    responsible: prog.responsible || '',
+                    risks: prog.risks || '',
+                    duration: prog.duration || '',
                     status: prog.status || 'DRAFT',
                     approved_by: prog.approved_by || '',
                     approved_date: prog.approved_date || '',
                 });
             } else {
-                setFormData({ objectives: '', scope: '', criteria: '', resources: '', methodology: '', status: 'DRAFT', approved_by: '', approved_date: '' });
+                setFormData({ 
+                    objectives: '', scope: '', criteria: '', resources: '', methodology: '', 
+                    frequency: 'Anual', audit_type: '', responsible: '', risks: '', duration: '',
+                    status: 'DRAFT', approved_by: '', approved_date: '' 
+                });
             }
 
             // Load teams
@@ -155,6 +167,46 @@ export default function ProgramaPage() {
                 <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                     <h2 className="text-base font-bold text-slate-900 mb-4">Información del Programa</h2>
                     <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Frecuencia</label>
+                                <select value={formData.frequency}
+                                    onChange={e => setFormData({ ...formData, frequency: e.target.value })}
+                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                    <option value="Anual">Anual</option>
+                                    <option value="Bianual">Bianual</option>
+                                    <option value="Trianual">Trianual</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Tipo de Auditoría</label>
+                                <input type="text" value={formData.audit_type}
+                                    onChange={e => setFormData({ ...formData, audit_type: e.target.value })}
+                                    placeholder="Ej: Interna, Certificación..."
+                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Responsable</label>
+                                <input type="text" value={formData.responsible}
+                                    onChange={e => setFormData({ ...formData, responsible: e.target.value })}
+                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1.5">Duración Estimada</label>
+                                <input type="text" value={formData.duration}
+                                    onChange={e => setFormData({ ...formData, duration: e.target.value })}
+                                    placeholder="Ej: 3 días, 24 horas..."
+                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-1.5">Riesgos del Programa</label>
+                            <textarea rows={2} value={formData.risks}
+                                onChange={e => setFormData({ ...formData, risks: e.target.value })}
+                                placeholder="Riesgos identificados que podrían afectar la ejecución del programa..."
+                                className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                            />
+                        </div>
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-1.5">Objetivos del Programa</label>
                             <textarea rows={3} value={formData.objectives}

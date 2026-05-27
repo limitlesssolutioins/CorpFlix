@@ -32,8 +32,114 @@ export class ISOAuditService {
   }
   
   getDashboardKPIs(standardId?: number) { return {}; }
-  getPrograms(standardId?: number, year?: number) { return []; }
-  saveAuditPlan(auditId: string, plan: any, activities: any[]) { return null as any; }
+
+  async getPrograms(standardId?: number, year?: number): Promise<any[]> {
+    let sql = 'SELECT * FROM AuditProgram WHERE 1=1';
+    const params: any[] = [];
+    if (standardId) { sql += ' AND standard_id = ?'; params.push(standardId); }
+    if (year) { sql += ' AND year = ?'; params.push(year); }
+    sql += ' ORDER BY year DESC';
+    return await query<any[]>(sql, params);
+  }
+
+  async createProgram(data: any): Promise<any> {
+    const result = await query<any>(`
+        INSERT INTO AuditProgram (standard_id, year, objectives, scope, criteria, resources, methodology, frequency, audit_type, responsible, risks, duration, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+        data.standard_id, data.year, data.objectives, data.scope, data.criteria, data.resources, data.methodology,
+        data.frequency || 'Anual', data.audit_type, data.responsible, data.risks, data.duration, data.status || 'DRAFT'
+    ]);
+    const [newProgram] = await query<any[]>('SELECT * FROM AuditProgram WHERE id = ?', [result.insertId]);
+    return newProgram;
+  }
+
+  async updateProgram(id: string | number, data: any): Promise<any> {
+    await query(`
+        UPDATE AuditProgram SET 
+            objectives=?, scope=?, criteria=?, resources=?, methodology=?, 
+            frequency=?, audit_type=?, responsible=?, risks=?, duration=?, status=?, approved_by=?, approved_date=?
+        WHERE id = ?
+    `, [
+        data.objectives, data.scope, data.criteria, data.resources, data.methodology,
+        data.frequency, data.audit_type, data.responsible, data.risks, data.duration, 
+        data.status, data.approved_by, data.approved_date, id
+    ]);
+    const [updated] = await query<any[]>('SELECT * FROM AuditProgram WHERE id = ?', [id]);
+    return updated;
+  }
+
+  async saveAuditPlan(auditId: string | number, plan: any, activities: any[]): Promise<void> {
+    const [existing] = await query<any[]>('SELECT id FROM AuditPlan WHERE audit_id = ?', [auditId]);
+    if (existing) {
+        await query(`
+            UPDATE AuditPlan SET 
+                opening_meeting_datetime=?, closing_meeting_datetime=?, location=?, criteria=?, 
+                documents_to_review=?, confidentiality=?, objective=?, scope=?, methods=?, resources=?, risks=?
+            WHERE id = ?
+        `, [
+            plan.opening_meeting_datetime, plan.closing_meeting_datetime, plan.location, plan.criteria,
+            plan.documents_to_review, plan.confidentiality, plan.objective, plan.scope, plan.methods, plan.resources, plan.risks,
+            existing.id
+        ]);
+    } else {
+        await query(`
+            INSERT INTO AuditPlan (audit_id, opening_meeting_datetime, closing_meeting_datetime, location, criteria, documents_to_review, confidentiality, objective, scope, methods, resources, risks)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            auditId, plan.opening_meeting_datetime, plan.closing_meeting_datetime, plan.location, plan.criteria,
+            plan.documents_to_review, plan.confidentiality, plan.objective, plan.scope, plan.methods, plan.resources, plan.risks
+        ]);
+    }
+
+    // Handle activities
+    const [planRecord] = await query<any[]>('SELECT id FROM AuditPlan WHERE audit_id = ?', [auditId]);
+    const planId = planRecord.id;
+
+    await query('DELETE FROM AuditPlanActivity WHERE plan_id = ?', [planId]);
+    for (const act of activities) {
+        if (!act.activity) continue;
+        await query(`
+            INSERT INTO AuditPlanActivity (plan_id, activity_date, start_time, end_time, activity, process_area, auditor_ids, documents, auditee, observations, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            planId, act.activity_date, act.start_time, act.end_time, act.activity, act.process_area,
+            act.auditor_ids, act.documents, act.auditee, act.observations, act.sort_order || 0
+        ]);
+    }
+  }
+
+  async getAuditPlan(auditId: string | number): Promise<{ plan: any, activities: any[] }> {
+    const [plan] = await query<any[]>('SELECT * FROM AuditPlan WHERE audit_id = ?', [auditId]);
+    if (!plan) return { plan: null, activities: [] };
+
+    const activities = await query<any[]>('SELECT * FROM AuditPlanActivity WHERE plan_id = ? ORDER BY activity_date, start_time, sort_order', [plan.id]);
+    return { plan, activities };
+  }
+
+  async getAuditReport(auditId: string | number): Promise<any> {
+    const [report] = await query<any[]>('SELECT * FROM AuditReport WHERE audit_id = ?', [auditId]);
+    return report || null;
+  }
+
+  async saveAuditReport(auditId: string | number, data: any): Promise<any> {
+    const companyId = await this.getCompanyContext();
+    const [existing] = await query<any[]>('SELECT id FROM AuditReport WHERE audit_id = ?', [auditId]);
+    if (existing) {
+        await query(`
+            UPDATE AuditReport SET 
+                suitability=?, effectiveness=?, convenience=?, risks=?, summary=?
+            WHERE id = ?
+        `, [data.suitability, data.effectiveness, data.convenience, data.risks, data.summary, existing.id]);
+    } else {
+        await query(`
+            INSERT INTO AuditReport (audit_id, company_id, suitability, effectiveness, convenience, risks, summary)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [auditId, companyId, data.suitability, data.effectiveness, data.convenience, data.risks, data.summary]);
+    }
+    return await this.getAuditReport(auditId);
+  }
+
   async getAuditTeam(auditId: string): Promise<any[]> {
     return await query<any[]>(`
         SELECT at.*, aa.name, aa.email, aa.role, aa.area
@@ -74,6 +180,7 @@ export class ISOAuditService {
                 WHEN af.type = 'CONFORMITY' THEN 1
                 WHEN af.type = 'NON_CONFORMITY' THEN 2
                 WHEN af.type = 'OPPORTUNITY' THEN 3
+                WHEN af.type = 'STRENGTH' THEN 4
                 ELSE NULL
             END as finding_type_id
         FROM AuditRequirement req
@@ -97,6 +204,7 @@ export class ISOAuditService {
         let typeStr = 'CONFORMITY';
         if (f.finding_type_id === 2) typeStr = 'NON_CONFORMITY';
         if (f.finding_type_id === 3) typeStr = 'OPPORTUNITY';
+        if (f.finding_type_id === 4) typeStr = 'STRENGTH';
 
         const [existing] = await query<any[]>('SELECT id FROM AuditFinding WHERE auditId = ? AND requirementId = ?', [auditId, f.requirement_id]);
 
@@ -150,23 +258,37 @@ export class ISOAuditService {
   // AUDITS
   // ==========================================
 
-  async getAllAudits(filters: any = {}): Promise<Audit[]> {
+  async getAllAudits(filters: any = {}): Promise<any[]> {
     const companyId = await this.getCompanyContext();
-    let sql = 'SELECT * FROM Audit WHERE companyId = ?';
+    let sql = `
+        SELECT a.*, s.name as standard_name, s.code as standard_code, s.color as standard_color, s.id as standard_id
+        FROM Audit a
+        LEFT JOIN AuditStandard s ON a.standardId = s.id
+        WHERE a.companyId = ?
+    `;
     const params: any[] = [companyId];
 
     if (filters.status) {
-        sql += ' AND status = ?';
+        sql += ' AND a.status = ?';
         params.push(filters.status);
     }
+    if (filters.standard_id) {
+        sql += ' AND a.standardId = ?';
+        params.push(filters.standard_id);
+    }
     
-    sql += ' ORDER BY date DESC';
-    return await query<Audit[]>(sql, params);
+    sql += ' ORDER BY a.date DESC';
+    return await query<any[]>(sql, params);
   }
 
-  async getAuditById(id: string): Promise<Audit | null> {
+  async getAuditById(id: string): Promise<any | null> {
     const companyId = await this.getCompanyContext();
-    const [audit] = await query<Audit[]>('SELECT * FROM Audit WHERE id = ? AND companyId = ?', [id, companyId]);
+    const [audit] = await query<any[]>(`
+        SELECT a.*, s.name as standard_name, s.code as standard_code, s.color as standard_color, s.id as standard_id
+        FROM Audit a
+        LEFT JOIN AuditStandard s ON a.standardId = s.id
+        WHERE a.id = ? AND a.companyId = ?
+    `, [id, companyId]);
     return audit || null;
   }
 

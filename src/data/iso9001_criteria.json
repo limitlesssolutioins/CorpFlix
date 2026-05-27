@@ -1,42 +1,4 @@
 {
-  "10.1": {
-    "title": "Generalidades",
-    "criteria": [
-      "La organización debe determinar y seleccionar las oportunidades de mejora e implementar cualquier acción necesaria para cumplir los requisitos del cliente y aumentar la satisfacción del cliente.",
-      "Estas deben incluir: a) mejorar los productos y servicios para cumplir los requisitos, así como tratar las necesidades y expectativas futuras;",
-      "Estas deben incluir: b) corregir, prevenir o reducir los efectos indeseados;",
-      "Estas deben incluir: c) mejorar el desempeño y la eficacia del sistema de gestión de la calidad."
-    ]
-  },
-  "10.2.1": {
-    "title": "Cuando ocurra una no conformidad, incluida cualquiera originada por quejas, la organización debe:",
-    "criteria": [
-      "Cuando ocurra una no conformidad, la organización debe: a) reaccionar ante la no conformidad y, cuando sea aplicable: 1) tomar acciones para controlarla y corregirla;",
-      "Cuando ocurra una no conformidad, la organización debe: a) reaccionar ante la no conformidad y, cuando sea aplicable: 2) hacer frente a las consecuencias;",
-      "Cuando ocurra una no conformidad, la organización debe: b) evaluar la necesidad de acciones para eliminar las causas de la no conformidad, mediante: 1) la revisión y el análisis de la no conformidad;",
-      "Cuando ocurra una no conformidad, la organización debe: b) evaluar la necesidad de acciones para eliminar las causas de la no conformidad, mediante: 2) la determinación de las causas de la no conformidad;",
-      "Cuando ocurra una no conformidad, la organización debe: b) evaluar la necesidad de acciones para eliminar las causas de la no conformidad, mediante: 3) la determinación de si existen no conformidades similares, o que potencialmente podrían ocurrir;",
-      "Cuando ocurra una no conformidad, la organización debe: c) implementar cualquier acción necesaria;",
-      "Cuando ocurra una no conformidad, la organización debe: d) revisar la eficacia de cualquier acción correctiva tomada;",
-      "Cuando ocurra una no conformidad, la organización debe: e) si es necesario, actualizar los riesgos y oportunidades determinados durante la planificación;",
-      "Cuando ocurra una no conformidad, la organización debe: f) si es necesario, hacer cambios al sistema de gestión de la calidad.",
-      "Las acciones correctivas deben ser adecuadas a los efectos de las no conformidades encontradas."
-    ]
-  },
-  "10.2.2": {
-    "title": "La organización debe conservar información documentada, como evidencia de:",
-    "criteria": [
-      "La organización debe conservar información documentada, como evidencia de: a) la naturaleza de las no conformidades y cualquier acción posterior tomada;",
-      "La organización debe conservar información documentada, como evidencia de: b) los resultados de cualquier acción correctiva."
-    ]
-  },
-  "10.3": {
-    "title": "MEJORA CONTINUA",
-    "criteria": [
-      "La organización debe mejorar continuamente la idoneidad, adecuación y eficacia del sistema de gestión de la calidad.",
-      "La organización debe considerar los resultados del análisis y la evaluación, y las salidas de la revisión por la dirección, para determinar si hay necesidades u oportunidades que deben tratarse como parte de la mejora continua."
-    ]
-  },
   "4.1": {
     "title": "COMPRENSIÓN DE LA ORGANIZACIÓN Y DE SU CONTEXTO",
     "criteria": [
@@ -60,6 +22,12 @@
       "Cuando se determina este alcance, la organización debe considerar: c. Los productos y servicios de la organización;",
       "El alcance debe estar disponible y mantenerse como información documentada estableciendo: Los tipos de productos y servicios cubiertos por el sistema de gestión de la calidad;",
       "El alcance debe estar disponible y mantenerse como información documentada estableciendo: La justificación para cualquier requisito de esta norma internacional que la organización determine que no es aplicable para el alcance de su SGC."
+    ]
+  },
+  "4.4": {
+    "title": "SISTEMA DE GESTIÓN DE LA CALIDAD Y SUS PROCESOS",
+    "criteria": [
+      "La organización debe establecer, implementar, mantener y mejorar continuamente un sistema de gestión de la calidad, incluidos los procesos necesarios y sus interacciones, de acuerdo con los requisitos de esta Norma Internacional."
     ]
   },
   "4.4.1": {
@@ -186,7 +154,7 @@
     ]
   },
   "7.1.1": {
-    "title": "",
+    "title": "Generalidades",
     "criteria": [
       "La organización debe determinar y proporcionar los recursos necesarios para el establecimiento, implementación, mantenimiento y mejora continua del SGC.",
       "La organización debe considerar: a) las capacidades y limitaciones de los recursos internos existentes;",
@@ -206,13 +174,13 @@
     ]
   },
   "7.1.4": {
-    "title": "",
+    "title": "Ambiente para la operación de los procesos",
     "criteria": [
       "La organización debe determinar, proporcionar y mantener el ambiente necesario para la operación de sus procesos y para lograr la conformidad de los productos y servicios."
     ]
   },
   "7.1.5.1": {
-    "title": "",
+    "title": "Generalidades",
     "criteria": [
       "La organización debe determinar y proporcionar los recursos necesarios para asegurarse de la validez y fiabilidad de los resultados de seguimiento o medición.",
       "La organización debe asegurarse de que los recursos: a) son adecuados para el tipo específico de actividades realizadas;",
@@ -221,7 +189,7 @@
     ]
   },
   "7.1.5.2": {
-    "title": "",
+    "title": "Trazabilidad de la medición",
     "criteria": [
       "Cuando la trazabilidad sea un requisito, el equipo de medición debe: a) verificarse o calibrarse a intervalos especificados o antes de su utilización;",
       "Cuando la trazabilidad sea un requisito, el equipo de medición debe: b) identificarse para determinar su estado;",
@@ -263,7 +231,7 @@
     ]
   },
   "7.5.1": {
-    "title": "",
+    "title": "Generalidades",
     "criteria": [
       "El SGC de la organización debe incluir: a) la información documentada requerida por esta Norma Internacional;",
       "El SGC de la organización debe incluir: b) la información documentada que la organización ha determinado necesaria para la eficacia del sistema."
@@ -278,14 +246,14 @@
     ]
   },
   "7.5.3.1": {
-    "title": "",
+    "title": "Control de la información documentada",
     "criteria": [
       "La información documentada se debe controlar para asegurarse de que: a) esté disponible y adecuada para su uso;",
       "La información documentada se debe controlar para asegurarse de que: b) esté protegida adecuadamente (confidencialidad, uso inadecuado, integridad)."
     ]
   },
   "7.5.3.2": {
-    "title": "",
+    "title": "Control de la información documentada - Conservación",
     "criteria": [
       "Para el control de la información documentada, la organización debe tratar: a) distribución, acceso, recuperación y uso;",
       "Para el control de la información documentada, la organización debe tratar: b) almacenamiento y preservación (incluida legibilidad);",
@@ -328,7 +296,7 @@
     ]
   },
   "8.2.3.1": {
-    "title": "",
+    "title": "Revisión de los requisitos para los productos y servicios",
     "criteria": [
       "La organización debe asegurarse de que tiene la capacidad de cumplir los requisitos para los productos y servicios que se van a ofrecer a los clientes.",
       "La organización debe llevar a cabo una revisión antes de comprometerse a suministrar productos y servicios a un cliente, para incluir: a) los requisitos especificados por el cliente, incluyendo los requisitos para las actividades de entrega y las posteriores a la misma;",
@@ -341,7 +309,7 @@
     ]
   },
   "8.2.3.2": {
-    "title": "",
+    "title": "Conservación de información documentada de la revisión",
     "criteria": [
       "La organización debe conservar la información documentada, cuando sea aplicable: a) sobre los resultados de la revisión;",
       "La organización debe conservar la información documentada, cuando sea aplicable: b) sobre cualquier requisito nuevo para los productos y servicios."
@@ -592,7 +560,7 @@
     ]
   },
   "9.3.1": {
-    "title": "",
+    "title": "Generalidades",
     "criteria": [
       "La alta dirección debe revisar el sistema de gestión de la calidad de la organización a intervalos planificados, para asegurarse de su idoneidad, adecuación, eficacia y alineación con la dirección estratégica de la organización continuas."
     ]
@@ -621,6 +589,44 @@
       "Las salidas de la revisión por la dirección deben incluir las decisiones y acciones relacionadas con: b) cualquier necesidad de cambio en el sistema de gestión de la calidad;",
       "Las salidas de la revisión por la dirección deben incluir las decisiones y acciones relacionadas con: c) las necesidades de recursos.",
       "La organización debe conservar información documentada como evidencia de los resultados de las revisiones por la dirección."
+    ]
+  },
+  "10.1": {
+    "title": "Generalidades",
+    "criteria": [
+      "La organización debe determinar y seleccionar las oportunidades de mejora e implementar cualquier acción necesaria para cumplir los requisitos del cliente y aumentar la satisfacción del cliente.",
+      "Estas deben incluir: a) mejorar los productos y servicios para cumplir los requisitos, así como tratar las necesidades y expectativas futuras;",
+      "Estas deben incluir: b) corregir, prevenir o reducir los efectos indeseados;",
+      "Estas deben incluir: c) mejorar el desempeño y la eficacia del sistema de gestión de la calidad."
+    ]
+  },
+  "10.2.1": {
+    "title": "Cuando ocurra una no conformidad, incluida cualquiera originada por quejas, la organización debe:",
+    "criteria": [
+      "Cuando ocurra una no conformidad, la organización debe: a) reaccionar ante la no conformidad y, cuando sea aplicable: 1) tomar acciones para controlarla y corregirla;",
+      "Cuando ocurra una no conformidad, la organización debe: a) reaccionar ante la no conformidad y, cuando sea aplicable: 2) hacer frente a las consecuencias;",
+      "Cuando ocurra una no conformidad, la organización debe: b) evaluar la necesidad de acciones para eliminar las causas de la no conformidad, mediante: 1) la revisión y el análisis de la no conformidad;",
+      "Cuando ocurra una no conformidad, la organización debe: b) evaluar la necesidad de acciones para eliminar las causas de la no conformidad, mediante: 2) la determinación de las causas de la no conformidad;",
+      "Cuando ocurra una no conformidad, la organización debe: b) evaluar la necesidad de acciones para eliminar las causas de la no conformidad, mediante: 3) la determinación de si existen no conformidades similares, o que potencialmente podrían ocurrir;",
+      "Cuando ocurra una no conformidad, la organización debe: c) implementar cualquier acción necesaria;",
+      "Cuando ocurra una no conformidad, la organización debe: d) revisar la eficacia de cualquier acción correctiva tomada;",
+      "Cuando ocurra una no conformidad, la organización debe: e) si es necesario, actualizar los riesgos y oportunidades determinados durante la planificación;",
+      "Cuando ocurra una no conformidad, la organización debe: f) si es necesario, hacer cambios al sistema de gestión de la calidad.",
+      "Las acciones correctivas deben ser adecuadas a los efectos de las no conformidades encontradas."
+    ]
+  },
+  "10.2.2": {
+    "title": "La organización debe conservar información documentada, como evidencia de:",
+    "criteria": [
+      "La organización debe conservar información documentada, como evidencia de: a) la naturaleza de las no conformidades y cualquier acción posterior tomada;",
+      "La organización debe conservar información documentada, como evidencia de: b) los resultados de cualquier acción correctiva."
+    ]
+  },
+  "10.3": {
+    "title": "MEJORA CONTINUA",
+    "criteria": [
+      "La organización debe mejorar continuamente la idoneidad, adecuación y eficacia del sistema de gestión de la calidad.",
+      "La organización debe considerar los resultados del análisis y la evaluación, y las salidas de la revisión por la dirección, para determinar si hay necesidades u oportunidades que deben tratarse como parte de la mejora continua."
     ]
   }
 }

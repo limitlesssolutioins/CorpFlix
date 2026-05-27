@@ -61,7 +61,6 @@ export default function ChecklistPage() {
     const [findings, setFindings] = useState<Map<number, FindingState>>(new Map());
     const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
     const [collapsedChapters, setCollapsedChapters] = useState<Set<number>>(new Set());
-    const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saveResult, setSaveResult] = useState<{ saved: number; actionsCreated: number } | null>(null);
@@ -274,35 +273,51 @@ export default function ChecklistPage() {
         }
     };
 
-    const toggleExpand = async (reqId: number) => {
+    const toggleExpand = async (item: any) => {
+        const reqId = item.id;
         const willExpand = !expandedItems.has(reqId);
         setExpandedItems(prev => {
             const next = new Set(prev);
             if (next.has(reqId)) next.delete(reqId); else next.add(reqId);
             return next;
         });
-        if (willExpand) await loadVariables(reqId);
-    };
-
-    const toggleParent = (code: string) => {
-        setExpandedParents(prev => {
-            const next = new Set(prev);
-            if (next.has(code)) next.delete(code); else next.add(code);
-            return next;
-        });
+        
+        if (willExpand) {
+            if (item.is_auditable === 1) {
+                await loadVariables(reqId);
+            }
+        }
     };
 
     const isVisible = (code: string) => {
         const parts = code.split('.');
-        // Top level items within a chapter (e.g., "4.1", "5.2") should always be visible
-        if (parts.length <= 2) return true;
-        
-        // Deeper levels (e.g., "4.4.1") only visible if their direct parent ("4.4") is expanded
-        for (let i = 2; i < parts.length; i++) {
-            const parentCode = parts.slice(0, i).join('.');
-            if (!expandedParents.has(parentCode)) return false;
+        // Find if any direct parent exists in the items list
+        // If it doesn't exist, this is a root item for the standard
+        const parentCode = parts.slice(0, -1).join('.');
+        if (!parentCode || parentCode === parts[0]) {
+            // It's a top level item (e.g., "4.1" or "1.1.1" if no "1.1" exists)
+            // But we need to be more precise: if "1.1" exists in items, then "1.1.1" is NOT root.
+            const parentExists = items.some(i => i.requirement_code === parentCode);
+            if (!parentExists) return true;
+        }
+
+        // Check all levels of hierarchy
+        for (let i = 1; i < parts.length; i++) {
+            const currentParentCode = parts.slice(0, i).join('.');
+            const parentItem = items.find(it => it.requirement_code === currentParentCode);
+            if (parentItem && !expandedItems.has(parentItem.id)) return false;
         }
         return true;
+    };
+
+    const getIndentLevel = (code: string) => {
+        const parts = code.split('.');
+        // Find the minimum number of parts in the current standard to normalize indent
+        // If the standard starts at 1.1.1, then 1.1.1 should have indent 0.
+        // For now, let's keep it simple: count dots, but subtract the 'root' depth.
+        // We can detect root depth from the first items.
+        const minParts = Math.min(...items.map(i => i.requirement_code.split('.').length));
+        return Math.max(0, parts.length - minParts);
     };
 
     const generateOpportunities = async () => {
@@ -780,178 +795,122 @@ export default function ChecklistPage() {
                                         if (!isVisible(item.requirement_code)) return null;
                                         const indent = getIndentLevel(item.requirement_code);
                                         const isExpanded = expandedItems.has(item.id);
+                                        const isAuditable = item.is_auditable === 1;
 
-                                        // PARENT item
-                                        if (item.is_auditable === 0) {
-                                            const isParentExpanded = expandedParents.has(item.requirement_code);
-                                            const childCount = countLeafChildren(item.requirement_code);
-                                            const evalCount = countEvaluated(item.requirement_code);
-                                            
-                                            return (
-                                                <div key={item.id} className="border-b border-slate-100 last:border-0" style={{ paddingLeft: `${indent * 20}px` }}>
-                                                    <div className="flex items-center px-4 py-2.5 hover:bg-slate-50 transition-colors">
-                                                        <button onClick={() => toggleParent(item.requirement_code)}
-                                                            className="flex items-center gap-2 min-w-0 flex-1 text-left">
-                                                            <div className="w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ backgroundColor: `${accentColor}18`, color: accentColor }}>
-                                                                {isParentExpanded ? <Minus size={12} /> : <Plus size={12} />}
-                                                            </div>
-                                                            <span className="text-xs font-mono font-black text-slate-500 shrink-0">{item.requirement_code}</span>
-                                                            <span className="text-sm font-bold text-slate-700 truncate">{item.requirement_title}</span>
-                                                            <span className="text-[10px] text-slate-400 shrink-0 ml-2">({evalCount}/{childCount})</span>
-                                                        </button>
-                                                        
-                                                        {/* Parent items only show criteria expansion, not compliance buttons */}
-                                                        <button onClick={() => toggleExpand(item.id)}
-                                                            className={`p-1.5 rounded-lg border transition-all ${isExpanded ? 'bg-slate-100 border-slate-300' : 'border-transparent hover:bg-slate-100'}`}>
-                                                            {isExpanded ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-400" />}
-                                                        </button>
-                                                    </div>
-                                                    {isExpanded && (
-                                                        <div className="px-4 pb-4">
-                                                            {renderVariables(item)}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        }
-
-                                        // LEAF item
                                         const f = findings.get(item.id);
                                         const isCumple = f?.type_id === CUMPLE_ID;
                                         const isNC = f?.type_id === NC_ID;
                                         const isOP = f?.type_id === OPPORTUNITY_ID;
                                         const isFortaleza = f?.type_id === FORTALEZA_ID;
 
-                                        // isExpanded is already declared above
-                                        const vars = reqVariables.get(item.id) || [];
-                                        const isLoadingV = loadingVars.has(item.id);
-                                        const isGeneratingV = generatingVars.has(item.id);
-                                        const isEditingV = editingVars.has(item.id);
-                                        const isSavingV = savingVars.has(item.id);
-                                        const drafts = varDrafts.get(item.id) || [];
-                                        const hasVars = vars.length > 0;
-                                        const answeredCount = hasVars ? vars.filter(v => varAnswers.has(`${item.id}-${v.id}`)).length : 0;
-                                        
-                                        const bgColor = isCumple ? '#10b98108' : 
-                                                        isNC ? '#ef444408' : 
-                                                        isOP ? '#f59e0b08' : 
-                                                        isFortaleza ? '#3b82f608' : 'transparent';
+                                        const bgColor = isAuditable ? (
+                                            isCumple ? '#10b98108' : 
+                                            isNC ? '#ef444408' : 
+                                            isOP ? '#f59e0b08' : 
+                                            isFortaleza ? '#3b82f608' : 'transparent'
+                                        ) : 'bg-slate-50/30';
+
+                                        const childCount = !isAuditable ? countLeafChildren(item.requirement_code) : 0;
+                                        const evalCount = !isAuditable ? countEvaluated(item.requirement_code) : 0;
 
                                         return (
-                                            <div key={item.id} className="border-b border-slate-50 last:border-0"
-                                                style={{ backgroundColor: bgColor, paddingLeft: `${indent * 20 + 12}px` }}>
+                                            <div key={item.id} className="border-b border-slate-50 last:border-0 relative"
+                                                style={{ backgroundColor: bgColor, paddingLeft: `${indent * 24}px` }}>
+                                                
+                                                {/* Hierarchy Line */}
+                                                {indent > 0 && (
+                                                    <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200" 
+                                                         style={{ left: `${(indent - 1) * 24 + 16}px` }} />
+                                                )}
+
                                                 <div className="p-3 pr-4">
                                                     <div className="flex items-start gap-3">
-                                                        {/* Code */}
-                                                        <div className="shrink-0 mt-0.5 flex items-center gap-1.5">
-                                                            {indent > 0 && <div className="w-3 h-px bg-slate-300" />}
-                                                            <span className={`text-xs font-mono font-black px-1.5 py-0.5 rounded ${indent === 0 ? 'text-slate-600 bg-slate-100' : 'text-slate-400 bg-white border border-slate-200'}`}>
+                                                        {/* Toggle & Code */}
+                                                        <div className="shrink-0 mt-0.5 flex items-center gap-2">
+                                                            <button onClick={() => toggleExpand(item)}
+                                                                className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${isExpanded ? 'bg-slate-200 text-slate-600' : 'bg-white border border-slate-200 text-slate-400 hover:border-slate-300'}`}>
+                                                                {isExpanded ? <Minus size={12} /> : <Plus size={12} />}
+                                                            </button>
+                                                            <span className={`text-[10px] font-mono font-black px-1.5 py-0.5 rounded ${isAuditable ? 'text-slate-600 bg-slate-100' : 'text-white bg-slate-500'}`}>
                                                                 {item.requirement_code}
                                                             </span>
                                                         </div>
 
                                                         <div className="flex-1 min-w-0">
-                                                            {/* Title + status buttons */}
-                                                            <div className="flex items-start justify-between gap-2 flex-wrap">
-                                                                <div className="flex-1 min-w-0">
-                                                                    <p className="text-sm font-semibold text-slate-800 leading-snug">{item.requirement_title}
-                                                                        {isRes0312 && item.weight > 0 && <span className="ml-1.5 text-xs text-slate-400 font-normal">({item.weight}pts)</span>}
+                                                            {/* Title + Status Buttons */}
+                                                            <div className="flex items-start justify-between gap-3 flex-wrap">
+                                                                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => toggleExpand(item)}>
+                                                                    <p className={`text-sm leading-snug ${isAuditable ? 'font-semibold text-slate-800' : 'font-black text-slate-900 uppercase tracking-tight'}`}>
+                                                                        {item.requirement_title}
+                                                                        {isRes0312 && isAuditable && item.weight > 0 && <span className="ml-1.5 text-[10px] text-slate-400 font-normal">({item.weight}pts)</span>}
+                                                                        {!isAuditable && <span className="text-[10px] text-slate-400 font-normal ml-2">({evalCount}/{childCount} evaluados)</span>}
                                                                     </p>
-                                                                    {/* Variable progress */}
-                                                                    {hasVars && (
-                                                                        <p className="text-xs text-slate-400 mt-0.5">
-                                                                            {answeredCount}/{vars.length} criterios respondidos
-                                                                            {answeredCount === vars.length && (isCumple || isFortaleza) && <span className="text-emerald-600 font-bold ml-1">→ Cumple automático</span>}
-                                                                            {answeredCount === vars.length && isNC && <span className="text-red-600 font-bold ml-1">→ No Cumple automático</span>}
-                                                                        </p>
+                                                                    
+                                                                    {isAuditable && (
+                                                                        <div className="flex items-center gap-2 mt-1">
+                                                                            {/* Mini Status indicators */}
+                                                                            {isFortaleza && <span className="text-[10px] font-bold text-blue-600 flex items-center gap-1"><TrendingUp size={10} /> Fortaleza</span>}
+                                                                            {isCumple && <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1"><CheckCircle2 size={10} /> Cumple</span>}
+                                                                            {isOP && <span className="text-[10px] font-bold text-amber-600 flex items-center gap-1"><Lightbulb size={10} /> Oportunidad</span>}
+                                                                            {isNC && <span className="text-[10px] font-bold text-red-600 flex items-center gap-1"><AlertTriangle size={10} /> No Conformidad</span>}
+                                                                            
+                                                                            {/* Variable progress */}
+                                                                            <p className="text-[10px] text-slate-400">
+                                                                                {(reqVariables.get(item.id) || []).length > 0 ? `${(reqVariables.get(item.id) || []).filter(v => varAnswers.has(`${item.id}-${v.id}`)).length}/${(reqVariables.get(item.id) || []).length} criterios` : 'Sin criterios'}
+                                                                            </p>
+                                                                        </div>
                                                                     )}
                                                                 </div>
 
-                                                                {/* Status buttons */}
-                                                                <div className="flex items-center gap-1.5 shrink-0">
-                                                                    <button onClick={() => setFindingType(item.id, isFortaleza ? null : FORTALEZA_ID)}
-                                                                        title="Fortaleza"
-                                                                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isFortaleza ? 'bg-blue-50 border-blue-400 text-blue-700' : 'border-slate-200 hover:border-blue-300 bg-white text-slate-500'}`}>
-                                                                        <TrendingUp size={12} /> Fortaleza
-                                                                    </button>
-                                                                    <button onClick={() => setFindingType(item.id, isCumple ? null : CUMPLE_ID)}
-                                                                        title="Cumple"
-                                                                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isCumple ? 'bg-emerald-50 border-emerald-400 text-emerald-700' : 'border-slate-200 hover:border-emerald-300 bg-white text-slate-500'}`}>
-                                                                        <CheckCircle2 size={12} /> Cumple
-                                                                    </button>
-                                                                    <button onClick={() => setFindingType(item.id, isOP ? null : OPPORTUNITY_ID)}
-                                                                        title="Oportunidad de Mejora"
-                                                                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isOP ? 'bg-amber-50 border-amber-400 text-amber-700' : 'border-slate-200 hover:border-amber-300 bg-white text-slate-500'}`}>
-                                                                        <Lightbulb size={12} /> Oportunidad
-                                                                    </button>
-                                                                    <button onClick={() => setFindingType(item.id, isNC ? null : NC_ID)}
-                                                                        title="No Conformidad"
-                                                                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all ${isNC ? 'bg-red-50 border-red-400 text-red-700' : 'border-slate-200 hover:border-red-300 bg-white text-slate-500'}`}>
-                                                                        <XCircle size={12} /> NC
-                                                                    </button>
-                                                                    <button onClick={() => toggleExpand(item.id)}
-                                                                        className={`p-1.5 rounded-lg border-2 transition-all ${isExpanded ? 'border-slate-300 bg-slate-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-                                                                        {isExpanded ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-400" />}
-                                                                    </button>
-                                                                </div>
+                                                                {/* Status buttons for leaf items */}
+                                                                {isAuditable && (
+                                                                    <div className="flex items-center gap-1.5 shrink-0">
+                                                                        <button onClick={() => setFindingType(item.id, isFortaleza ? null : FORTALEZA_ID)}
+                                                                            className={`px-2 py-1.5 rounded-lg border-2 text-[10px] font-black uppercase transition-all ${isFortaleza ? 'bg-blue-50 border-blue-400 text-blue-700' : 'border-slate-100 bg-white text-slate-400 hover:border-blue-200'}`}>
+                                                                            F
+                                                                        </button>
+                                                                        <button onClick={() => setFindingType(item.id, isCumple ? null : CUMPLE_ID)}
+                                                                            className={`px-2 py-1.5 rounded-lg border-2 text-[10px] font-black uppercase transition-all ${isCumple ? 'bg-emerald-50 border-emerald-400 text-emerald-700' : 'border-slate-100 bg-white text-slate-400 hover:border-emerald-200'}`}>
+                                                                            C
+                                                                        </button>
+                                                                        <button onClick={() => setFindingType(item.id, isOP ? null : OPPORTUNITY_ID)}
+                                                                            className={`px-2 py-1.5 rounded-lg border-2 text-[10px] font-black uppercase transition-all ${isOP ? 'bg-amber-50 border-amber-400 text-amber-700' : 'border-slate-100 bg-white text-slate-400 hover:border-amber-200'}`}>
+                                                                            OP
+                                                                        </button>
+                                                                        <button onClick={() => setFindingType(item.id, isNC ? null : NC_ID)}
+                                                                            className={`px-2 py-1.5 rounded-lg border-2 text-[10px] font-black uppercase transition-all ${isNC ? 'bg-red-50 border-red-400 text-red-700' : 'border-slate-100 bg-white text-slate-400 hover:border-red-200'}`}>
+                                                                            NC
+                                                                        </button>
+
+                                                                        <div className="ml-1 w-px h-6 bg-slate-200 mx-1" />
+
+                                                                        {/* Evidence Upload for Item */}
+                                                                        <input type="file" id={`evidence-${item.id}`} className="hidden" accept="image/*,application/pdf"
+                                                                            onChange={async (e) => {
+                                                                                const file = e.target.files?.[0]; if (!file) return;
+                                                                                const formData = new FormData(); formData.append('file', file);
+                                                                                const tId = toast.loading('Subiendo...');
+                                                                                try {
+                                                                                    const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+                                                                                    if (res.ok) { const data = await res.json(); setFindingDetail(item.id, 'evidence', data.url); toast.success('Listo', { id: tId }); }
+                                                                                } catch { toast.error('Error', { id: tId }); }
+                                                                            }}
+                                                                        />
+                                                                        <button onClick={() => document.getElementById(`evidence-${item.id}`)?.click()}
+                                                                            className={`p-1.5 rounded-lg border-2 transition-all ${f?.evidence ? 'bg-blue-50 border-blue-400 text-blue-700' : 'border-slate-100 bg-white text-slate-400 hover:border-blue-200'}`}>
+                                                                            <Plus size={14} />
+                                                                        </button>
+                                                                        {f?.evidence && (
+                                                                            <a href={f.evidence} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg border-2 border-slate-200 bg-white text-blue-500">
+                                                                                <ArrowLeft size={14} className="rotate-180" />
+                                                                            </a>
+                                                                        )}
+                                                                    </div>
+                                                                )}
                                                             </div>
 
-                                                            {/* Status badges */}
-                                                            <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                                {isFortaleza && <span className="text-xs font-bold text-blue-600 flex items-center gap-1"><TrendingUp size={10} /> Fortaleza</span>}
-                                                                {isCumple && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1"><CheckCircle2 size={10} /> Cumple</span>}
-                                                                {isOP && <span className="text-xs font-bold text-amber-600 flex items-center gap-1"><Lightbulb size={10} /> Oportunidad de Mejora</span>}
-                                                                {isNC && <span className="flex items-center gap-1 text-xs font-bold text-red-600"><AlertTriangle size={10} /> No Conformidad</span>}
-                                                                
-                                                                {/* Evidence Badge/Button */}
-                                                                <div className="flex items-center gap-2">
-                                                                    <input 
-                                                                        type="file" 
-                                                                        id={`evidence-${item.id}`}
-                                                                        className="hidden" 
-                                                                        accept="image/*,application/pdf"
-                                                                        onChange={async (e) => {
-                                                                            const file = e.target.files?.[0];
-                                                                            if (!file) return;
-                                                                            
-                                                                            const formData = new FormData();
-                                                                            formData.append('file', file);
-                                                                            
-                                                                            const tId = toast.loading('Subiendo evidencia...');
-                                                                            try {
-                                                                                const res = await fetch('/api/admin/upload', {
-                                                                                    method: 'POST',
-                                                                                    body: formData
-                                                                                });
-                                                                                if (res.ok) {
-                                                                                    const data = await res.json();
-                                                                                    setFindingDetail(item.id, 'evidence', data.url);
-                                                                                    toast.success('Evidencia subida', { id: tId });
-                                                                                } else {
-                                                                                    toast.error('Error al subir', { id: tId });
-                                                                                }
-                                                                            } catch {
-                                                                                toast.error('Error al subir', { id: tId });
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <button 
-                                                                        onClick={() => document.getElementById(`evidence-${item.id}`)?.click()}
-                                                                        className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border transition-all ${f?.evidence ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-slate-200 text-slate-400 hover:border-blue-300'}`}
-                                                                    >
-                                                                        <Plus size={10} /> {f?.evidence ? 'Cambiar Evidencia' : 'Subir Evidencia'}
-                                                                    </button>
-                                                                    {f?.evidence && (
-                                                                        <a href={f.evidence} target="_blank" rel="noopener noreferrer" 
-                                                                           className="text-[10px] font-bold text-blue-500 hover:underline">
-                                                                            Ver archivo
-                                                                        </a>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Expanded panel */}
-                                                            {isExpanded && renderVariables(item)}
+                                                            {/* Expanded Content (Criteria/Findings) */}
+                                                            {isExpanded && isAuditable && renderVariables(item)}
                                                         </div>
                                                     </div>
                                                 </div>

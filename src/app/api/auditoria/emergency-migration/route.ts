@@ -23,18 +23,17 @@ export async function GET() {
         ];
 
         // Obtener columnas actuales de Audit
-        const [existingAuditCols] = await query<any[]>('SHOW COLUMNS FROM Audit');
-        const existingNames = existingAuditCols.map(c => c.Field);
+        const auditColsRes = await query<any>('SHOW COLUMNS FROM Audit');
+        const existingAuditCols = Array.isArray(auditColsRes) ? auditColsRes : (auditColsRes?.rows || []);
+        const existingNames = existingAuditCols.map((c: any) => c.Field);
 
         for (const col of auditColumns) {
             if (!existingNames.includes(col.name)) {
                 // Caso especial: si existe standardId (camelCase), renombrarlo
                 if (col.name === 'standard_id' && existingNames.includes('standardId')) {
                     await query('ALTER TABLE Audit CHANGE COLUMN standardId standard_id INT');
-                    console.log('Renamed standardId to standard_id');
                 } else {
                     await query(`ALTER TABLE Audit ADD COLUMN ${col.name} ${col.type}`);
-                    console.log(`Added column ${col.name} to Audit`);
                 }
             }
         }
@@ -48,13 +47,13 @@ export async function GET() {
             { name: 'duration', type: 'VARCHAR(255)' }
         ];
 
-        const [existingProgCols] = await query<any[]>('SHOW COLUMNS FROM AuditProgram');
-        const existingProgNames = existingProgCols.map(c => c.Field);
+        const progColsRes = await query<any>('SHOW COLUMNS FROM AuditProgram');
+        const existingProgCols = Array.isArray(progColsRes) ? progColsRes : (progColsRes?.rows || []);
+        const existingProgNames = existingProgCols.map((c: any) => c.Field);
 
         for (const col of programColumns) {
             if (!existingProgNames.includes(col.name)) {
                 await query(`ALTER TABLE AuditProgram ADD COLUMN ${col.name} ${col.type}`);
-                console.log(`Added column ${col.name} to AuditProgram`);
             }
         }
         
@@ -66,8 +65,10 @@ export async function GET() {
             { name: 'resources', type: 'TEXT' },
             { name: 'risks', type: 'TEXT' }
         ];
-        const [existingPlanCols] = await query<any[]>('SHOW COLUMNS FROM AuditPlan');
-        const existingPlanNames = existingPlanCols.map(c => c.Field);
+        const planColsRes = await query<any>('SHOW COLUMNS FROM AuditPlan');
+        const existingPlanCols = Array.isArray(planColsRes) ? planColsRes : (planColsRes?.rows || []);
+        const existingPlanNames = existingPlanCols.map((c: any) => c.Field);
+        
         for (const col of planColumns) {
             if (!existingPlanNames.includes(col.name)) {
                 await query(`ALTER TABLE AuditPlan ADD COLUMN ${col.name} ${col.type}`);

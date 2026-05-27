@@ -12,43 +12,71 @@ export async function GET() {
         // 1. Normalizar AuditStandard (asegurar id vs standard_id no es el problema aquí, sino el nombre de la columna en Audit)
         // Pero primero veamos si AuditStandard tiene los nombres de columna correctos.
         
-        // 2. Normalizar Audit
-        await query(`
-            ALTER TABLE Audit 
-            ADD COLUMN IF NOT EXISTS audit_code VARCHAR(191),
-            ADD COLUMN IF NOT EXISTS standard_id INT,
-            ADD COLUMN IF NOT EXISTS scope TEXT,
-            ADD COLUMN IF NOT EXISTS objectives TEXT,
-            ADD COLUMN IF NOT EXISTS criteria TEXT,
-            ADD COLUMN IF NOT EXISTS company_profile VARCHAR(191)
-        `).catch(e => console.log('Audit columns exist or error:', e.message));
+        // 1. Lista de columnas necesarias en la tabla Audit
+        const auditColumns = [
+            { name: 'audit_code', type: 'VARCHAR(191)' },
+            { name: 'standard_id', type: 'INT' },
+            { name: 'scope', type: 'TEXT' },
+            { name: 'objectives', type: 'TEXT' },
+            { name: 'criteria', type: 'TEXT' },
+            { name: 'company_profile', type: 'VARCHAR(191)' }
+        ];
 
-        // Si la columna era standardId (camelCase), la renombramos o aseguramos que standard_id exista
-        // En MySQL DESCRIBE nos diría, pero aquí vamos a asegurar standard_id
-        const columns = await query<any[]>('SHOW COLUMNS FROM Audit');
-        const hasStandardIdUnderscore = columns.find(c => c.Field === 'standard_id');
-        const hasStandardIdCamel = columns.find(c => c.Field === 'standardId');
+        // Obtener columnas actuales de Audit
+        const [existingAuditCols] = await query<any[]>('SHOW COLUMNS FROM Audit');
+        const existingNames = existingAuditCols.map(c => c.Field);
 
-        if (hasStandardIdCamel && !hasStandardIdUnderscore) {
-            await query('ALTER TABLE Audit CHANGE COLUMN standardId standard_id INT');
-            console.log('Renamed standardId to standard_id');
+        for (const col of auditColumns) {
+            if (!existingNames.includes(col.name)) {
+                // Caso especial: si existe standardId (camelCase), renombrarlo
+                if (col.name === 'standard_id' && existingNames.includes('standardId')) {
+                    await query('ALTER TABLE Audit CHANGE COLUMN standardId standard_id INT');
+                    console.log('Renamed standardId to standard_id');
+                } else {
+                    await query(`ALTER TABLE Audit ADD COLUMN ${col.name} ${col.type}`);
+                    console.log(`Added column ${col.name} to Audit`);
+                }
+            }
         }
 
-        // 3. Normalizar AuditProgram
-        await query(`
-            ALTER TABLE AuditProgram 
-            MODIFY COLUMN standard_id INT,
-            ADD COLUMN IF NOT EXISTS frequency VARCHAR(50) DEFAULT 'Anual',
-            ADD COLUMN IF NOT EXISTS audit_type VARCHAR(255),
-            ADD COLUMN IF NOT EXISTS responsible VARCHAR(255),
-            ADD COLUMN IF NOT EXISTS risks TEXT,
-            ADD COLUMN IF NOT EXISTS duration VARCHAR(255)
-        `).catch(e => console.log('AuditProgram columns exist or error:', e.message));
+        // 2. Normalizar AuditProgram
+        const programColumns = [
+            { name: 'frequency', type: "VARCHAR(50) DEFAULT 'Anual'" },
+            { name: 'audit_type', type: 'VARCHAR(255)' },
+            { name: 'responsible', type: 'VARCHAR(255)' },
+            { name: 'risks', type: 'TEXT' },
+            { name: 'duration', type: 'VARCHAR(255)' }
+        ];
+
+        const [existingProgCols] = await query<any[]>('SHOW COLUMNS FROM AuditProgram');
+        const existingProgNames = existingProgCols.map(c => c.Field);
+
+        for (const col of programColumns) {
+            if (!existingProgNames.includes(col.name)) {
+                await query(`ALTER TABLE AuditProgram ADD COLUMN ${col.name} ${col.type}`);
+                console.log(`Added column ${col.name} to AuditProgram`);
+            }
+        }
+        
+        // 3. Normalizar AuditPlan
+        const planColumns = [
+            { name: 'objective', type: 'TEXT' },
+            { name: 'scope', type: 'TEXT' },
+            { name: 'methods', type: 'TEXT' },
+            { name: 'resources', type: 'TEXT' },
+            { name: 'risks', type: 'TEXT' }
+        ];
+        const [existingPlanCols] = await query<any[]>('SHOW COLUMNS FROM AuditPlan');
+        const existingPlanNames = existingPlanCols.map(c => c.Field);
+        for (const col of planColumns) {
+            if (!existingPlanNames.includes(col.name)) {
+                await query(`ALTER TABLE AuditPlan ADD COLUMN ${col.name} ${col.type}`);
+            }
+        }
 
         return NextResponse.json({ 
             success: true, 
-            message: 'Migración de emergencia completada. Columnas normalizadas a snake_case.',
-            columns: columns.map(c => c.Field)
+            message: 'Migración completada con éxito. Todas las columnas están sincronizadas.'
         });
 
     } catch (error: any) {

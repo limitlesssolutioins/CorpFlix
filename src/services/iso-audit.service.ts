@@ -259,79 +259,91 @@ export class ISOAuditService {
   // ==========================================
 
   async getAllAudits(filters: any = {}): Promise<any[]> {
-    const companyId = await this.getCompanyContext();
-    let sql = `
-        SELECT a.*, s.name as standard_name, s.code as standard_code, s.color as standard_color, s.id as standard_id
-        FROM Audit a
-        LEFT JOIN AuditStandard s ON a.standardId = s.id
-        WHERE a.companyId = ?
-    `;
-    const params: any[] = [companyId];
+   const companyId = await this.getCompanyContext();
+   let sql = `
+       SELECT a.*, s.name as standard_name, s.code as standard_code, s.color as standard_color, s.id as standard_id
+       FROM Audit a
+       LEFT JOIN AuditStandard s ON a.standard_id = s.id
+       WHERE a.companyId = ?
+   `;
+   const params: any[] = [companyId];
 
-    if (filters.status) {
-        sql += ' AND a.status = ?';
-        params.push(filters.status);
-    }
-    if (filters.standard_id) {
-        sql += ' AND a.standardId = ?';
-        params.push(filters.standard_id);
-    }
-    
-    sql += ' ORDER BY a.date DESC';
-    return await query<any[]>(sql, params);
+   if (filters.status) {
+       sql += ' AND a.status = ?';
+       params.push(filters.status);
+   }
+   if (filters.standard_id) {
+       sql += ' AND a.standard_id = ?';
+       params.push(filters.standard_id);
+   }
+
+   sql += ' ORDER BY a.date DESC';
+   return await query<any[]>(sql, params);
   }
 
   async getAuditById(id: string): Promise<any | null> {
-    const companyId = await this.getCompanyContext();
-    const [audit] = await query<any[]>(`
-        SELECT a.*, s.name as standard_name, s.code as standard_code, s.color as standard_color, s.id as standard_id
-        FROM Audit a
-        LEFT JOIN AuditStandard s ON a.standardId = s.id
-        WHERE a.id = ? AND a.companyId = ?
-    `, [id, companyId]);
-    return audit || null;
+   const companyId = await this.getCompanyContext();
+   const [audit] = await query<any[]>(`
+       SELECT a.*, s.name as standard_name, s.code as standard_code, s.color as standard_color, s.id as standard_id
+       FROM Audit a
+       LEFT JOIN AuditStandard s ON a.standard_id = s.id
+       WHERE a.id = ? AND a.companyId = ?
+   `, [id, companyId]);
+   return audit || null;
   }
 
-  async createAudit(data: Audit): Promise<Audit> {
-    const companyId = await this.getCompanyContext();
-    const id = uuidv4();
-    
-    await query(`
-        INSERT INTO Audit (id, companyId, title, date, status, description)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `, [
-        id,
-        companyId,
-        data.title || 'Auditoría sin título',
-        data.date ? new Date(data.date) : new Date(),
-        data.status || 'PLANNED',
-        data.description ?? null // Ensure undefined becomes null
-    ]);
+  async createAudit(data: any): Promise<any> {
+   const companyId = await this.getCompanyContext();
+   const id = uuidv4();
+   const audit_code = `AUD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    const newAudit = await this.getAuditById(id);
-    if (!newAudit) throw new Error("Failed to create audit");
-    return newAudit;
+   await query(`
+       INSERT INTO Audit (id, companyId, audit_code, title, date, status, description, scope, objectives, criteria, standard_id, company_profile)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+   `, [
+       id,
+       companyId,
+       audit_code,
+       data.title || 'Auditoría Interna',
+       data.audit_date ? new Date(data.audit_date) : new Date(),
+       data.status || 'PLANNED',
+       data.description || null,
+       data.scope || null,
+       data.objectives || null,
+       data.criteria || null,
+       data.standard_id || null,
+       data.company_profile || null
+   ]);
+
+   const newAudit = await this.getAuditById(id);
+   if (!newAudit) throw new Error("Failed to create audit");
+   return newAudit;
   }
 
-  async updateAudit(id: string, data: Partial<Audit>): Promise<Audit | null> {
-    const companyId = await this.getCompanyContext();
-    const existing = await this.getAuditById(id);
-    if (!existing) return null;
+  async updateAudit(id: string, data: any): Promise<any | null> {
+   const companyId = await this.getCompanyContext();
+   const existing = await this.getAuditById(id);
+   if (!existing) return null;
 
-    await query(`
-        UPDATE Audit SET title=?, date=?, status=?, description=? WHERE id=? AND companyId=?
-    `, [
-        data.title ?? existing.title,
-        data.date ? new Date(data.date) : existing.date,
-        data.status ?? existing.status,
-        data.description ?? existing.description,
-        id,
-        companyId
-    ]);
+   await query(`
+       UPDATE Audit SET 
+           title=?, date=?, status=?, description=?, scope=?, objectives=?, criteria=?, company_profile=?
+       WHERE id=? AND companyId=?
+   `, [
+       data.title ?? existing.title,
+       data.audit_date ? new Date(data.audit_date) : (data.date ? new Date(data.date) : existing.date),
+       data.status ?? existing.status,
+       data.description ?? existing.description,
+       data.scope ?? existing.scope,
+       data.objectives ?? existing.objectives,
+       data.criteria ?? existing.criteria,
+       data.company_profile ?? existing.company_profile,
+       id,
+       companyId
+   ]);
 
-    return await this.getAuditById(id);
+   return await this.getAuditById(id);
   }
-
   async deleteAudit(id: string): Promise<boolean> {
     const companyId = await this.getCompanyContext();
     await query('DELETE FROM Audit WHERE id = ? AND companyId = ?', [id, companyId]);

@@ -29,7 +29,8 @@ import {
     Building2,
     Lock,
     LogOut,
-    Check
+    Check,
+    Tags
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -73,6 +74,11 @@ interface CompanyData {
     };
 }
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 const ADMIN_TOKEN = 'lidus_admin_super_secret_token_2026';
 
 export default function ControlMaestroStandalone() {
@@ -97,6 +103,13 @@ export default function ControlMaestroStandalone() {
     const [auditView, setAuditView] = useState<'STANDARDS' | 'CHAPTERS' | 'REQUIREMENTS'>('STANDARDS');
     const [isStdModalOpen, setIsStdModalOpen] = useState(false);
     const [editingStd, setEditingStd] = useState<Partial<Standard> | null>(null);
+
+    // Categories State
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [isCatModalOpen, setIsCatModalOpen] = useState(false);
+    const [newCatName, setNewCatName] = useState('');
+    const [editingCatId, setEditingCatId] = useState<number | null>(null);
+    const [editingCatName, setEditingCatName] = useState('');
 
     // Tab 2: Support State
     const { socket, isConnected } = useSocket();
@@ -126,6 +139,7 @@ export default function ControlMaestroStandalone() {
     // --- FETCH DATA WHEN AUTHENTICATED ---
     useEffect(() => {
         if (isAuthenticated) {
+            fetchCategories();
             fetchStandards();
             fetchTickets();
             fetchCompanies();
@@ -186,6 +200,84 @@ export default function ControlMaestroStandalone() {
         localStorage.removeItem('control_maestro_session');
         setIsAuthenticated(false);
         toast.info('Sesión cerrada');
+    };
+
+    // --- CATEGORIES CRUD ACTIONS ---
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch('/api/admin/audit-master/categories');
+            if (res.ok) {
+                setCategories(await res.json());
+            }
+        } catch (e) {
+            console.error('Error fetching categories', e);
+        }
+    };
+
+    const handleCreateCategory = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newCatName.trim()) return;
+
+        try {
+            const res = await fetch('/api/admin/audit-master/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newCatName.trim() })
+            });
+            if (res.ok) {
+                toast.success('Categoría creada exitosamente');
+                setNewCatName('');
+                fetchCategories();
+                fetchStandards(); // Refresh grouping
+            } else {
+                const data = await res.json();
+                toast.error(data.error || 'Error al crear categoría');
+            }
+        } catch (e) {
+            toast.error('Error de red');
+        }
+    };
+
+    const handleUpdateCategory = async (id: number) => {
+        if (!editingCatName.trim()) return;
+
+        try {
+            const res = await fetch('/api/admin/audit-master/categories', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name: editingCatName.trim() })
+            });
+            if (res.ok) {
+                toast.success('Categoría actualizada');
+                setEditingCatId(null);
+                setEditingCatName('');
+                fetchCategories();
+                fetchStandards(); // Refresh grouping
+            } else {
+                toast.error('Error al actualizar');
+            }
+        } catch (e) {
+            toast.error('Error de red');
+        }
+    };
+
+    const handleDeleteCategory = async (id: number) => {
+        if (!confirm('¿Seguro que deseas eliminar esta categoría? Las normas asociadas quedarán sin categorizar.')) return;
+
+        try {
+            const res = await fetch(`/api/admin/audit-master/categories?id=${id}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                toast.success('Categoría eliminada');
+                fetchCategories();
+                fetchStandards(); // Refresh grouping
+            } else {
+                toast.error('Error al eliminar');
+            }
+        } catch (e) {
+            toast.error('Error de red');
+        }
     };
 
     // --- TAB 1: AUDIT MASTER DATA FETCHERS & ACTIONS ---
@@ -355,6 +447,21 @@ export default function ControlMaestroStandalone() {
             toast.error('Error de red al actualizar');
         }
     };
+
+    // Grouping standards dynamically by category
+    const groupedStandards = categories.reduce((acc, cat) => {
+        const stdsInCat = standards.filter(std => std.category === cat.name);
+        if (stdsInCat.length > 0) {
+            acc.push({ category: cat.name, standards: stdsInCat });
+        }
+        return acc;
+    }, [] as { category: string; standards: Standard[] }[]);
+
+    // Include uncategorized standards
+    const uncategorizedStandards = standards.filter(std => !std.category || !categories.some(c => c.name === std.category));
+    if (uncategorizedStandards.length > 0) {
+        groupedStandards.push({ category: 'Sin Categorizar / Otras', standards: uncategorizedStandards });
+    }
 
     // --- LOADING RENDER WHILE AUTH CHECK ---
     if (isAuthenticated === null) {
@@ -786,17 +893,25 @@ export default function ControlMaestroStandalone() {
                 {activeTab === 'audit' && (
                     <div className="space-y-6 animate-in fade-in duration-300">
                         {/* Header Audit Structuring */}
-                        <div className="flex justify-between items-center bg-slate-900 border border-slate-800/80 p-6 rounded-[1.8rem]">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 border border-slate-800/80 p-6 rounded-[1.8rem] gap-4">
                             <div>
                                 <h2 className="text-xl font-black tracking-tight">Estructurador Maestro de Auditorías</h2>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Configuración Estándar para Normas de Certificación</p>
                             </div>
-                            <button 
-                                onClick={() => { setEditingStd({}); setIsStdModalOpen(true); }}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all"
-                            >
-                                <Plus size={16} /> Nueva Norma
-                            </button>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => setIsCatModalOpen(true)}
+                                    className="bg-slate-950 border border-slate-800 text-slate-300 hover:text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all"
+                                >
+                                    <Tags size={16} /> Gestionar Categorías
+                                </button>
+                                <button 
+                                    onClick={() => { setEditingStd({}); setIsStdModalOpen(true); }}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all"
+                                >
+                                    <Plus size={16} /> Nueva Norma
+                                </button>
+                            </div>
                         </div>
 
                         {/* Breadcrumbs Navigation */}
@@ -833,33 +948,46 @@ export default function ControlMaestroStandalone() {
                         {/* Audit Structure View Grid */}
                         <div className="grid grid-cols-1 gap-6">
                             
-                            {/* Standards Listing */}
+                            {/* Grouped Standards Listing */}
                             {auditView === 'STANDARDS' && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {standards.map(std => (
-                                        <div key={std.id} className="group bg-slate-900 rounded-[1.8rem] border border-slate-850/80 p-6 hover:border-slate-700 transition-all relative overflow-hidden flex flex-col justify-between">
-                                            <div className="absolute top-0 right-0 p-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => { setEditingStd(std); setIsStdModalOpen(true); }} className="p-2 bg-slate-800 hover:bg-blue-600 rounded-lg text-slate-300 hover:text-white transition-all">
-                                                    <Edit2 size={12} />
-                                                </button>
-                                                <button onClick={() => deleteStandard(std.id)} className="p-2 bg-slate-800 hover:bg-red-600 rounded-lg text-slate-300 hover:text-white transition-all">
-                                                    <Trash2 size={12} />
-                                                </button>
+                                <div className="space-y-12">
+                                    {groupedStandards.map(group => (
+                                        <div key={group.category} className="space-y-5">
+                                            <div className="flex items-center gap-3 border-b border-slate-850 pb-2.5">
+                                                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-lg shadow-blue-500/20"></span>
+                                                <h3 className="text-sm font-black uppercase tracking-widest text-slate-300 leading-none">{group.category}</h3>
+                                                <span className="text-[9px] bg-slate-900 border border-slate-850 text-slate-500 px-2.5 py-0.5 rounded-full font-bold">
+                                                    {group.standards.length} {group.standards.length === 1 ? 'norma' : 'normas'}
+                                                </span>
                                             </div>
-                                            <div>
-                                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-6 shadow-md" style={{ backgroundColor: std.color }}>
-                                                    <Folder size={24} />
-                                                </div>
-                                                <div className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{ color: std.color }}>{std.category}</div>
-                                                <h3 className="text-base font-black text-slate-100 leading-tight mb-2">{std.name}</h3>
-                                                <p className="text-xs text-slate-500 font-medium line-clamp-2 mb-6">{std.description}</p>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                {group.standards.map(std => (
+                                                    <div key={std.id} className="group bg-slate-900 rounded-[1.8rem] border border-slate-850/80 p-6 hover:border-slate-700 transition-all relative overflow-hidden flex flex-col justify-between">
+                                                        <div className="absolute top-0 right-0 p-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button onClick={() => { setEditingStd(std); setIsStdModalOpen(true); }} className="p-2 bg-slate-800 hover:bg-blue-600 rounded-lg text-slate-300 hover:text-white transition-all">
+                                                                <Edit2 size={12} />
+                                                            </button>
+                                                            <button onClick={() => deleteStandard(std.id)} className="p-2 bg-slate-800 hover:bg-red-600 rounded-lg text-slate-300 hover:text-white transition-all">
+                                                                <Trash2 size={12} />
+                                                            </button>
+                                                        </div>
+                                                        <div>
+                                                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-6 shadow-md" style={{ backgroundColor: std.color }}>
+                                                                <Folder size={24} />
+                                                            </div>
+                                                            <div className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{ color: std.color }}>{std.category}</div>
+                                                            <h3 className="text-base font-black text-slate-100 leading-tight mb-2">{std.name}</h3>
+                                                            <p className="text-xs text-slate-500 font-medium line-clamp-2 mb-6">{std.description}</p>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => handleSelectStd(std)}
+                                                            className="w-full py-3 bg-slate-950 hover:bg-blue-600 hover:text-white text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-850"
+                                                        >
+                                                            Configurar Estructura <ArrowRight size={12} />
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <button 
-                                                onClick={() => handleSelectStd(std)}
-                                                className="w-full py-3 bg-slate-950 hover:bg-blue-600 hover:text-white text-slate-300 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-850"
-                                            >
-                                                Configurar Estructura <ArrowRight size={12} />
-                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -967,7 +1095,7 @@ export default function ControlMaestroStandalone() {
                                     <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Color Identificador</label>
                                     <input 
                                         type="color" 
-                                        className="w-full h-[40px] p-1 bg-slate-950 border border-slate-850 rounded-xl outline-none" 
+                                        className="w-full h-[40px] p-1 bg-slate-950 border border-slate-200 rounded-xl outline-none" 
                                         value={editingStd?.color || '#3b82f6'}
                                         onChange={e => setEditingStd({...editingStd, color: e.target.value})}
                                     />
@@ -984,13 +1112,17 @@ export default function ControlMaestroStandalone() {
                             </div>
                             <div>
                                 <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Categoría General</label>
-                                <input 
+                                <select 
                                     required 
-                                    placeholder="Ej: Calidad, Gestión Ambiental, SST..."
                                     className="w-full p-3 bg-slate-950 border border-slate-850 rounded-xl text-xs font-bold text-white outline-none focus:border-blue-500 transition-all" 
                                     value={editingStd?.category || ''}
                                     onChange={e => setEditingStd({...editingStd, category: e.target.value})}
-                                />
+                                >
+                                    <option value="">Selecciona una categoría...</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Descripción</label>
@@ -1062,6 +1194,87 @@ export default function ControlMaestroStandalone() {
                                 Guardar Configuración de Plan
                             </button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* --- MODAL: CATEGORY MANAGEMENT --- */}
+            {isCatModalOpen && (
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+                    <div className="bg-slate-900 border border-slate-800 rounded-[2rem] w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="px-8 py-6 border-b border-slate-850 flex justify-between items-center bg-slate-950/25">
+                            <h2 className="text-lg font-black text-slate-200 tracking-tight flex items-center gap-2">
+                                <Tags size={20} className="text-blue-500" /> Administrar Categorías
+                            </h2>
+                            <button onClick={() => setIsCatModalOpen(false)} className="p-2 hover:bg-slate-800 rounded-xl transition-all text-slate-400 hover:text-white"><X size={18} /></button>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            {/* Create Form */}
+                            <form onSubmit={handleCreateCategory} className="flex gap-2">
+                                <input 
+                                    required 
+                                    placeholder="Nueva Categoría (ej: Seguridad Vial)"
+                                    className="flex-1 p-3 bg-slate-950 border border-slate-850 rounded-xl text-xs font-bold text-white outline-none focus:border-blue-500 transition-all" 
+                                    value={newCatName}
+                                    onChange={e => setNewCatName(e.target.value)}
+                                />
+                                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-xl font-black uppercase tracking-widest text-[9px] transition-all flex items-center gap-1">
+                                    <Plus size={14} /> Crear
+                                </button>
+                            </form>
+
+                            {/* Categories List */}
+                            <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+                                {categories.length === 0 ? (
+                                    <p className="text-center text-slate-500 text-xs italic py-8">No hay categorías registradas.</p>
+                                ) : (
+                                    categories.map(cat => (
+                                        <div key={cat.id} className="p-3 bg-slate-950 border border-slate-850 rounded-xl flex items-center justify-between gap-4 transition-all">
+                                            {editingCatId === cat.id ? (
+                                                <div className="flex-1 flex gap-2">
+                                                    <input 
+                                                        required 
+                                                        className="flex-1 p-1 px-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-white outline-none focus:border-blue-500 transition-all" 
+                                                        value={editingCatName}
+                                                        onChange={e => setEditingCatName(e.target.value)}
+                                                    />
+                                                    <button 
+                                                        onClick={() => handleUpdateCategory(cat.id)}
+                                                        className="p-1.5 bg-emerald-600/15 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-600 hover:text-white rounded-lg transition-all"
+                                                    >
+                                                        <Check size={14} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => { setEditingCatId(null); setEditingCatName(''); }}
+                                                        className="p-1.5 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-lg transition-all"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <span className="text-xs font-bold text-slate-200">{cat.name}</span>
+                                                    <div className="flex gap-1.5">
+                                                        <button 
+                                                            onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name); }}
+                                                            className="p-1.5 bg-slate-900 border border-slate-850 text-slate-400 hover:text-white rounded-lg transition-all"
+                                                        >
+                                                            <Edit2 size={12} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleDeleteCategory(cat.id)}
+                                                            className="p-1.5 bg-slate-900 border border-slate-850 text-slate-400 hover:text-red-400 hover:border-red-500/20 rounded-lg transition-all"
+                                                        >
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

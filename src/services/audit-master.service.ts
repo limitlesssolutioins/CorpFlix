@@ -27,14 +27,60 @@ export interface AuditRequirementMaster {
 }
 
 export class AuditMasterService {
-    // CATEGORIES (Using unique strings from AuditStandard)
-    async getCategories(): Promise<string[]> {
-        const rows = await query<any[]>('SELECT DISTINCT category FROM AuditStandard WHERE category IS NOT NULL AND category != "" ORDER BY category ASC');
-        return rows.map(r => r.category);
+    // CATEGORIES (Using a dedicated AuditCategory table with auto-initialization)
+    private async ensureCategoryTableExists(): Promise<void> {
+        await query(`
+            CREATE TABLE IF NOT EXISTS AuditCategory (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(191) NOT NULL UNIQUE
+            )
+        `);
+
+        // Check if empty, then seed default categories
+        const countRes = await query<any[]>('SELECT COUNT(*) as count FROM AuditCategory');
+        if (countRes[0]?.count === 0) {
+            const defaults = ['Calidad', 'Ambiental', 'SST', 'Seguridad y Salud', 'Seguridad vial'];
+            for (const cat of defaults) {
+                await query('INSERT IGNORE INTO AuditCategory (name) VALUES (?)', [cat]);
+            }
+        }
     }
 
-    async updateCategory(oldName: string, newName: string): Promise<void> {
-        await query('UPDATE AuditStandard SET category = ? WHERE category = ?', [newName, oldName]);
+    async getCategories(): Promise<{ id: number; name: string }[]> {
+        await this.ensureCategoryTableExists();
+        return await query<{ id: number; name: string }[]>('SELECT id, name FROM AuditCategory ORDER BY name ASC');
+    }
+
+    async createCategory(name: string): Promise<number> {
+        await this.ensureCategoryTableExists();
+        const res = await query<any>('INSERT INTO AuditCategory (name) VALUES (?)', [name]);
+        return res.insertId;
+    }
+
+    async updateCategory(id: number, name: string): Promise<void> {
+        await this.ensureCategoryTableExists();
+        // Fetch old name to update associated standards
+        const existing = await query<any[]>('SELECT name FROM AuditCategory WHERE id = ?', [id]);
+        if (existing.length === 0) throw new Error('Category not found');
+        const oldName = existing[0].name;
+
+        // Update category table
+        await query('UPDATE AuditCategory SET name = ? WHERE id = ?', [name, id]);
+        
+        // Update standards table to keep sync
+        await query('UPDATE AuditStandard SET category = ? WHERE category = ?', [name, oldName]);
+    }
+
+    async deleteCategory(id: number): Promise<void> {
+        await this.ensureCategoryTableExists();
+        // Fetch old name to clear associated standards
+        const existing = await query<any[]>('SELECT name FROM AuditCategory WHERE id = ?', [id]);
+        if (existing.length > 0) {
+            const oldName = existing[0].name;
+            // Clear category field in standards
+            await query('UPDATE AuditStandard SET category = "" WHERE category = ?', [oldName]);
+        }
+        await query('DELETE FROM AuditCategory WHERE id = ?', [id]);
     }
 
     // STANDARDS

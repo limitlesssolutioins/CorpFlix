@@ -213,13 +213,13 @@ export default function SuscripcionPage() {
               
               <div className="space-y-3 mb-10">
                 <div className="flex items-center gap-3 text-xs text-slate-300 font-medium">
-                  <CheckCircle size={14} className="text-blue-400" /> Gestión Humana, Nómina, Prestaciones Sociales y Turnos con IA.
+                  <CheckCircle size={14} className="text-blue-400" /> Gestión de Talento Humano, Nómina y Turnos con IA.
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-300 font-medium">
-                  <CheckCircle size={14} className="text-blue-400" /> Ingeniería Financiera: Diagnóstico, Proyección de Renta y Pricing.
+                  <CheckCircle size={14} className="text-blue-400" /> Ingeniería Financiera: Diagnóstico y Proyección de Renta.
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-300 font-medium">
-                  <CheckCircle size={14} className="text-blue-400" /> Auditorías ISO, Riesgos, Mejora Continua y Gestión Documental.
+                  <CheckCircle size={14} className="text-blue-400" /> Auditorías Legales e Internacionales, Riesgos y Procesos.
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 # Proyecto Lidus
 
-Lidus es una plataforma integral SaaS (Software as a Service) diseñada para la gestión humana y calidad ISO en el mercado colombiano. Combina automatización de procesos, inteligencia artificial y cumplimiento normativo en una sola interfaz.
+Lidus es una plataforma integral SaaS (Software as a Service) diseñada para la gestión humana y el direccionamiento estratégico en el mercado colombiano. Combina automatización de procesos, inteligencia artificial y cumplimiento normativo en una sola interfaz.
 
 ## Estructura de la Suscripción
 
@@ -11,24 +11,22 @@ A partir de la sesión actual, Lidus opera bajo un modelo de **Suscripción Úni
 
 ## Módulos y Servicios Principales
 
-### 1. Gestión Humana
-- **Gestión de Empleados:** Registro ilimitado y perfiles detallados.
-- **Nómina:** Liquidación de prestaciones sociales y nómina bajo normativa colombiana.
-- **Turnos y Asistencia:** Control de asistencia en tiempo real, turnos rotativos y cálculo de recargos.
-- **Salud Mental:** Evaluación de riesgo psicosocial y herramientas de bienestar.
+### 1. Gestión Humana y Nómina
+- **Gestión de Talento Humano:** Administración integral de personal, registro de perfiles, liquidación de nómina y prestaciones sociales bajo normativa colombiana.
+- **Turnos y Asistencia:** Control en tiempo real, turnos rotativos y cálculo automático de recargos.
+- **Salud Mental:** Evaluación de riesgo psicosocial y herramientas de bienestar organizacional.
 
-### 2. Calidad e ISO
-- **Auditorías:** Soporte para ISO 9001 (Calidad), 14001 (Ambiental) y 45001 (Seguridad y Salud).
+### 2. Auditorías y diagnósticos de normas legales e internacionales
+- **Auditorías y Diagnósticos:** Soporte para evaluación de cumplimiento en Calidad, Gestión Ambiental y Seguridad y Salud.
 - **Res. 0312:** Cumplimiento de estándares mínimos del Ministerio de Trabajo (SGSST).
-- **Matrices de Riesgo:** Generación automática de matrices y planes de acción con Inteligencia Artificial.
-- **BPM (Gestión de Procesos):** Mapeo, diagramación y documentación técnica de procesos.
+- **Gestión de Riesgos:** Generación automática de matrices y planes de acción con Inteligencia Artificial.
+- **Gestión de Procesos:** Mapeo, diagramación y documentación técnica de la operación corporativa.
 
 ### 3. Ingeniería Financiera
 - **Diagnóstico Financiero:** Evaluación cualitativa y cuantitativa de la salud financiera, ratios de liquidez y rentabilidad.
 - **Proyección de Renta:** Simulador de impuestos y proyección de utilidades netas bajo normativa colombiana.
-- **Pricing:** Calculadora de precios de venta basada en costos reales, carga prestacional y margen de utilidad deseado.
 
-### 4. Dashboard y Estrategia
+### 4. Direccionamiento Estratégico
 - **Indicadores:** Visualización de métricas clave (KPIs) de asistencia, financieros y operativos.
 - **Soporte:** Sistema de tickets integrado para atención al cliente.
 

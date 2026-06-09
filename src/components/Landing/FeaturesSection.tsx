@@ -16,8 +16,8 @@ const features = [
     icon: Users2,
   },
   {
-    title: 'Procesos BPM & Calidad',
-    description: 'Diseña y gestiona tus procesos operativos con diagramas interactivos. Alineado a estándares ISO.',
+    title: 'Procesos y Auditorías',
+    description: 'Diseña y gestiona tus procesos operativos con diagramas interactivos. Alineado a estándares nacionales e internacionales.',
     icon: Network,
   },
   {
@@ -36,7 +36,7 @@ const features = [
     icon: BarChart3,
   },
   {
-    title: 'Planeación Estratégica',
+    title: 'Direccionamiento Estratégico',
     description: 'Define tu visión, misión y objetivos. Conecta la estrategia con la ejecución diaria de tu equipo.',
     icon: Target,
   }

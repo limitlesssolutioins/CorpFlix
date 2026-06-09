@@ -30,10 +30,10 @@ const HeroSection = () => {
     },
     {
       id: 'audits' as const,
-      label: 'Auditorías e ISO',
+      label: 'Auditorías de Normas',
       icon: Shield,
       image: '/portfolio/auditorias.jpg',
-      badge: 'ISO 9001, 14001, 45001',
+      badge: 'Legales e Internacionales',
       metricTitle: 'Puntuación Auditoría',
       metricValue: '99.2% Excelente',
       colorClass: 'text-indigo-400 border-indigo-500/30 bg-indigo-500/10'
@@ -82,7 +82,7 @@ const HeroSection = () => {
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.1] md:leading-[1.05] tracking-tight mb-6">
             La plataforma todo en uno para <br className="hidden sm:block" />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400 bg-300%">
-              Gestión Humana y Calidad ISO
+              Gestión Humana y Direccionamiento Estratégico
             </span>
           </h1>
 
@@ -122,10 +122,10 @@ const HeroSection = () => {
             <div className="bg-white/5 p-4 rounded-2xl sm:bg-transparent sm:p-0">
               <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm mb-2">
                 <Shield size={16} className="text-cyan-400" />
-                ISO y Res. 0312
+                Normativa y Res. 0312
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Estructura automática para ISO 9001, 14001, 45001 y estándares del Ministerio de Trabajo.
+                Estructura automática para auditorías de estándares nacionales e internacionales y del Ministerio de Trabajo.
               </p>
             </div>
             <div className="bg-white/5 p-4 rounded-2xl sm:bg-transparent sm:p-0">

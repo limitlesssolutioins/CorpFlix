@@ -86,16 +86,9 @@ const LandingNav = () => {
             
             <Link 
               href="/login" 
-              className="text-slate-300 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest whitespace-nowrap shrink-0"
+              className="text-slate-300 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest border border-white/10 hover:border-white/20 rounded-xl px-5 py-2 bg-white/5 transition-all whitespace-nowrap shrink-0"
             >
               Ingresar
-            </Link>
-
-            <Link 
-              href="/login?signup=true" 
-              className="text-slate-300 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest border border-white/10 hover:border-white/20 rounded-xl px-4 py-2 bg-white/5 transition-all whitespace-nowrap shrink-0 hidden xl:inline-block"
-            >
-              Solicitar Demo
             </Link>
             
             <Link 
@@ -147,16 +140,9 @@ const LandingNav = () => {
           <Link 
             href="/login" 
             onClick={() => setIsMobileMenuOpen(false)}
-            className="w-full text-center py-3 text-slate-200 border border-white/10 rounded-xl font-bold hover:bg-white/5 transition-all text-sm"
+            className="w-full text-center py-3 text-slate-200 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all text-sm"
           >
             Ingresar
-          </Link>
-          <Link 
-            href="/login?signup=true" 
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="w-full text-center py-3 text-slate-200 border border-white/10 rounded-xl font-bold hover:bg-white/5 transition-all text-sm"
-          >
-            Solicitar Demo
           </Link>
           <Link 
             href="/login?signup=true" 

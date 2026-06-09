@@ -36,7 +36,6 @@ code {
 .app-content {
   flex-grow: 1;
   padding: 40px; /* Aumentado de 32px para más elegancia */
-  margin-left: 288px; /* Ajustado exactamente a w-72 de la barra lateral */
   min-height: 100vh;
 }
 

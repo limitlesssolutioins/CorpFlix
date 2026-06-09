@@ -38,10 +38,16 @@ const SocketListener = () => {
 
 const Layout = ({ children }: LayoutProps) => {
   const pathname = usePathname();
-  const isFullScreen = FULL_SCREEN_PATHS.some(p => pathname.startsWith(p));
+  
+  // Robust check for full screen mode
+  const isLanding = pathname === '/' || pathname === '';
+  const isFullScreen = isLanding || FULL_SCREEN_PATHS.some(p => pathname?.startsWith(p));
+  
   const [companyId, setCompanyId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!pathname) return;
+    
     // Intentamos obtener el ID de la empresa para unirnos a su sala de sockets
     fetch('/api/auth/me')
       .then(res => res.json())
@@ -54,15 +60,23 @@ const Layout = ({ children }: LayoutProps) => {
   }, [pathname]);
 
   if (isFullScreen) {
-    return <>{children}</>;
+    return (
+      <SocketProvider companyId={companyId}>
+        <SocketListener />
+        <div className="w-full min-h-screen overflow-x-hidden">
+          {children}
+        </div>
+        <SupportChat />
+      </SocketProvider>
+    );
   }
 
   return (
     <SocketProvider companyId={companyId}>
       <SocketListener />
-      <div className="app-container">
+      <div className="app-container min-h-screen w-full">
         <Sidebar />
-        <main className="app-content">
+        <main className="app-content w-full" style={{ marginLeft: '288px' }}>
           {children}
         </main>
       </div>

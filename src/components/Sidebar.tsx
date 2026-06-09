@@ -169,7 +169,7 @@ const Sidebar = () => {
         {/* Navigation Content */}
         <div className="flex-1 overflow-y-auto px-4 py-8 space-y-2 scrollbar-none">
           
-          <NavItem href="/" label="Dashboard" icon={LayoutDashboard} exact />
+          <NavItem href="/dashboard" label="Dashboard" icon={LayoutDashboard} exact />
 
           <div className="pt-6 space-y-4">
             <Section title="Estrategia" id="gestión" icon={Target}>

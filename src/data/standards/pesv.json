@@ -1,0 +1,58 @@
+{
+  "code": "PESV",
+  "name": "PESV 2022",
+  "fullName": "Plan Estratégico de Seguridad Vial (Res. 40595)",
+  "category": "Seguridad Vial",
+  "color": "#10b981",
+  "description": "Plan Estratégico de Seguridad Vial conforme a la Resolución 40595 de 2022.",
+  "chapters": [
+    {
+      "number": "1",
+      "title": "PLANIFICACIÓN",
+      "requirements": [
+        { "code": "1", "title": "Lider del PESV", "isAuditable": true, "criteria": ["Acta de asignación", "Perfil del cargo", "HV y Competencia"] },
+        { "code": "2", "title": "Comité de Seguridad Vial", "isAuditable": true, "criteria": ["Acta de constitución", "Registros de reuniones"] },
+        { "code": "3", "title": "Politica de Seguridad Vial", "isAuditable": true, "criteria": ["Documentada", "Divulgada y firmada por representante legal"] },
+        { "code": "4", "title": "Liderazgo y Compromiso del Nivel Directivo", "isAuditable": true, "criteria": ["Acta de compromiso", "Matriz legal", "Presupuesto asignado"] },
+        { "code": "5", "title": "Diagnostico", "isAuditable": true, "criteria": ["Documento de diagnóstico inicial", "Análisis de datos"] },
+        { "code": "6", "title": "Caracterización, Evaluación y Control de Riesgos", "isAuditable": true, "criteria": ["Matriz de riesgos viales", "Controles definidos"] },
+        { "code": "7", "title": "Objetivos y metas de Seguridad Vial", "isAuditable": true, "criteria": ["Objetivos medibles", "Metas definidas"] },
+        { "code": "8", "title": "Programa de gestión de riesgos criticos", "isAuditable": true, "criteria": ["Programas específicos (Velocidad, Alcohol, etc.)"] }
+      ]
+    },
+    {
+      "number": "2",
+      "title": "IMPLEMENTACIÓN Y EJECUCIÓN",
+      "requirements": [
+        { "code": "9", "title": "Plan de trabajo Anual", "isAuditable": true, "criteria": ["Cronograma de actividades", "Registro de cumplimiento"] },
+        { "code": "10", "title": "Competencia y PLAN Anual de formación", "isAuditable": true, "criteria": ["Plan de capacitación", "Registros de asistencia"] },
+        { "code": "11", "title": "Responsabilidad y comportamiento Seguro", "isAuditable": true, "criteria": ["Manual de funciones", "Compromisos de conductores"] },
+        { "code": "12", "title": "Plan de preparación y respuesta ante emergencias viales", "isAuditable": true, "criteria": ["Protocolos de atención", "Simulacros"] },
+        { "code": "13", "title": "Investigación interna de siniestros viales", "isAuditable": true, "criteria": ["Procedimiento de investigación", "Lecciones aprendidas"] },
+        { "code": "14", "title": "Vias seguras administradas por la organización", "isAuditable": true, "criteria": ["Inventario de vías internas", "Señalización"] },
+        { "code": "15", "title": "Planificacion de desplazamientos", "isAuditable": true, "criteria": ["Rutas seguras", "Tiempos de viaje"] },
+        { "code": "16", "title": "Inspección de vehiculos y equipos", "isAuditable": true, "criteria": ["Preoperacionales", "Fichas técnicas"] },
+        { "code": "17", "title": "Mantenimiento y control de vehiculos y equipos", "isAuditable": true, "criteria": ["Plan de mantenimiento", "Hojas de vida de vehículos"] },
+        { "code": "18", "title": "Gestión del cambio y gestión de contratistas", "isAuditable": true, "criteria": ["Evaluación de proveedores", "Control de cambios"] },
+        { "code": "19", "title": "Archivo y retención documental", "isAuditable": true, "criteria": ["Sistema de organización de archivos", "Tiempos de retención"] }
+      ]
+    },
+    {
+      "number": "3",
+      "title": "SEGUIMIENTO",
+      "requirements": [
+        { "code": "20", "title": "Indicadores y reporte de autogestión", "isAuditable": true, "criteria": ["Fichas de indicadores", "Reporte trimestral"] },
+        { "code": "21", "title": "Registro y analisis estadistico de siniestros viales", "isAuditable": true, "criteria": ["Estadísticas", "Tendencias"] },
+        { "code": "22", "title": "Auditoria Anual", "isAuditable": true, "criteria": ["Plan de auditoría", "Informe de resultados"] }
+      ]
+    },
+    {
+      "number": "4",
+      "title": "MEJORA CONTINUA",
+      "requirements": [
+        { "code": "23", "title": "Mejora continua", "isAuditable": true, "criteria": ["Acciones correctivas", "Planes de mejora"] },
+        { "code": "24", "title": "Comunicación", "isAuditable": true, "criteria": ["Canales de comunicación", "Evidencias de divulgación"] }
+      ]
+    }
+  ]
+}

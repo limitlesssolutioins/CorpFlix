@@ -1,0 +1,417 @@
+{
+  "code": "ISO45001",
+  "name": "ISO 45001:2018",
+  "fullName": "Sistema de Gestión de la Seguridad y Salud en el Trabajo",
+  "category": "Seguridad y Salud",
+  "color": "#ef4444",
+  "chapters": [
+    {
+      "number": "4",
+      "title": "Contexto de la organización",
+      "requirements": [
+        {
+          "code": "4.1",
+          "title": "Comprensión de la organización y de su contexto",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe determinar las cuestiones externas e internas que son pertinentes para su propósito y que afectan a su capacidad para alcanzar los resultados previstos de su sistema de gestión de la SST."
+          ]
+        },
+        {
+          "code": "4.2",
+          "title": "Comprensión de las necesidades y expectativas de los trabajadores y de otras partes interesadas",
+          "isAuditable": true,
+          "criteria": [
+            "Determinar las otras partes interesadas, además de los trabajadores, que son pertinentes al sistema de gestión de la SST.",
+            "Determinar las necesidades y expectativas pertinentes (es decir, los requisitos) de los trabajadores y de otras partes interesadas.",
+            "Determinar cuáles de estas necesidades y expectativas son, o podrían convertirse en, requisitos legales y otros requisitos."
+          ]
+        },
+        {
+          "code": "4.3",
+          "title": "Determinación del alcance del sistema de gestión de la SST",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe determinar los límites y la aplicabilidad del sistema de gestión de la SST para establecer su alcance.",
+            "Considerar las cuestiones externas e internas indicadas en el apartado 4.1.",
+            "Tener en cuenta los requisitos indicados en el apartado 4.2.",
+            "Tener en cuenta las actividades relacionadas con el trabajo, planificadas o realizadas.",
+            "El alcance debe estar disponible como información documentada."
+          ]
+        },
+        {
+          "code": "4.4",
+          "title": "Sistema de gestión de la SST",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe establecer, implementar, mantener y mejorar continuamente un sistema de gestión de la SST, incluidos los procesos necesarios y sus interacciones, de acuerdo con los requisitos de este documento."
+          ]
+        }
+      ]
+    },
+    {
+      "number": "5",
+      "title": "Liderazgo y participación de los trabajadores",
+      "requirements": [
+        {
+          "code": "5.1",
+          "title": "Liderazgo y compromiso",
+          "isAuditable": true,
+          "criteria": [
+            "Asumir la responsabilidad global y la rendición de cuentas para la prevención de las lesiones y el deterioro de la salud relacionados con el trabajo, así como la provisión de actividades y lugares de trabajo seguros y saludables.",
+            "Asegurar que se establezcan la política de la SST y los objetivos relacionados de la SST y que éstos sean compatibles con la dirección estratégica de la organización.",
+            "Asegurar la integración de los requisitos del sistema de gestión de la SST en los procesos de negocio de la organización.",
+            "Asegurar que los recursos necesarios para establecer, implementar, mantener y mejorar el sistema de gestión de la SST estén disponibles.",
+            "Comunicar la importancia de una gestión de la SST eficaz y conforme con los requisitos del sistema de gestión de la SST."
+          ]
+        },
+        {
+          "code": "5.2",
+          "title": "Política de la SST",
+          "isAuditable": true,
+          "criteria": [
+            "Incluir un compromiso para proporcionar condiciones de trabajo seguras y saludables para la prevención de lesiones y deterioro de la salud relacionados con el trabajo.",
+            "Proporcionar un marco de referencia para el establecimiento de los objetivos de la SST.",
+            "Incluir un compromiso para cumplir los requisitos legales y otros requisitos.",
+            "Incluir un compromiso para eliminar los peligros y reducir los riesgos para la SST.",
+            "Incluir un compromiso para la mejora continua del sistema de gestión de la SST.",
+            "Incluir un compromiso para la consulta y la participación de los trabajadores."
+          ]
+        },
+        {
+          "code": "5.3",
+          "title": "Roles, responsabilidades y autoridades en la organización",
+          "isAuditable": true,
+          "criteria": [
+            "Asegurar que las responsabilidades y autoridades para los roles pertinentes dentro del sistema de gestión de la SST se asignen y comuniquen a todos los niveles dentro de la organización, y se mantengan como información documentada.",
+            "Los trabajadores en cada nivel de la organización deben asumir la responsabilidad de aquellos aspectos del sistema de gestión de la SST sobre los que tengan control."
+          ]
+        },
+        {
+          "code": "5.4",
+          "title": "Consulta y participación de los trabajadores",
+          "isAuditable": true,
+          "criteria": [
+            "Establecer, implementar y mantener procesos para la consulta y la participación de los trabajadores a todos los niveles y funciones aplicables.",
+            "Proporcionar los mecanismos, el tiempo, la formación y los recursos necesarios para la consulta y la participación.",
+            "Proporcionar acceso oportuno a información clara, comprensible y pertinente sobre el sistema de gestión de la SST.",
+            "Determinar y eliminar los obstáculos o barreras a la participación y minimizar aquellas que no puedan eliminarse."
+          ]
+        }
+      ]
+    },
+    {
+      "number": "6",
+      "title": "Planificación",
+      "requirements": [
+        {
+          "code": "6.1",
+          "title": "Acciones para abordar riesgos y oportunidades",
+          "isAuditable": false,
+          "requirements": [
+            {
+              "code": "6.1.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "Al planificar el sistema de gestión de la SST, la organización debe considerar las cuestiones referidas en el apartado 4.1, los requisitos referidos en los apartados 4.2 y 4.3 y determinar los riesgos y oportunidades que es necesario abordar."
+              ]
+            },
+            {
+              "code": "6.1.2",
+              "title": "Identificación de peligros y evaluación de los riesgos y oportunidades",
+              "isAuditable": true,
+              "criteria": [
+                "Establecer, implementar y mantener procesos de identificación continua y proactiva de los peligros.",
+                "Evaluar los riesgos para la SST a partir de los peligros identificados, teniendo en cuenta la eficacia de los controles existentes.",
+                "Evaluar las oportunidades para la SST que permitan mejorar el desempeño de la SST."
+              ]
+            },
+            {
+              "code": "6.1.3",
+              "title": "Determinación de los requisitos legales y otros requisitos",
+              "isAuditable": true,
+              "criteria": [
+                "Determinar y tener acceso a los requisitos legales y otros requisitos actualizados que sean aplicables a sus peligros, sus riesgos para la SST y su sistema de gestión de la SST.",
+                "Determinar cómo estos requisitos legales y otros requisitos se aplican a la organización y qué necesita comunicarse."
+              ]
+            },
+            {
+              "code": "6.1.4",
+              "title": "Planificación de acciones",
+              "isAuditable": true,
+              "criteria": [
+                "Planificar las acciones para abordar estos riesgos y oportunidades, abordar los requisitos legales y otros requisitos, y prepararse y responder ante situaciones de emergencia."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "6.2",
+          "title": "Objetivos de la SST y planificación para lograrlos",
+          "isAuditable": false,
+          "requirements": [
+            {
+              "code": "6.2.1",
+              "title": "Objetivos de la SST",
+              "isAuditable": true,
+              "criteria": [
+                "Establecer objetivos de la SST para las funciones y niveles pertinentes para mantener y mejorar continuamente el sistema de gestión de la SST y el desempeño de la SST.",
+                "Los objetivos deben ser coherentes con la política de la SST, ser medibles o evaluables, y tener en cuenta los requisitos aplicables."
+              ]
+            },
+            {
+              "code": "6.2.2",
+              "title": "Planificación para lograr los objetivos de la SST",
+              "isAuditable": true,
+              "criteria": [
+                "Determinar qué se va a hacer, qué recursos se requerirán, quién será responsable, cuándo se finalizará y cómo se evaluarán los resultados."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "7",
+      "title": "Apoyo",
+      "requirements": [
+        {
+          "code": "7.1",
+          "title": "Recursos",
+          "isAuditable": true,
+          "criteria": [
+            "La organización debe determinar y proporcionar los recursos necesarios para el establecimiento, implementación, mantenimiento y mejora continua del sistema de gestión de la SST."
+          ]
+        },
+        {
+          "code": "7.2",
+          "title": "Competencia",
+          "isAuditable": true,
+          "criteria": [
+            "Determinar la competencia necesaria de los trabajadores que afectan o pueden afectar a su desempeño de la SST.",
+            "Asegurarse de que los trabajadores sean competentes (incluyendo la capacidad de identificar peligros) basándose en la educación, formación o experiencia apropiadas.",
+            "Cuando sea aplicable, tomar acciones para adquirir y mantener la competencia necesaria y evaluar la eficacia de las acciones tomadas."
+          ]
+        },
+        {
+          "code": "7.3",
+          "title": "Toma de conciencia",
+          "isAuditable": true,
+          "criteria": [
+            "Los trabajadores deben ser sensibilizados sobre la política y los objetivos de la SST, su contribución a la eficacia del sistema, las implicaciones de no cumplir los requisitos, y los peligros y riesgos pertinentes para ellos."
+          ]
+        },
+        {
+          "code": "7.4",
+          "title": "Comunicación",
+          "isAuditable": false,
+          "requirements": [
+            {
+              "code": "7.4.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "Establecer, implementar y mantener los procesos necesarios para las comunicaciones internas y externas pertinentes al sistema de gestión de la SST."
+              ]
+            },
+            {
+              "code": "7.4.2",
+              "title": "Comunicación interna",
+              "isAuditable": true,
+              "criteria": [
+                "Comunicar internamente la información pertinente para el sistema de gestión de la SST entre los diversos niveles y funciones de la organización."
+              ]
+            },
+            {
+              "code": "7.4.3",
+              "title": "Comunicación externa",
+              "isAuditable": true,
+              "criteria": [
+                "Comunicar externamente la información pertinente para el sistema de gestión de la SST, según lo establecido por los procesos de comunicación de la organización."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "7.5",
+          "title": "Información documentada",
+          "isAuditable": false,
+          "requirements": [
+            {
+              "code": "7.5.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "El sistema de gestión de la SST debe incluir la información documentada requerida por este documento y la que la organización determine como necesaria."
+              ]
+            },
+            {
+              "code": "7.5.2",
+              "title": "Creación y actualización",
+              "isAuditable": true,
+              "criteria": [
+                "Al crear y actualizar la información documentada, la organización debe asegurar la identificación, descripción, formato y revisión y aprobación para su adecuación."
+              ]
+            },
+            {
+              "code": "7.5.3",
+              "title": "Control de la información documentada",
+              "isAuditable": true,
+              "criteria": [
+                "La información documentada se debe controlar para asegurar que esté disponible y sea idónea para su uso, y que esté protegida adecuadamente."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "8",
+      "title": "Operación",
+      "requirements": [
+        {
+          "code": "8.1",
+          "title": "Planificación y control operacional",
+          "isAuditable": false,
+          "requirements": [
+            {
+              "code": "8.1.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "Planificar, implementar, controlar y mantener los procesos necesarios para cumplir los requisitos del sistema de gestión de la SST mediante el establecimiento de criterios para los procesos y la implementación del control de los procesos."
+              ]
+            },
+            {
+              "code": "8.1.2",
+              "title": "Eliminar peligros y reducir riesgos para la SST",
+              "isAuditable": true,
+              "criteria": [
+                "Establecer, implementar y mantener procesos para la eliminación de peligros y la reducción de los riesgos para la SST utilizando la jerarquía de los controles: eliminación, sustitución, controles de ingeniería, controles administrativos y EPP."
+              ]
+            },
+            {
+              "code": "8.1.3",
+              "title": "Gestión del cambio",
+              "isAuditable": true,
+              "criteria": [
+                "Establecer procesos para la implementación y el control de los cambios planificados temporales y permanentes que impactan en el desempeño de la SST."
+              ]
+            },
+            {
+              "code": "8.1.4",
+              "title": "Compras",
+              "isAuditable": true,
+              "criteria": [
+                "Establecer, implementar y mantener procesos para controlar la compra de productos y servicios de forma que se asegure su conformidad con su sistema de gestión de la SST.",
+                "Coordinar sus procesos de compras con sus contratistas para identificar peligros y evaluar y controlar los riesgos para la SST."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "8.2",
+          "title": "Preparación y respuesta ante emergencias",
+          "isAuditable": true,
+          "criteria": [
+            "Establecer, implementar y mantener procesos necesarios para prepararse y para responder ante situaciones de emergencia potenciales.",
+            "Establecer una respuesta planificada ante las situaciones de emergencia.",
+            "Realizar pruebas periódicas de la capacidad de respuesta planificada."
+          ]
+        }
+      ]
+    },
+    {
+      "number": "9",
+      "title": "Evaluación del desempeño",
+      "requirements": [
+        {
+          "code": "9.1",
+          "title": "Seguimiento, medición, análisis y evaluación del desempeño",
+          "isAuditable": false,
+          "requirements": [
+            {
+              "code": "9.1.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "Determinar qué necesita seguimiento y medición, incluyendo el grado en que se cumplen los requisitos legales, las actividades y operaciones relacionadas con los peligros identificados, y el progreso en el logro de los objetivos de la SST."
+              ]
+            },
+            {
+              "code": "9.1.2",
+              "title": "Evaluación del cumplimiento",
+              "isAuditable": true,
+              "criteria": [
+                "Establecer, implementar y mantener procesos para evaluar el cumplimiento con los requisitos legales y otros requisitos."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "9.2",
+          "title": "Auditoría interna",
+          "isAuditable": false,
+          "requirements": [
+            {
+              "code": "9.2.1",
+              "title": "Generalidades",
+              "isAuditable": true,
+              "criteria": [
+                "Llevar a cabo auditorías internas a intervalos planificados para proporcionar información sobre si el sistema de gestión de la SST es conforme con los requisitos propios de la organización y con los requisitos de este documento."
+              ]
+            },
+            {
+              "code": "9.2.2",
+              "title": "Programa de auditoría interna",
+              "isAuditable": true,
+              "criteria": [
+                "Planificar, establecer, implementar y mantener programas de auditoría que incluyan la frecuencia, los métodos, las responsabilidades, la consulta, los requisitos de planificación y la elaboración de informes."
+              ]
+            }
+          ]
+        },
+        {
+          "code": "9.3",
+          "title": "Revisión por la dirección",
+          "isAuditable": true,
+          "criteria": [
+            "La alta dirección debe revisar el sistema de gestión de la SST de la organización a intervalos planificados para asegurarse de su conveniencia, adecuación y eficacia continuas."
+          ]
+        }
+      ]
+    },
+    {
+      "number": "10",
+      "title": "Mejora",
+      "requirements": [
+        {
+          "code": "10.1",
+          "title": "Generalidades",
+          "isAuditable": true,
+          "criteria": [
+            "Determinar las oportunidades de mejora e implementar las acciones necesarias para alcanzar los resultados previstos de su sistema de gestión de la SST."
+          ]
+        },
+        {
+          "code": "10.2",
+          "title": "Incidentes, no conformidades y acciones correctivas",
+          "isAuditable": true,
+          "criteria": [
+            "Establecer, implementar y mantener procesos, incluyendo informar, investigar y tomar acciones para determinar y gestionar los incidentes y las no conformidades.",
+            "Evaluar, con la participación de los trabajadores y la participación de otras partes interesadas pertinentes, la necesidad de acciones correctivas para eliminar las causas raíz."
+          ]
+        },
+        {
+          "code": "10.3",
+          "title": "Mejora continua",
+          "isAuditable": true,
+          "criteria": [
+            "Mejorar continuamente la conveniencia, adecuación y eficacia del sistema de gestión de la SST para mejorar el desempeño de la SST, promover una cultura que apoye al sistema de gestión y promover la participación de los trabajadores."
+          ]
+        }
+      ]
+    }
+  ]
+}

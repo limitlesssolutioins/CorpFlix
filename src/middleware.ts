@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/register', '/api/platform/data-policy'];
+const PUBLIC_PATHS = ['/', '/login', '/api/auth/login', '/api/auth/register', '/api/platform/data-policy'];
 const PUBLIC_FILES = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'];
 const SECRET_KEY = new TextEncoder().encode(
   process.env.JWT_SECRET || 'lidus-super-secret-development-key-12345!'
@@ -23,15 +23,15 @@ export async function middleware(request: NextRequest) {
   // 2. Verificar sesión
   const sessionToken = request.cookies.get('session')?.value;
 
-  // 3. Lógica para rutas públicas (/login, etc)
-  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
-    if (sessionToken) {
+  // 3. Lógica para rutas públicas (/, /login, etc)
+  if (PUBLIC_PATHS.some((p) => pathname === p)) {
+    // Si es la raíz '/', siempre permitir ver la landing page (no redirigir aunque haya sesión para permitir ver la web comercial)
+    // Pero si es '/login' y ya tiene sesión, mandarlo al dashboard
+    if (pathname === '/login' && sessionToken) {
       try {
-        // Si ya tiene sesión, intentar mandarlo al dashboard en lugar de dejarlo en login
         await jwtVerify(sessionToken, SECRET_KEY);
-        return NextResponse.redirect(new URL('/', request.url));
+        return NextResponse.redirect(new URL('/dashboard', request.url));
       } catch (e) {
-        // Token inválido, dejar que entre a login
         return NextResponse.next();
       }
     }
@@ -56,9 +56,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
 
-    // Si ya tiene empresa y está intentando entrar a onboarding, devolver a home
+    // Si ya tiene empresa y está intentando entrar a onboarding, devolver a dashboard
     if (companyId && pathname.startsWith('/onboarding')) {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
     return NextResponse.next();

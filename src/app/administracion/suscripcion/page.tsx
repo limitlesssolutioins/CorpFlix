@@ -208,18 +208,18 @@ export default function SuscripcionPage() {
                   </button>
                 )}
               </div>
-              <h2 className="text-3xl font-black mb-1 tracking-tight">LIDUS PRO</h2>
+              <h2 className="text-3xl font-black mb-1 tracking-tight">LIDUS TOTAL</h2>
               <div className="text-4xl font-black mb-8">$50.000 <span className="text-sm font-normal text-slate-500">/ mes</span></div>
               
               <div className="space-y-3 mb-10">
                 <div className="flex items-center gap-3 text-xs text-slate-300 font-medium">
-                  <CheckCircle size={14} className="text-blue-400" /> Recursos Humanos, Liquidacion de Nomina y Prestaciones Sociales, Liquidacion de Seguridad Social y Matriz de Turnos con IA.
+                  <CheckCircle size={14} className="text-blue-400" /> Gestión Humana, Nómina, Prestaciones Sociales y Turnos con IA.
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-300 font-medium">
-                  <CheckCircle size={14} className="text-blue-400" /> Evaluación financiera, diagnóstico e implementación de buenas prácticas en administración financiera.
+                  <CheckCircle size={14} className="text-blue-400" /> Ingeniería Financiera: Diagnóstico, Proyección de Renta y Pricing.
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-300 font-medium">
-                  <CheckCircle size={14} className="text-blue-400" /> Planeacion Estrategia, Identificacion de Procesos, Analizis de Riesgos, Auditoria, Mejora Continua y Gestion Documental.
+                  <CheckCircle size={14} className="text-blue-400" /> Auditorías ISO, Riesgos, Mejora Continua y Gestión Documental.
                 </div>
               </div>
             </div>

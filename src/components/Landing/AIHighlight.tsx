@@ -21,7 +21,7 @@ const AIHighlight = () => {
                   </div>
                   <div>
                     <h4 className="text-white font-bold text-base md:text-lg tracking-tight">Lidus Assistant</h4>
-                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Powered by Gemini AI</p>
+                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Potenciado por Inteligencia Artificial Avanzada</p>
                   </div>
                 </div>
 

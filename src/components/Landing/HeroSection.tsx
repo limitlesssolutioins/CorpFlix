@@ -131,7 +131,7 @@ const HeroSection = () => {
             <div className="bg-white/5 p-4 rounded-2xl sm:bg-transparent sm:p-0">
               <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm mb-2">
                 <Sparkles size={16} className="text-indigo-400 animate-pulse" />
-                Copiloto IA
+                Asistente IA
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Generador automático de matrices de riesgos, planes de acción y documentación técnica.
@@ -209,13 +209,13 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Floating Card 2: AI Copilot (Constant) */}
+            {/* Floating Card 2: AI Assistant (Constant) */}
             <div className="absolute -bottom-6 -right-6 bg-slate-900/90 border border-white/10 p-4 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-3 animate-float-2 hidden sm:flex hover:border-blue-500/30 transition-colors z-20">
               <div className="h-10 w-10 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center text-blue-400 animate-pulse">
                 <Sparkles size={20} className="stroke-[2]" />
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Copiloto AI</div>
+                <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Asistente IA</div>
                 <div className="text-sm font-black text-white">Análisis Activo</div>
               </div>
             </div>

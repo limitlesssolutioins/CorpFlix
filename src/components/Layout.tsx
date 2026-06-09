@@ -11,7 +11,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const FULL_SCREEN_PATHS = ['/login', '/onboarding', '/evaluacion-psicosocial'];
+const FULL_SCREEN_PATHS = ['/login', '/onboarding', '/evaluacion-psicosocial', '/administracion/control-maestro'];
 
 // Componente interno para acceder al hook useSocket
 const SocketListener = () => {

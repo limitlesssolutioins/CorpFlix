@@ -205,7 +205,6 @@ const Sidebar = () => {
             </Section>
 
             <Section title="Sistema" id="admin" icon={Settings2}>
-              <NavItem href="/administracion/control-maestro" label="Control Maestro" icon={Wrench} />
               <NavItem href="/administracion/suscripcion" label="Suscripción" icon={CreditCard} />
               <NavItem href="/tickets" label="Soporte" icon={Ticket} />
             </Section>

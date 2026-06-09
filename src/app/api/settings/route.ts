@@ -27,7 +27,7 @@ export async function GET() {
         idType: 'NIT', // Default as admin service doesn't store this specific field yet
         nit: adminSettings.nit || '900123456',
         address: adminSettings.direccion || 'Calle 123 # 45-67',
-        city: adminSettings.ciudad || 'Bogotá D.C.',
+        city: adminSettings.ciudad || 'Barranquilla',
         sectorActividad: adminSettings.sectorActividad || '',
         logoUrl: adminSettings.logoUrl || '',
         phone: adminSettings.telefono || '',

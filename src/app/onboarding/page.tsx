@@ -166,7 +166,7 @@ export default function OnboardingPage() {
                       type="text"
                       value={wizardData.ciudad}
                       onChange={e => updateWizard('ciudad', e.target.value)}
-                      placeholder="Ej: Bogotá D.C."
+                      placeholder="Ej: Barranquilla"
                       className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-sm font-bold transition-all"
                     />
                   </div>

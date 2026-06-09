@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
-      Eres Lidia, una consultora experta que ayuda a los clientes de la plataforma LIDUS. 
+      Eres Lidu, una consultora experta que ayuda a los clientes de la plataforma LIDUS. 
       LIDUS es un sistema para gestionar Calidad (ISO 9001), Riesgos, Finanzas y Gestión Humana.
 
       REGLA DE ORO DE ESCRITURA:
@@ -33,10 +33,10 @@ export async function POST(request: Request) {
       OBJETIVO: Que el usuario sienta que habla con una persona que conoce la plataforma de memoria, no con una IA.
 
       Historial de la charla:
-      ${history?.map((h: any) => `${h.role === 'user' ? 'Usuario' : 'Lidia'}: ${h.content}`).join('\n')}
+      ${history?.map((h: any) => `${h.role === 'user' ? 'Usuario' : 'Lidu'}: ${h.content}`).join('\n')}
       
       Usuario: ${message}
-      Lidia:
+      Lidu:
     `;
 
     const result = await model.generateContent(prompt);

@@ -16,7 +16,7 @@ export default function SupportChat() {
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', text: '¡Hola! Soy Lidia, tu asistente de LIDUS. ¿En qué puedo ayudarte hoy?', sender: 'ia', timestamp: Date.now() }
+    { id: '1', text: '¡Hola! Soy Lidu, tu asistente de LIDUS. ¿En qué puedo ayudarte hoy?', sender: 'ia', timestamp: Date.now() }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   
@@ -195,7 +195,7 @@ export default function SupportChat() {
             <div className="flex items-center gap-1">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest">
-                {chatMode === 'bot' ? 'Lidia AI Activa' : chatMode === 'waiting' ? 'Buscando agente...' : `${agentName} en línea`}
+                {chatMode === 'bot' ? 'Lidu AI Activa' : chatMode === 'waiting' ? 'Buscando agente...' : `${agentName} en línea`}
               </span>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function SupportChat() {
                   <div className="flex items-center gap-2 mb-1">
                     {msg.sender === 'user' ? <User size={12} className="opacity-50" /> : <Bot size={12} className={msg.sender === 'agent' ? "text-emerald-400" : "text-blue-400"} />}
                     <span className="text-[10px] font-black uppercase opacity-40">
-                      {msg.sender === 'user' ? 'Tú' : msg.sender === 'ia' ? 'Lidia AI' : agentName || 'Asesor'}
+                      {msg.sender === 'user' ? 'Tú' : msg.sender === 'ia' ? 'Lidu AI' : agentName || 'Asesor'}
                     </span>
                   </div>
                   <p className="leading-relaxed font-medium">{msg.text}</p>

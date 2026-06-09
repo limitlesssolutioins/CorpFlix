@@ -2,7 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Leaf, HardHat, Lock, Car, ClipboardList, AlertTriangle, Users, ChevronRight, Activity } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  Leaf, 
+  HardHat, 
+  Lock, 
+  Car, 
+  ClipboardList, 
+  AlertTriangle, 
+  Users, 
+  ChevronRight, 
+  Activity,
+  Globe,
+  Gavel,
+  Zap,
+  ArrowRight
+} from 'lucide-react';
 
 interface AuditStandard {
     id: number; code: string; name: string; full_name: string;
@@ -15,7 +30,7 @@ interface GlobalKPIs {
 
 const ICONS: Record<string, any> = {
     ISO9001: ShieldCheck, ISO14001: Leaf, ISO45001: HardHat,
-    RES0312: HardHat, ISO27001: Lock, ISO39001: Car, PESV: Car,
+    RES0312: Gavel, ISO27001: Lock, ISO39001: Car, PESV: Car,
 };
 
 export default function AuditoriaPage() {
@@ -34,91 +49,142 @@ export default function AuditoriaPage() {
     }, []);
 
     if (loading) return (
-        <div className="flex items-center justify-center min-h-[400px]">
-            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="relative">
+                <div className="w-16 h-16 border-4 border-slate-200 rounded-full" />
+                <div className="absolute top-0 w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            </div>
         </div>
     );
 
     const categories = Array.from(new Set(standards.map(s => s.category)));
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8">
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl font-black text-slate-900">Auditorías</h1>
-                <p className="text-slate-500 mt-1">Selecciona la norma que deseas auditar</p>
+        <div className="max-w-7xl mx-auto space-y-12 pb-20">
+            {/* Header Hero Section */}
+            <div className="relative p-10 md:p-16 rounded-[3rem] bg-slate-950 text-white overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-[500px] h-full bg-blue-600/10 blur-[120px] -rotate-12 translate-x-1/2 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/10 blur-[100px] rounded-full pointer-events-none" />
+                
+                <div className="relative z-10 max-w-2xl">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+                        <Zap size={14} className="animate-pulse" /> Cumplimiento Normativo
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-none mb-6">
+                        Auditorías de Normas <br />
+                        <span className="text-slate-500 italic">Legales e Internacionales</span>
+                    </h1>
+                    <p className="text-lg text-slate-400 font-medium leading-relaxed max-w-xl">
+                        Asegura la excelencia operativa evaluando tus procesos bajo estándares locales e internacionales con asistencia inteligente.
+                    </p>
+                </div>
+
+                {/* KPI Overview Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 relative z-10">
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2rem] hover:bg-white/10 transition-colors group">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="p-3 rounded-2xl bg-blue-600/20 text-blue-400">
+                                <Activity size={20} />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-500">Ejecución Anual</span>
+                        </div>
+                        <div className="text-3xl font-black text-white">{kpis?.auditsThisYear || 0} <span className="text-sm font-medium text-slate-500 tracking-normal">Auditorías</span></div>
+                    </div>
+                    
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2rem] hover:bg-white/10 transition-colors group">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="p-3 rounded-2xl bg-orange-500/20 text-orange-400">
+                                <AlertTriangle size={20} />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-500">Acciones Abiertas</span>
+                        </div>
+                        <div className="text-3xl font-black text-white">{kpis?.openActions || 0} <span className="text-sm font-medium text-slate-500 tracking-normal">Pendientes</span></div>
+                    </div>
+
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2rem] hover:bg-white/10 transition-colors group">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400">
+                                <Users size={20} />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-500">Gestión de Equipo</span>
+                        </div>
+                        <Link href="/auditoria/equipo" className="inline-flex items-center gap-2 text-sm font-bold text-white hover:text-emerald-400 transition-colors">
+                            Ver Auditores <ChevronRight size={16} />
+                        </Link>
+                    </div>
+                </div>
             </div>
 
-            {/* Alert vencidas */}
+            {/* Alert for overdue actions */}
             {kpis && kpis.overdueActions > 0 && (
                 <Link href="/mejora-continua/acciones"
-                    className="flex items-center gap-3 p-3.5 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-colors">
-                    <AlertTriangle size={18} className="text-red-600 shrink-0" />
-                    <span className="text-sm font-semibold text-red-700 flex-1">
-                        {kpis.overdueActions} acción{kpis.overdueActions !== 1 ? 'es' : ''} correctiva{kpis.overdueActions !== 1 ? 's' : ''} vencida{kpis.overdueActions !== 1 ? 's' : ''} — requieren atención
-                    </span>
-                    <ChevronRight size={16} className="text-red-400 shrink-0" />
+                    className="flex items-center gap-4 p-6 bg-red-500/5 border border-red-500/20 rounded-3xl group hover:bg-red-500/10 transition-all">
+                    <div className="p-3 bg-red-500 text-white rounded-2xl shadow-lg shadow-red-500/20">
+                        <AlertTriangle size={24} />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mb-0.5">Atención Requerida</p>
+                        <h4 className="text-slate-900 font-bold text-lg leading-tight">
+                            {kpis.overdueActions} acción{kpis.overdueActions !== 1 ? 'es' : ''} correctiva{kpis.overdueActions !== 1 ? 's' : ''} vencida{kpis.overdueActions !== 1 ? 's' : ''}
+                        </h4>
+                    </div>
+                    <ArrowRight size={20} className="text-red-300 group-hover:translate-x-1 transition-transform" />
                 </Link>
             )}
 
-            {/* Resumen rápido */}
-            {kpis && (kpis.auditsThisYear > 0 || kpis.openActions > 0) && (
-                <div className="flex gap-4 flex-wrap text-sm">
-                    <span className="flex items-center gap-1.5 text-slate-600">
-                        <Activity size={15} className="text-blue-500" />
-                        <strong className="text-slate-900">{kpis.auditsThisYear}</strong> auditorías este año
-                    </span>
-                    <span className="text-slate-300">·</span>
-                    <span className="flex items-center gap-1.5 text-slate-600">
-                        <AlertTriangle size={15} className="text-orange-500" />
-                        <strong className="text-slate-900">{kpis.openActions}</strong> acciones abiertas
-                    </span>
-                    {kpis.nonConformities > 0 && <>
-                        <span className="text-slate-300">·</span>
-                        <span className="flex items-center gap-1.5 text-slate-600">
-                            <strong className="text-slate-900">{kpis.nonConformities}</strong> no conformidades
-                        </span>
-                    </>}
-                </div>
-            )}
-
-            {/* Standards */}
+            {/* Standards Sections */}
             {categories.map(category => (
-                <div key={category}>
-                    {categories.length > 1 && (
-                        <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">{category}</p>
-                    )}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div key={category} className="space-y-6">
+                    <div className="flex items-center gap-4">
+                        <div className="h-px bg-slate-200 flex-1" />
+                        <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">{category}</h2>
+                        <div className="h-px bg-slate-200 flex-1" />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {standards.filter(s => s.category === category).map(std => {
                             const Icon = ICONS[std.code] || ClipboardList;
                             const color = std.color || '#3b82f6';
-                            
-                            // Safe parsing of full name to prevent split crash
                             const displayName = std.full_name ? (std.full_name.includes(' - ') ? std.full_name.split(' - ')[1] : std.full_name) : std.name;
 
                             return (
                                 <Link key={std.id} href={`/auditoria/${std.code.toLowerCase()}`}
-                                    className="group bg-white rounded-2xl p-5 border-2 border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0" style={{ backgroundColor: color }}>
-                                            <Icon size={18} />
+                                    className="group relative flex flex-col p-1 bg-white rounded-[2.5rem] border border-slate-100 hover:border-slate-300 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 hover:-translate-y-2">
+                                    
+                                    <div className="p-8 pb-4">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6" style={{ backgroundColor: color }}>
+                                                <Icon size={32} />
+                                            </div>
+                                            {std.total_audits > 0 && (
+                                                <div className="flex flex-col items-end">
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registradas</span>
+                                                    <span className="text-xl font-black text-slate-900">{std.total_audits}</span>
+                                                </div>
+                                            )}
                                         </div>
-                                        {std.total_audits > 0 && (
-                                            <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                                                {std.total_audits} audit.
-                                            </span>
-                                        )}
+
+                                        <div className="text-[10px] font-black uppercase tracking-[0.15em] mb-2" style={{ color }}>{std.name}</div>
+                                        <h3 className="text-xl font-black text-slate-900 tracking-tight leading-tight mb-4 group-hover:text-blue-600 transition-colors">
+                                            {displayName}
+                                        </h3>
+                                        <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8 line-clamp-3">
+                                            {std.description}
+                                        </p>
                                     </div>
-                                    <div className="text-xs font-black uppercase tracking-wide mb-0.5" style={{ color }}>{std.name}</div>
-                                    <h3 className="text-sm font-bold text-slate-900 leading-snug mb-1">
-                                        {displayName}
-                                    </h3>
-                                    <p className="text-xs text-slate-400 line-clamp-2 mb-4">{std.description}</p>
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="text-slate-400">{std.total_requirements} requisitos</span>
-                                        <span className="font-bold flex items-center gap-1 group-hover:gap-1.5 transition-all" style={{ color }}>
-                                            Abrir <ChevronRight size={13} />
-                                        </span>
+
+                                    <div className="mt-auto border-t border-slate-50 p-8 pt-6 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-1.5 rounded-lg bg-slate-50 text-slate-400 group-hover:text-blue-500 transition-colors">
+                                                <Globe size={14} />
+                                            </div>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                {std.total_requirements} Requisitos
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 group-hover:text-blue-600 transition-all">
+                                            Evaluar <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                        </div>
                                     </div>
                                 </Link>
                             );
@@ -127,18 +193,15 @@ export default function AuditoriaPage() {
                 </div>
             ))}
 
-            {/* Accesos globales */}
-            <div className="pt-2 flex gap-3 flex-wrap border-t border-slate-100">
+            {/* Footer Actions */}
+            <div className="flex justify-center gap-6 pt-12 border-t border-slate-100">
                 <Link href="/mejora-continua/acciones"
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 text-sm font-semibold hover:border-slate-300 hover:shadow-sm transition-all">
-                    <AlertTriangle size={15} className="text-orange-500" /> Acciones Correctivas
-                    {kpis && kpis.openActions > 0 && (
-                        <span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">{kpis.openActions}</span>
-                    )}
+                    className="flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 rounded-2xl text-slate-700 font-bold hover:border-blue-500 hover:text-blue-600 hover:shadow-xl hover:shadow-blue-500/10 transition-all">
+                    <Zap size={20} className="text-blue-500" /> Plan de Acción
                 </Link>
-                <Link href="/auditoria/equipo"
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 text-sm font-semibold hover:border-slate-300 hover:shadow-sm transition-all">
-                    <Users size={15} className="text-violet-500" /> Equipo Auditor
+                <Link href="/auditoria/hallazgos"
+                    className="flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 rounded-2xl text-slate-700 font-bold hover:border-emerald-500 hover:text-emerald-600 hover:shadow-xl hover:shadow-emerald-500/10 transition-all">
+                    <ClipboardList size={20} className="text-emerald-500" /> Historial de Hallazgos
                 </Link>
             </div>
         </div>

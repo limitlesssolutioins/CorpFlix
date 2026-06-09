@@ -72,6 +72,16 @@ interface CompanyData {
         estado: string;
         fechaFin: string | null;
     };
+    profile?: {
+        nombreEmpresa?: string;
+        nit?: string;
+        sectorActividad?: string;
+        direccion?: string;
+        ciudad?: string;
+        telefono?: string;
+        email?: string;
+        sitioWeb?: string;
+    } | null;
 }
 
 interface Category {
@@ -125,6 +135,7 @@ export default function ControlMaestroStandalone() {
     const [selectedCompany, setSelectedCompany] = useState<CompanyData | null>(null);
     const [editingSub, setEditingSub] = useState({ plan: 'Mensual Total', estado: 'ACTIVO', fechaFin: '' });
     const [isSubModalOpen, setIsSubModalOpen] = useState(false);
+    const [expandedOnboardings, setExpandedOnboardings] = useState<Record<string, boolean>>({});
 
     // --- CHECK AUTH ON MOUNT ---
     useEffect(() => {
@@ -675,6 +686,61 @@ export default function ControlMaestroStandalone() {
                                                         ))
                                                     )}
                                                 </div>
+                                            </div>
+
+                                            {/* Onboarding Profile collapsible */}
+                                            <div className="pt-2">
+                                                {comp.profile ? (
+                                                    <>
+                                                        <button 
+                                                            onClick={() => setExpandedOnboardings(prev => ({ ...prev, [comp.id]: !prev[comp.id] }))}
+                                                            className="text-[9px] font-black uppercase text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors outline-none"
+                                                        >
+                                                            {expandedOnboardings[comp.id] ? 'Ocultar Ficha Onboarding' : 'Ver Ficha Onboarding'}
+                                                            <ChevronRight size={10} className={`transform transition-transform ${expandedOnboardings[comp.id] ? 'rotate-90' : ''}`} />
+                                                        </button>
+                                                        
+                                                        {expandedOnboardings[comp.id] && (
+                                                            <div className="mt-3 p-4 bg-slate-950/50 rounded-2xl border border-slate-850/70 grid grid-cols-2 gap-x-6 gap-y-3 text-[11px] animate-in fade-in slide-in-from-top-2 duration-200">
+                                                                <div className="space-y-0.5">
+                                                                    <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Sector Actividad</span>
+                                                                    <span className="font-bold text-slate-300">{comp.profile.sectorActividad || 'No especificado'}</span>
+                                                                </div>
+                                                                <div className="space-y-0.5">
+                                                                    <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Ciudad</span>
+                                                                    <span className="font-bold text-slate-300">{comp.profile.ciudad || 'No especificada'}</span>
+                                                                </div>
+                                                                <div className="space-y-0.5 col-span-2 border-t border-slate-850/40 pt-1.5">
+                                                                    <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Dirección</span>
+                                                                    <span className="font-bold text-slate-300">{comp.profile.direccion || 'No especificada'}</span>
+                                                                </div>
+                                                                <div className="space-y-0.5 border-t border-slate-850/40 pt-1.5">
+                                                                    <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Teléfono</span>
+                                                                    <span className="font-bold text-slate-300">{comp.profile.telefono || 'No especificado'}</span>
+                                                                </div>
+                                                                <div className="space-y-0.5 border-t border-slate-850/40 pt-1.5">
+                                                                    <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Email Corporativo</span>
+                                                                    <span className="font-bold text-slate-300">{comp.profile.email || 'No especificado'}</span>
+                                                                </div>
+                                                                {comp.profile.sitioWeb && (
+                                                                    <div className="space-y-0.5 col-span-2 border-t border-slate-850/40 pt-1.5">
+                                                                        <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Sitio Web</span>
+                                                                        <a 
+                                                                            href={comp.profile.sitioWeb.startsWith('http') ? comp.profile.sitioWeb : `https://${comp.profile.sitioWeb}`} 
+                                                                            target="_blank" 
+                                                                            rel="noopener noreferrer" 
+                                                                            className="font-bold text-blue-400 hover:text-blue-300 hover:underline transition-colors"
+                                                                        >
+                                                                            {comp.profile.sitioWeb}
+                                                                        </a>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <span className="text-[8px] font-black uppercase text-slate-600 italic tracking-wider">Perfil Onboarding Pendiente</span>
+                                                )}
                                             </div>
                                         </div>
 

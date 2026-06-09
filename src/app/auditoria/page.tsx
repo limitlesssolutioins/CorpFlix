@@ -16,13 +16,15 @@ import {
   Globe,
   Gavel,
   Zap,
-  ArrowRight
+  ArrowRight,
+  Plus
 } from 'lucide-react';
 
 interface AuditStandard {
     id: number; code: string; name: string; full_name: string;
     category: string; color: string; description: string;
     total_requirements: number; total_audits: number;
+    latest_audit_id: string | null;
 }
 interface GlobalKPIs {
     auditsThisYear: number; nonConformities: number; overdueActions: number; openActions: number;
@@ -161,36 +163,47 @@ export default function AuditoriaPage() {
 
                                     {/* Right Side: Quick Action Buttons */}
                                     <div className="flex flex-wrap items-center gap-2 shrink-0 w-full lg:w-auto border-t border-slate-50 lg:border-0 pt-4 lg:pt-0">
-                                        <Link 
-                                            href={`/auditoria/${std.code.toLowerCase()}/autoevaluacion`}
-                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
-                                        >
-                                            Autoevaluación
-                                        </Link>
-                                        <Link 
-                                            href={`/auditoria/${std.code.toLowerCase()}/programa`}
-                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
-                                        >
-                                            Programa
-                                        </Link>
-                                        <Link 
-                                            href={`/auditoria/${std.code.toLowerCase()}/plan`}
-                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
-                                        >
-                                            Plan
-                                        </Link>
-                                        <Link 
-                                            href={`/auditoria/${std.code.toLowerCase()}/checklist`}
-                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
-                                        >
-                                            Checklist
-                                        </Link>
-                                        <Link 
-                                            href={`/auditoria/${std.code.toLowerCase()}/reporte`}
-                                            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-1.5"
-                                        >
-                                            Reporte <ArrowRight size={10} />
-                                        </Link>
+                                        {std.latest_audit_id ? (
+                                            <>
+                                                <Link 
+                                                    href={`/auditoria/${std.code.toLowerCase()}/autoevaluacion?audit_id=${std.latest_audit_id}`}
+                                                    className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                                >
+                                                    Autoevaluación
+                                                </Link>
+                                                <Link 
+                                                    href={`/auditoria/${std.code.toLowerCase()}/programa?audit_id=${std.latest_audit_id}`}
+                                                    className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                                >
+                                                    Programa
+                                                </Link>
+                                                <Link 
+                                                    href={`/auditoria/${std.code.toLowerCase()}/plan?audit_id=${std.latest_audit_id}`}
+                                                    className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                                >
+                                                    Plan
+                                                </Link>
+                                                <Link 
+                                                    href={`/auditoria/${std.code.toLowerCase()}/checklist?audit_id=${std.latest_audit_id}`}
+                                                    className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                                >
+                                                    Checklist
+                                                </Link>
+                                                <Link 
+                                                    href={`/auditoria/${std.code.toLowerCase()}/reporte?audit_id=${std.latest_audit_id}`}
+                                                    className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-1.5"
+                                                >
+                                                    Reporte <ArrowRight size={10} />
+                                                </Link>
+                                            </>
+                                        ) : (
+                                            <Link 
+                                                href={`/auditoria/${std.code.toLowerCase()}/auditorias`}
+                                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-md shadow-blue-500/10 flex items-center gap-2 border border-blue-500"
+                                            >
+                                                <Plus size={12} /> Iniciar Auditoría o Autoevaluación
+                                            </Link>
+                                        )}
                                     </div>
                                 </div>
                             );

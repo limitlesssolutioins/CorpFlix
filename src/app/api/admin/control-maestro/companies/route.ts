@@ -20,6 +20,21 @@ function getCompanySubscription(companyId: string) {
     }
 }
 
+// Helper to get company onboarding profile
+function getCompanyProfile(companyId: string) {
+    const dataPath = path.join(process.cwd(), 'src', 'data', 'companies', companyId, 'admin.json');
+    try {
+        if (!fs.existsSync(dataPath)) {
+            return null;
+        }
+        const fileContent = fs.readFileSync(dataPath, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        return parsed.general || null;
+    } catch {
+        return null;
+    }
+}
+
 // Helper to save company subscription
 function saveCompanySubscription(companyId: string, subscription: any) {
     const dirPath = path.join(process.cwd(), 'src', 'data', 'companies', companyId);
@@ -61,14 +76,16 @@ export async function GET(request: Request) {
         // Get all users
         const users = await query<any[]>('SELECT id, email, name, role, status, companyId FROM User ORDER BY createdAt DESC');
 
-        // Map companies with their users and subscription
+        // Map companies with their users, subscription, and onboarding profile
         const fullCompaniesData = companies.map(c => {
             const companyUsers = users.filter(u => u.companyId === c.id);
             const subscription = getCompanySubscription(c.id);
+            const profile = getCompanyProfile(c.id);
             return {
                 ...c,
                 users: companyUsers,
-                subscription
+                subscription,
+                profile
             };
         });
 

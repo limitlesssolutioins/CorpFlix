@@ -9,11 +9,13 @@ export async function GET() {
 
         const sql = `
             SELECT s.*, 
-                   (SELECT COUNT(*) FROM AuditChapter c WHERE c.standardId = s.id) as chaptersCount 
+                   (SELECT COUNT(*) FROM AuditChapter c WHERE c.standardId = s.id) as chaptersCount,
+                   (SELECT COUNT(*) FROM Audit a WHERE a.standard_id = s.id AND a.companyId = ?) as totalAudits,
+                   (SELECT id FROM Audit a WHERE a.standard_id = s.id AND a.companyId = ? ORDER BY a.date DESC LIMIT 1) as latestAuditId
             FROM AuditStandard s 
             ORDER BY s.id ASC
         `;
-        const standards = await query<any[]>(sql);
+        const standards = await query<any[]>(sql, [companyId, companyId]);
         
         // Map to match old API format expectations if necessary.
         const mappedStandards = standards.map(s => ({
@@ -24,7 +26,9 @@ export async function GET() {
             category: s.category,
             color: s.color,
             description: s.description,
-            total_requirements: s.chaptersCount // approximate mapped value for UI
+            total_requirements: s.chaptersCount,
+            total_audits: s.totalAudits || 0,
+            latest_audit_id: s.latestAuditId || null
         }));
 
         return NextResponse.json(mappedStandards);

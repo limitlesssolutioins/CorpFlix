@@ -11,7 +11,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan credenciales' }, { status: 400 });
     }
 
-    const users = await query<any[]>('SELECT id, email, password, companyId FROM User WHERE email = ? LIMIT 1', [email]);
+    const users = await query<any[]>(
+      `SELECT u.id, u.email, u.password, u.companyId, c.name as companyName
+       FROM User u
+       LEFT JOIN Company c ON c.id = u.companyId
+       WHERE u.email = ?
+       LIMIT 1`,
+      [email]
+    );
     
     if (users.length === 0) {
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
@@ -27,16 +34,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 });
     }
 
+    const needsOnboarding = !user.companyId || user.companyName === 'Lidus Default';
+
     // Crear JWT
     await createSession({
       userId: user.id,
       email: user.email,
       companyId: user.companyId || null,
+      needsOnboarding,
       planId: "MVP" // Hardcoded for now based on old logic
     });
 
     const response = NextResponse.json({
       success: true,
+      needsOnboarding,
       user: { id: user.id, email: user.email, companyId: user.companyId }
     });
 

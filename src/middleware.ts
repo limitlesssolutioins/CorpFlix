@@ -29,8 +29,8 @@ export async function middleware(request: NextRequest) {
     // Pero si es '/login' y ya tiene sesión, mandarlo al dashboard
     if (pathname === '/login' && sessionToken) {
       try {
-        await jwtVerify(sessionToken, SECRET_KEY);
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        const { payload }: any = await jwtVerify(sessionToken, SECRET_KEY);
+        return NextResponse.redirect(new URL(payload.needsOnboarding ? '/onboarding' : '/dashboard', request.url));
       } catch (e) {
         return NextResponse.next();
       }
@@ -50,14 +50,15 @@ export async function middleware(request: NextRequest) {
     });
 
     const companyId = payload.companyId;
+    const needsOnboarding = Boolean(payload.needsOnboarding);
 
     // Si no tiene empresa y no está en onboarding, redirigir a onboarding
-    if (!companyId && !pathname.startsWith('/onboarding') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth/logout')) {
+    if ((!companyId || needsOnboarding) && !pathname.startsWith('/onboarding') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth/logout')) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
 
     // Si ya tiene empresa y está intentando entrar a onboarding, devolver a dashboard
-    if (companyId && pathname.startsWith('/onboarding')) {
+    if (companyId && !needsOnboarding && pathname.startsWith('/onboarding')) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 

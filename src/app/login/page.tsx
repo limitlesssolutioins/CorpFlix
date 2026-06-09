@@ -35,10 +35,10 @@ export default function AuthPage() {
         return;
       }
 
-      console.log('Navegando al dashboard...');
+      console.log('Navegando al espacio de trabajo...');
       // Usamos window.location.href para un "hard redirect" que limpie el estado del router
       // y asegure que el middleware procese la nueva sesión.
-      window.location.href = '/';
+      window.location.href = data.needsOnboarding ? '/onboarding' : '/dashboard';
     } catch (err) {
       console.error('Error en el submit:', err);
       setError('Error de conexión');

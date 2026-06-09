@@ -6,6 +6,7 @@ export async function POST() {
   
   const response = NextResponse.json({ success: true });
   response.cookies.delete('selectedCompanyId');
+  response.cookies.delete('lidus_company_id');
 
   return response;
 }

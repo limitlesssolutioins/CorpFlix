@@ -66,6 +66,7 @@ export async function POST(request: Request) {
       userId: session.userId,
       email: session.email,
       companyId: companyId,
+      needsOnboarding: false,
       planId: "MVP"
     });
 

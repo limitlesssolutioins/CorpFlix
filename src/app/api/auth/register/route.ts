@@ -20,29 +20,20 @@ export async function POST(request: Request) {
     const id = uuidv4();
     const password_hash = await bcrypt.hash(password, 10);
 
-    // We need a default company because the schema requires it now.
-    // Ideally this comes from a registration form.
-    let companyId: string;
-    const companies = await query<any[]>('SELECT id FROM Company LIMIT 1');
-    
-    if (companies.length === 0) {
-        companyId = uuidv4();
-        await query(
-            'INSERT INTO Company (id, name, nit, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, NOW(), NOW())',
-            [companyId, 'Lidus Default', '000000000', 'ACTIVE']
-        );
-    } else {
-        companyId = companies[0].id;
-    }
+    const companyId = uuidv4();
+    await query(
+        'INSERT INTO Company (id, name, nit, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, NOW(), NOW())',
+        [companyId, 'Lidus Default', '000000000', 'ACTIVE']
+    );
 
     await query(
         'INSERT INTO User (id, email, password, name, companyId, role, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
         [id, email, password_hash, email.split('@')[0], companyId, 'USER', 'ACTIVE']
     );
 
-    await createSession({ userId: id, email, companyId: companyId });
+    await createSession({ userId: id, email, companyId, needsOnboarding: true });
 
-    return NextResponse.json({ success: true, user: { id, email } }, { status: 201 });
+    return NextResponse.json({ success: true, needsOnboarding: true, user: { id, email, companyId } }, { status: 201 });
   } catch (error: any) {
     console.error('Registration error:', error);
     return NextResponse.json({ error: 'Error en el registro' }, { status: 500 });

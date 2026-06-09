@@ -15,7 +15,8 @@ import {
     X,
     Layout,
     Globe,
-    Shield
+    Shield,
+    ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 

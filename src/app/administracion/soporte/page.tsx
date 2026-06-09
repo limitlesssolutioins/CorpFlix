@@ -264,7 +264,11 @@ export default function SoporteDashboard() {
                           {t.status}
                         </span>
                       </td>
-                      <td className="p-4 text-slate-500">{new Date(t.created_at).toLocaleDateString()}</td>
+                      <td className="p-4 text-slate-500">
+                        {t.created_at && !isNaN(new Date(t.created_at).getTime())
+                          ? new Date(t.created_at).toLocaleDateString()
+                          : 'N/A'}
+                      </td>
                     </tr>
                   ))
                 )}

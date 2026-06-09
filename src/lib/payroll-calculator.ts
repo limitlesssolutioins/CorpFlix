@@ -38,7 +38,17 @@ export function calculateShiftColombian({
     const hourlyRate = salary / monthlyHours;
 
     if (!startTime || !endTime) {
-        return { ordinaryHours: 0, nightSurchargeHours: 0, sundayHours: 0 };
+        return {
+            hourlyRate: 0,
+            totalHours: 0,
+            breakdown: {
+                ordinaryDay: { hours: 0, amount: 0, multiplier: 1.0, label: 'Ordinaria Diurna' },
+                ordinaryNight: { hours: 0, amount: 0, multiplier: 1.35, label: 'Ordinaria Nocturna' },
+                extraDay: { hours: 0, amount: 0, multiplier: 1.25, label: 'Extra Diurna' },
+                extraNight: { hours: 0, amount: 0, multiplier: 1.75, label: 'Extra Nocturna' },
+            },
+            totalAmount: 0
+        };
     }
 
     const [startH, startM] = startTime.split(':').map(Number);

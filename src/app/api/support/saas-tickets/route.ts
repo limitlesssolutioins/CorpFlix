@@ -12,9 +12,19 @@ export async function GET(request: Request) {
         }
 
         const db = getSaasSupportDb();
-        const tickets = db.getAllTickets();
+        const tickets = await db.getAllTickets();
 
-        return NextResponse.json(tickets);
+        // Map camelCase DB fields to snake_case used by UI, and generate ticket_code
+        const mappedTickets = tickets.map((t: any) => ({
+            id: t.id,
+            ticket_code: t.id ? `TCK-${t.id.substring(0, 8).toUpperCase()}` : 'TCK-UNKNOWN',
+            company_id: t.companyId,
+            subject: t.subject,
+            status: t.status || 'OPEN',
+            created_at: t.createdAt
+        }));
+
+        return NextResponse.json(mappedTickets);
     } catch (error) {
         console.error('Error fetching SaaS tickets:', error);
         return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
@@ -39,11 +49,11 @@ export async function POST(request: Request) {
         }
 
         const db = getSaasSupportDb();
-        const newTicket = db.createTicket({
-            company_id: companyId,
-            user_id: userId,
+        const newTicket = await db.createTicket({
+            companyId: companyId,
+            userId: userId,
             subject,
-            transcript,
+            description: transcript,
             priority: priority || 'MEDIUM',
             status: 'OPEN'
         });

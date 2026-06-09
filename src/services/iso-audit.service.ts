@@ -160,7 +160,7 @@ export class ISOAuditService {
     }
   }
 
-  getAuditPlan(auditId: string) { return { plan: null, activities: [] }; }
+
 
   // ==========================================
   // FINDINGS AND CHECKLIST
@@ -409,8 +409,6 @@ export class ISOAuditService {
     updateCorrectiveAction(id: string, updateData: any) { return null as any; }
     createFinding(body: any) { return null as any; }
     saveRequirementVariables(reqId: number, vars: string[]) { return null as any; }
-    createProgram(body: any) { return null as any; }
-    updateProgram(id: string, data: any) { return null as any; }
 }
 
 let instance: ISOAuditService | null = null;

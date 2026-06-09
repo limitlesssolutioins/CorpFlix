@@ -105,44 +105,94 @@ export default function AuditoriaPage() {
                         <div className="h-px bg-slate-100 flex-1" />
                     </div>
                     
-                    {/* Standardized Grid - Mobile App Style */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                    {/* Horizontal Card Stack */}
+                    <div className="space-y-4">
                         {standards.filter(s => s.category === category).map(std => {
                             const Icon = ICONS[std.code] || ClipboardList;
                             const color = std.color || '#3b82f6';
 
                             return (
-                                <Link key={std.id} href={`/auditoria/${std.code.toLowerCase()}`}
-                                    className="group flex flex-col items-center text-center space-y-3 p-2 transition-all">
-                                    
-                                    {/* App Icon Style */}
-                                    <div className="relative">
+                                <div 
+                                    key={std.id}
+                                    className="bg-white border border-slate-100/80 rounded-[1.8rem] p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:border-slate-200 hover:shadow-lg hover:shadow-slate-100/50 transition-all duration-300 relative group overflow-hidden"
+                                >
+                                    {/* Accent Left Border on Hover */}
+                                    <div 
+                                        className="absolute left-0 top-0 bottom-0 w-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                        style={{ backgroundColor: color }}
+                                    />
+
+                                    {/* Left Side: Standard details */}
+                                    <div className="flex items-center gap-5 flex-1 min-w-0">
                                         <div 
-                                            className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center text-white shadow-lg group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
+                                            className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-md relative overflow-hidden shrink-0"
                                             style={{ backgroundColor: color }}
                                         >
-                                            <Icon size={32} className="md:size-40 relative z-10" />
-                                            {/* Subtle internal glow */}
+                                            <Icon size={24} className="relative z-10" />
+                                            {/* Glow overlay */}
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
                                         </div>
-                                        
-                                        {/* Notification Badge Style for Audits Count */}
-                                        {std.total_audits > 0 && (
-                                            <div className="absolute -top-1 -right-1 min-w-[20px] h-[20px] bg-slate-900 border-2 border-white text-white rounded-full flex items-center justify-center text-[9px] font-black px-1.5 shadow-md">
-                                                {std.total_audits}
+
+                                        <div className="space-y-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <h3 className="text-sm font-black text-slate-900 group-hover:text-blue-600 transition-colors uppercase tracking-tight truncate">
+                                                    {std.name}
+                                                </h3>
+                                                <span className="text-[8px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200/50">
+                                                    {std.code}
+                                                </span>
                                             </div>
-                                        )}
+                                            <p className="text-[11px] text-slate-500 font-medium line-clamp-1 max-w-xl">
+                                                {std.description || 'Gestión y evaluación de estándares y cumplimiento reglamentario.'}
+                                            </p>
+                                            <div className="flex items-center gap-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest pt-0.5">
+                                                <span>📋 {std.total_requirements} Requisitos</span>
+                                                {std.total_audits > 0 && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span className="text-blue-600 font-extrabold bg-blue-50/50 border border-blue-100 px-1.5 py-0.5 rounded-md">
+                                                            📊 {std.total_audits} {std.total_audits === 1 ? 'Auditoría' : 'Auditorías'}
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-1">
-                                        <div className="text-[11px] font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors uppercase tracking-tight">
-                                            {std.name}
-                                        </div>
-                                        <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                                            {std.total_requirements} Reqs
-                                        </div>
+                                    {/* Right Side: Quick Action Buttons */}
+                                    <div className="flex flex-wrap items-center gap-2 shrink-0 w-full lg:w-auto border-t border-slate-50 lg:border-0 pt-4 lg:pt-0">
+                                        <Link 
+                                            href={`/auditoria/${std.code.toLowerCase()}/autoevaluacion`}
+                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                        >
+                                            Autoevaluación
+                                        </Link>
+                                        <Link 
+                                            href={`/auditoria/${std.code.toLowerCase()}/programa`}
+                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                        >
+                                            Programa
+                                        </Link>
+                                        <Link 
+                                            href={`/auditoria/${std.code.toLowerCase()}/plan`}
+                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                        >
+                                            Plan
+                                        </Link>
+                                        <Link 
+                                            href={`/auditoria/${std.code.toLowerCase()}/checklist`}
+                                            className="px-3.5 py-2.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-slate-100 hover:border-blue-100"
+                                        >
+                                            Checklist
+                                        </Link>
+                                        <Link 
+                                            href={`/auditoria/${std.code.toLowerCase()}/reporte`}
+                                            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-1.5"
+                                        >
+                                            Reporte <ArrowRight size={10} />
+                                        </Link>
                                     </div>
-                                </Link>
+                                </div>
                             );
                         })}
                     </div>

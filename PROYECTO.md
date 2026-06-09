@@ -48,3 +48,8 @@ A partir de la sesión actual, Lidus opera bajo un modelo de **Suscripción Úni
 - Rediseño del módulo de Auditoría con interfaz tipo "App Mobile" (cuadrícula de iconos).
 - Implementación del **Control Maestro** para gestión dinámica de auditorías y normativas.
 - Creación de este documento estructural (`PROYECTO.md`).
+- **Seguridad e Integración del Portal de Control & Soporte Maestro:**
+  - Se desacopló por completo el "Control Maestro" de la barra lateral estándar para que los usuarios finales no puedan visualizarlo ni acceder a él.
+  - Se convirtió en un portal autónomo de pantalla completa (`FULL_SCREEN_PATHS` en Layout) accesible en `/administracion/control-maestro` protegido por credenciales de soporte independientes (`soporte@lidus.co` / `LidusSoporte2026!`).
+  - Se integró el **Soporte en Vivo** (chat WebSocket bidireccional permanente y visualización de tickets fallback) y la **Administración de Licencias & Suscripciones** de todas las empresas.
+  - Se elevó la gestión de **Categorías de Auditoría** (`AuditCategory`) a una tabla e interfaz de primer nivel (CRUD completo con modal interactivo), lo que permite agrupar y visualizar dinámicamente las normas por categoría en la cuadrícula de auditorías.

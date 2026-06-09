@@ -19,3 +19,10 @@ Si necesitas gestionar la aplicación una vez conectado por SSH, aquí tienes lo
 - **Reiniciar la aplicación:** `pm2 restart lidus`
 - **Limpiar el historial de logs (errores viejos):** `pm2 flush`
 - **Ver el estado de la aplicación:** `pm2 status`
+
+## Credenciales del Portal de Comando & Soporte Permanente (Back-office)
+Para acceder a la administración aislada del sistema (desde donde se gestionan las categorías, normas de auditoría, se atienden chats con clientes en tiempo real y se activan/bloquean licencias de empresas):
+- **URL de Acceso:** [http://160.153.188.144:3000/administracion/control-maestro](http://160.153.188.144:3000/administracion/control-maestro)
+- **Email de Soporte:** `soporte@lidus.co`
+- **Contraseña:** `LidusSoporte2026!`
+- **Token de Seguridad Interno (API):** `lidus_admin_super_secret_token_2026`

@@ -30,6 +30,10 @@ A partir de la sesión actual, Lidus opera bajo un modelo de **Suscripción Úni
 - **Indicadores:** Visualización de métricas clave (KPIs) de asistencia, financieros y operativos.
 - **Soporte:** Sistema de tickets integrado para atención al cliente.
 
+### 5. Control Maestro (Back-office)
+- **Gestión Estructural:** Panel administrativo para crear, editar y eliminar categorías de auditoría, normas legales, capítulos y listas de chequeo.
+- **Estandarización:** Herramienta centralizada para escalar la plataforma con nuevas normativas sin intervención directa en código.
+
 ## Stack Tecnológico
 - **Frontend:** React.js + Next.js (App Router).
 - **Estilos:** Tailwind CSS.
@@ -40,4 +44,7 @@ A partir de la sesión actual, Lidus opera bajo un modelo de **Suscripción Úni
 ## Notas de Sesión (2026-06-09)
 - Simplificación del modelo de precios a una sola suscripción de lanzamiento ($50k).
 - Actualización de terminología en Landing Page ("Suscripción" en lugar de "Planes").
+- Reemplazo de "ISO/BPM" por lenguaje de normas legales e internacionales y procesos.
+- Rediseño del módulo de Auditoría con interfaz tipo "App Mobile" (cuadrícula de iconos).
+- Implementación del **Control Maestro** para gestión dinámica de auditorías y normativas.
 - Creación de este documento estructural (`PROYECTO.md`).

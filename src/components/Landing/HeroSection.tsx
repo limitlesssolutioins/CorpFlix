@@ -104,7 +104,7 @@ const HeroSection = () => {
               href="#pricing" 
               className="w-full sm:w-auto px-10 py-5 bg-white/5 hover:bg-white/10 text-white rounded-2xl font-bold text-lg border border-white/10 hover:border-white/20 backdrop-blur-md transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center"
             >
-              Ver Planes
+              Ver Precio
             </a>
           </div>
 

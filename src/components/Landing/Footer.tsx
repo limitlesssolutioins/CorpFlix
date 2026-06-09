@@ -32,7 +32,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm font-medium">
               <li><a href="#features" className="hover:text-blue-500 transition-colors">Características</a></li>
               <li><a href="#ai" className="hover:text-blue-500 transition-colors">Tecnología IA</a></li>
-              <li><a href="#pricing" className="hover:text-blue-500 transition-colors">Planes & Precios</a></li>
+              <li><a href="#pricing" className="hover:text-blue-500 transition-colors">Suscripción</a></li>
               <li><Link href="/login" className="hover:text-blue-500 transition-colors">Solicitar Demo</Link></li>
             </ul>
           </div>

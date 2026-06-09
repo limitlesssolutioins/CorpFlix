@@ -79,7 +79,7 @@ const LandingNav = () => {
               href="#pricing" 
               className="text-slate-300 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest whitespace-nowrap shrink-0 py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-500 after:transition-all hover:after:w-full"
             >
-              Planes
+              Suscripción
             </a>
             
             <div className="w-px h-4 bg-white/10 shrink-0 mx-1" />
@@ -141,7 +141,7 @@ const LandingNav = () => {
             onClick={() => setIsMobileMenuOpen(false)} 
             className="text-slate-200 hover:text-white text-base font-semibold transition-colors py-1"
           >
-            Planes
+            Suscripción
           </a>
           <div className="h-px bg-white/10 w-full my-1" />
           <Link 
